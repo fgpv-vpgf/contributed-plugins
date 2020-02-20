@@ -7,8 +7,8 @@
         "noImplicitAny": false,
         "outDir": "./dist",
         "target": "es5",
-        "types": ["jquery"]
+        "types": ["jquery", "node"]
     },
     "include": ["./**/*.ts"],
-    "exclude": ["node_modules", "lib"]
+    "exclude": ["node_modules"]
 }

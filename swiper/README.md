@@ -29,6 +29,9 @@ Inside your html, add this to your head section then replace href and src with y
 ```
 
 ## Test page
+To play with the code, from the plugin folder, do npm install, run build then npm run serve. 
+- http://localhost:6001/samples/draw-index.html
+
 To deploy a test page, do npm run build then npm run deploy. The page will be created at
 - https://"Your GitHub UserName".github.io/contributed-plugins/samples/swiper-index.html
 
