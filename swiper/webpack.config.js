@@ -2,19 +2,18 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const cssFileName = './swiper.css';
-const jsFileName = './swiper.js';
+const pluginName = 'swiper';
 
 module.exports = function(variable={}, argv) {
     const config = {
         mode: argv.mode,
-        devtool: argv.mode === 'development' ? 'source-map' : false,
+        devtool: argv.mode === 'development' ? 'cheap-module-eval-source-map' : false,
 
         entry: ['./src/loader.js'],
 
         output: {
-            path: path.join(__dirname, './dist'),
-            filename: jsFileName
+            path: path.join(__dirname, `../dist/${pluginName}`),
+            filename: `./${pluginName}.js`
         },
 
         resolve: {
@@ -42,7 +41,7 @@ module.exports = function(variable={}, argv) {
 
         plugins: [
             new MiniCssExtractPlugin({
-                filename: cssFileName
+                filename:  `./${pluginName}.css`
             }),
 
             new CopyWebpackPlugin([
@@ -53,7 +52,7 @@ module.exports = function(variable={}, argv) {
                 },
                 {
                     from: '../fgpv/*.+(js|css)',
-                    to: 'fgpv'
+                    to: '../fgpv'
                 }
             ])
         ],
@@ -65,7 +64,8 @@ module.exports = function(variable={}, argv) {
             port: 6001,
             stats: { colors: true },
             compress: true,
-            contentBase: './dist/'
+            contentBase: [path.join(__dirname, `../dist/${pluginName}`), path.join(__dirname, '../dist')],
+            watchContentBase: true
         }
     };
 

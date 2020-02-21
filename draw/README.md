@@ -12,7 +12,7 @@ You can use this toolbar to suscribe on event like add point, add line, add poly
     });
 ```
 
-[Demo page](https://jolevesq.github.io/contributed-plugins/samples/draw-index.html)
+[Demo page](https://jolevesq.github.io/contributed-plugins/draw/samples/draw-index.html)
 
 ## How to use the plugin
 Inside your configuration file you need
@@ -46,12 +46,12 @@ To play with the code, from the plugin folder, do npm install, run build then np
 - http://localhost:6001/samples/draw-index.html
 
 To deploy a test page, from the plugin folder, do npm run build then npm run deploy. The page will be created at
-- https://"Your GitHub UserName".github.io/contributed-plugins/samples/draw-index.html
+- https://"Your GitHub UserName".github.io/contributed-plugins/draw/samples/draw-index.html
 
 ## Author and support
 Author and maintainers [NRCan FGP - Johann Levesque](https://github.com/jolevesq)
 
-To report issue, please create an issue from the [GitHub repository](https://github.com/fgpv-vpgf/contributed-plugins/issues). Add the plugin-draw to label.
+To report issue, please create an issue from the [GitHub repository](https://github.com/fgpv-vpgf/contributed-plugins/issues). Add the plugin-draw label and any other applicable one.
 
 ## RAMP version
 Developed with RAMP version 3.2

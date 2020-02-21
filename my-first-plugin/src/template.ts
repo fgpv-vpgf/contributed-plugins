@@ -1,17 +1,23 @@
-// this is where you will add all needed html template
-
-// this is a sample to show you how to link your button with Angular controller
-// ng-controller will link to a controller in one of your ts file
-// to access translation, use {{ 'plugins.YOUR PLUGIN NAME.YOUR TRANSLATION VALUE' | translate }}
-// in this sample, ng-click will be link to a function called sampleFunction inside my controller
-export const SAMPLE_BUTTON = `
-<div class="" ng-controller="SampleCtrl as ctrl">
-    <md-button
-        aria-label="{{ 'plugins.myFirstPlugin.placeHolder' | translate }}"
-        class="rv-button-square md-button ng-scope md-ink-ripple"
-        ng-click="ctrl.sampleFunction()">
-            {{ 'plugins.myFirstPlugin.placeHolder' | translate }}
-        <md-tooltip>{{ 'plugins.myFirstPlugin.placeHolder' | translate }}</md-tooltip>
-    </md-button>
+// panels templates: draw
+export const MAPNAV_DRAW_TOOLBAR_TEMPLATE = `
+<span class="rv-spacer"></span>
+<div class="rv-mapnav-content rv-mapnav-draw-content">
+    <div class="rv-button-group hover rv-whiteframe-z2" ng-controller="DrawToolbarCtrl as ctrl">
+        <md-button ng-repeat-start="control in ctrl.controls" name="{{ controls }}"
+            aria-label="{{ control.label | translate }}"
+            class="md-icon-button rv-button-32 rv-icon-16 rv-draw-button rv-draw-{{ control.name }}-button"
+            ng-class="{ 'rv-control-active': control.selected() }"
+            ng-click="control.action($event)">
+            <md-tooltip md-direction="left">{{ control.tooltip | translate }}</md-tooltip>
+            <md-icon>
+                <svg xmlns="http://www.w3.org/2000/svg" fit="" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24" focusable="false">
+                <g id="drawicon{{control.name}}" ng-init="control.createIcon()"><path id="path{{control.name}}" d=""></path></g></svg>
+            </md-icon>
+        </md-button>
+        <!-- this will insert divider after every element except the last one -->
+        <md-divider ng-if="!$last" ng-repeat-end></md-divider>
+        <input id="rvUploadGraphics" class="ng-hide" type="file" accept=".fgpv"></input>
+    </div>
 </div>
+<span class="rv-spacer"></span>
 `;
