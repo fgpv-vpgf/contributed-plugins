@@ -24,7 +24,7 @@
         "build": "webpack --mode=production --config=webpack.config.js && npm run sass",
         "serve": "webpack-dev-server --progress --hot --mode=development --config webpack.config.js",
         "sass": "bash ./compileSass.sh",
-        "deploy": "gh-pages -d dist"
+        "deploy": "gh-pages -d ../dist"
     },
     "dependencies": {
         "ag-grid-community": "19.0.0",

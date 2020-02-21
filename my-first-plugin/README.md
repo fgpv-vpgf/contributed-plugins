@@ -4,12 +4,13 @@ This folder (my-first-plugin) contains everything you need to create your first 
 # Plugin configuration
 First, you need to configure the plugin.
 - Inside compileSass.sh file, replace myFirstPlugin with your plugin name
-    - e.g. ```... ./dist/my-first-plugin.css --importer ... => ... ./dist/power-plugin.css --importer ...```
-- Inside webpack.config.js, replace cssFileName and jsFileName variable with your plugin name
-    - e.g. ```const cssFileName = './my-first-plugin.css'; => const cssFileName = './power-plugin.css';```
-    - e.g. ```const jsFileName = './my-first-plugin.js'; => const jsFileName = './power-plugin.js';```
+    - e.g. ```... ../dist/my-first-plugin/my-first-plugin.css --importer ... => ... ../dist/power-plugin/power-plugin.css --importer ...```
+- Inside webpack.config.js, replace pluginName variable with your plugin name
+    - e.g. ```const pluginName = 'my-first-plugin'; => const pluginName = 'power-plugin';```
 - Inside package.json
     - Replace "name, "homepage" and "keyword" by your plugin name (e.g my-first-plugin => power-plugin)
+- Inside tsconfig.json, replace myFirstPlugin with your plugin name
+    - e.g. ```"outDir": "../dist/my-first-plugin" => "outDir": "../dist/power-plugin"```
 
 You have finish the plugin configuration!
 
@@ -88,5 +89,8 @@ Inside src/samples folder you will find your test html page with a sample config
 
 Modification to the code is applied automatically and webpack-dev-server will reload the page with your modification.
 
-To run your dev-server, do npm run serve and navigate to http://localhost:6001/samples/"plugin name"-index.html
+# Run your code
+To run your dev-server, from your plugin directory, do npm run serve and navigate to http://localhost:6001/samples/"plugin name"-index.html
 
+## Deploy a test page
+To deploy a test page, do npm run build to update the dist folder then npm run deploy to upload the content of your dist folder to GitHub. Every plugins inside dist folder will be upload to your page. If you want to restrict the number of plugins, clean the dist folder before you do npm run deploy.

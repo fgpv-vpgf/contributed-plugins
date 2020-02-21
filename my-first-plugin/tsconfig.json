@@ -5,7 +5,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": false,
-        "outDir": "./dist",
+        "outDir": "../dist/my-first-plugin",
         "target": "es5",
         "types": ["jquery", "node"]
     },

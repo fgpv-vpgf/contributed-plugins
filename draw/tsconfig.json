@@ -5,7 +5,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": false,
-        "outDir": "./dist",
+        "outDir": "../dist/draw",
         "target": "es5",
         "types": ["jquery", "node"]
     },
