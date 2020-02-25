@@ -2,7 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const pluginName = 'my-first-plugin';
+const pluginName = 'thematic-slider';
 
 module.exports = function(variable={}, argv) {
     const config = {

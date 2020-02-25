@@ -1,4 +1,4 @@
-// how to add an html element from template.tx to your application
+// how to add an html element from template.ts to your application
 import { SAMPLE_BUTTON } from './template';
 
 export default class MyFirstPlugin {
@@ -55,6 +55,10 @@ export default class MyFirstPlugin {
         const that = this;
 
         // same name as the one we have set in template.ts
+        // ************************
+        // IMPORTANT: passing the scope $scope to the function may create angular compilation error (Unknown provider: tProvider <- t <- DescriptionCtrl)
+        // when pushing your code to gh-pages
+        // ************************
         this.mapApi.agControllerRegister('SampleCtrl', function () {
 
             // access to ng-click

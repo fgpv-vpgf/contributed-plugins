@@ -1,12 +1,12 @@
 {
-    "name": "my-first-plugin",
+    "name": "thematic-slider",
     "version": "0.1.0",
     "description": "",
     "author": "NRCan - CCMEO - FGP",
     "license": "MIT",
-    "homepage": "https://github.com/fgpv-vpgf/contributed-plugins/my-first-plugin#readme",
+    "homepage": "https://github.com/fgpv-vpgf/contributed-plugins/thematic-plugin#readme",
     "keywords": [
-        "my-first-plugin",
+        "thematic-slider",
         "plugins",
         "RAMP"
     ],
