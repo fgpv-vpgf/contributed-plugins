@@ -71,7 +71,7 @@ export class SliderControls {
      * @param {String} template measure control
      * @return {JQuery<HTMLElement>} temp compile template
      */
-    private compileTemplate(template): JQuery<HTMLElement> {
+    private compileTemplate(template: string): JQuery<HTMLElement> {
         let temp = $(template);
         this._mapApi.$compile(temp);
         return temp;

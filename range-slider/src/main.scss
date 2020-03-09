@@ -1,0 +1,150 @@
+@import '../node_modules/nouislider/distribute/nouislider.css';
+
+// overwrite nouislider class
+.noUi-marker-horizontal.noUi-marker-large {
+    height: 10px;;
+}
+
+.noUi-horizontal {
+    height: 10px;
+}
+
+.noUi-horizontal .noUi-handle {
+    height: 20px;
+    width: 26px;
+}
+
+.noUi-handle:before {
+    height: 10px;
+    top: 4px;
+    left: 10px;
+}
+
+.noUi-handle:after {
+    height: 10px;
+    top: 4px;
+    left: 12px;
+}
+
+.noUi-handle {
+    &:focus {
+        .noUi-tooltip {
+            display: block;
+        }
+    }
+}
+
+.noUi-tooltip {
+    padding: 1px 4px;
+    display: none;
+}
+
+.noUi-horizontal .noUi-tooltip {
+    top: 20px;
+    bottom: initial;
+}
+
+input:focus + .noUi-tooltip { display: block; }
+
+// smaller then medium mobile
+@media (max-width: 374px) {
+    .slider-delay-control {
+        display: none!important;
+    }
+}
+
+// smaller then laptop
+@media (max-width: 1023px) {
+    .slider-export-control, .slider-refresh-control {
+        display: none!important;
+    }
+
+    .slider-loop-control {
+        display: none!important;
+    }
+
+    #rangeSlider {
+        margin-left: 10px!important;
+        opacity: 1!important;
+    }
+}
+
+// range slider style
+#rangeSlider {
+    opacity: 0.7;
+
+    .panel-body {
+        height: auto;
+    }
+}
+
+#rangeSlider:hover {
+    opacity: 1;
+}
+
+.rv-rangeslider {
+    display: flex;
+    flex-direction: row;
+
+    .slider-content {
+        overflow: hidden;
+        width: 100%;
+        flex-direction: row;
+
+        .slider-settings {
+
+            .slider-global {
+                display: flex;
+                height: 40px;
+            }
+
+            .slider-layers {
+                display: flex;
+                height: 40px;
+            }
+        }
+
+        .slider-bar {
+            width: 100%;
+            padding: 10px 30px;
+
+            .slider-controls {
+                display: flex;
+                margin-top: 40px;
+
+                .slider-bar-control {
+                    display: flex;
+                    align-items: center;
+                    height: 50px;
+
+                    md-input-container {
+                        display: inline-block;
+                        margin: 10px 0;
+                        width: 80px;
+                    }
+
+                    &.slider-loop-control .slider-loop-control-active {
+                        color: black;
+                        opacity: 1;
+                    }
+
+                    &.slider-play-control {
+                        margin: auto
+                    }
+
+                    &.slider-delay-control {
+                        display: inline-block;
+                    }
+
+                    &.slider-switch {
+                        margin: 0;
+                        flex-direction: row-reverse;
+                        div:last-of-type {
+                            margin-right: 5px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+ }

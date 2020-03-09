@@ -89,7 +89,7 @@ export default class Swiper {
     * @function closureFunc
     * @param {Function} fn function to applyt the closure to
     * @param {Object[]} params array of variables to set
-    */s
+    */
     closureFunc = function(fn: any, ...params: number[]) {
         var args = Array.prototype.slice.call(arguments, 1);
         return function() {
