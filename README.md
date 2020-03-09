@@ -48,6 +48,7 @@ Authors are free to update their plugins at whim. Please attempt to keep the plu
 
 - [Draw](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/draw) - Provides tools for drawing and measuring on the map
 - [My First Plugin](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/my-first-plugin) - A basic sample and starter template for plugins
+- [Range Slider](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/range-slider) - Adds a range slider to the map
 - [Swiper](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/swiper) - Adds a LayerSwipe to the map
 - [Thematic Slider](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/thematic-slider) - Adds a thematic slider to the map
 
