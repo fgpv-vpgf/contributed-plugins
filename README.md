@@ -46,6 +46,7 @@ Authors are free to update their plugins at whim. Please attempt to keep the plu
 
 ## List of Plugins
 
+- [Chart](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/chart) - Create a chart from feature attributes on identify (click)
 - [Draw](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/draw) - Provides tools for drawing and measuring on the map
 - [My First Plugin](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/my-first-plugin) - A basic sample and starter template for plugins
 - [Range Slider](https://github.com/fgpv-vpgf/contributed-plugins/tree/master/range-slider) - Adds a range slider to the map
