@@ -19,13 +19,15 @@ Inside your configuration file you need
 ```
 "plugins": {
       "draw": {
+        "open": true
         "tools": ["picker", "point", "polyline", "polygon", "measure", "extent", "write", "read"]
       }
     }
 ```
 
 Configuration parameters
-- draw: array of tools to add to the draw toolbar
+- open: boolean to specify if the draw toolbar is open by default
+- tools: array of tools to add to the draw toolbar
     - picker: modify symbology color
     - point: add a point on the map
     - polyline: add a line on the map

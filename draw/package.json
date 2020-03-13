@@ -30,9 +30,10 @@
         "ag-grid-community": "19.0.0",
         "rxjs": "6.4.0",
         "gh-pages": "2.2.0",
-        "vanilla-picker": "2.10.0",
+        "debounce": "1.2.0",
         "file-saver": "2.0.0",
-        "debounce": "1.2.0"
+        "lodash": "4.17.15",
+        "vanilla-picker": "2.10.0"
     },
     "devDependencies": {
         "@types/jquery": "3.3.29",

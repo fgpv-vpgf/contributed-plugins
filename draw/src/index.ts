@@ -22,7 +22,10 @@ export default class Draw {
             Draw.prototype.translations[this._RV.getCurrentLang()].menu,
             this.onMenuItemClick()
         );
-        this.button.isActive = true;
+        
+        // set toolbar state
+        this.button.isActive = (this.config.open) ? true : false;
+        (<any>document).getElementsByClassName('rv-mapnav-draw-content')[0].style.display = this.button.isActive ? 'block' : 'none';
     }
 
     /**

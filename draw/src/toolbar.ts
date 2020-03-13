@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 import { MultiLineLayer, MultilineTextSymbol } from './multi-line';
 
 // create observable so plugin user can subscribe to plugin events like for the viewer api
@@ -416,6 +418,9 @@ export class DrawToolbar {
                 this.addGraphic(evt.geometry, new this._bundle.SimpleMarkerSymbol());
                 break;
             case 'polyline':
+                // remove duplicate vertex
+                evt.geometry.rings[0] = this.removeDuplicate(evt.geometry.rings[0], false);
+
                 // trigger observable
                 (<any>window).drawObs.subsDrawPolyline(evt.geometry);
 
@@ -427,6 +432,9 @@ export class DrawToolbar {
                 this.addGraphic(evt.geometry, new this._bundle.SimpleLineSymbol());
                 break;
             case 'polygon':
+                // remove duplicate vertex
+                evt.geometry.rings[0] = this.removeDuplicate(evt.geometry.rings[0], true);
+
                 // trigger observable
                 (<any>window).drawObs.subsDrawPolygon(evt.geometry);
 
@@ -444,6 +452,19 @@ export class DrawToolbar {
                 this.deleteGraphics(evt.geometry);
                 break;
         }
+    }
+
+    /**
+     * remove duplicate vertices inside geometry
+     * @function removeDuplicate
+     * @param {[]} arr array of coordinates
+     * @param {Boolean} isPolygon true if geometry is polygon, false otherwise 
+     */
+    removeDuplicate(arr: [], isPolygon: boolean): any {
+        // if it is polygon, close geometry after removing duplicate
+        const newArray = _.uniqWith(arr,_.isEqual);
+        if (isPolygon) { newArray.push(newArray[0]); }
+        return newArray;
     }
 
     /**
