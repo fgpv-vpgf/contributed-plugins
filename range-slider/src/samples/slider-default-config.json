@@ -281,9 +281,6 @@
         "layers": [{
           "id": "0",
           "field": "Total_MW"
-        }, {
-          "id": "1",
-          "field": "Total_MW"
         }]
       }
     }

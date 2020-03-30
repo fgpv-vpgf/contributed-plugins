@@ -13,8 +13,11 @@ import { SliderBar } from './slider-bar';
 
 import { take } from 'rxjs/internal/operators/take';
 
+const _ = require('lodash');
+
 export default class RangeSlider {
     private _button: any;
+    private _intervalAtt: any;
 
     /**
     * Plugin init
@@ -42,7 +45,13 @@ export default class RangeSlider {
 
         // get array of id(s) and set layer(s)
         const ids = this.config.layers.map(layer => layer.id);
-        this.mapApi.layersObj.layerAdded.subscribe((layer: any) => this.setLayer(layer, this.config.layers, ids));
+        this.mapApi.layersObj.layerAdded.subscribe((layer: any) => {
+            // if it is the right layer, get the attributes
+            if (ids.indexOf(layer.id) !== -1) {
+                // clone deep the layer object and use a timeout. If not, sometimes getAttributes return empty array
+                setTimeout(() => { this.setLayer(_.cloneDeep(layer), this.config.layers); }, 1000);
+            }
+        });
     }
 
     /**
@@ -67,43 +76,37 @@ export default class RangeSlider {
      * @param {Any} mapApi the viewer api
      * @param {Any} config the slider configuration
      */
-    setLayer(layer: any, config: any, ids: string[]): void {
-
-        // If it is the right layer, get the attributes
-        if (ids.indexOf(layer.id) !== -1) {
-            const layerInfo = config.find(i => i.id === layer.id);
-            this.extendConfig.layers.push(layerInfo);
-            this.extendConfig.nbLayers += 1;
-
-            // If layer is ESRI, get all attributes to define the limit
-            const layerType = layer.type;
-            if ((layerType === 'esriDynamic' || layerType === 'esriFeature') && this.extendConfig.nbLayers === this.config.layers.length) {
-                const attrs = layer.getAttributes();
-
-                if (attrs.length === 0) {
-                    // make sure all attributes are added before creating the slider
-                    this.mapApi.layers.attributesAdded.pipe(take(1)).subscribe(attrs => {
-                        if (attrs.attributes.length > 0) {
-
-                            // get attributes value for specified field
-                            const values = [];
-                            for (let row of attrs.attributes) {
-                                values.push(row[layerInfo.field]);
-                            }
-
-                            // set limit and range if not set from configuration
-                            const limits: Range = { min: Math.min.apply(null, values), max: Math.max.apply(null, values) };
-                            if (this.extendConfig.limit.min === null) { this.extendConfig.limit = limits; }
-                            if (this.extendConfig.range.min === null) { this.extendConfig.range = limits; }
+    setLayer(layer: any, config: any): void {
+        const layerInfo = config.find(i => i.id === layer.id);
+        this.extendConfig.layers.push(layerInfo);
+        this.extendConfig.nbLayers += 1;
+        // if layer is ESRI, get all attributes to define the limit
+        const layerType = layer.type;
+        if ((layerType === 'esriDynamic' || layerType === 'esriFeature') && this.extendConfig.nbLayers === this.config.layers.length) {
+            const attrs = layer.getAttributes();
+            if (attrs.length === 0) {
+                // make sure all attributes are added before creating the slider
+                this.mapApi.layers.attributesAdded.pipe(take(1)).subscribe(attrs => {
+                    if (attrs.attributes.length > 0) {
+                        console.log(attrs.attributes)
+                        // get attributes value for specified field
+                        const values = [];
+                        for (let row of attrs.attributes) {
+                            values.push(row[layerInfo.field]);
                         }
+                        // set limit and range if not set from configuration
+                        const limits: Range = { min: Math.min.apply(null, values), max: Math.max.apply(null, values) };
+                        if (this.extendConfig.limit.min === null) { this.extendConfig.limit = limits; }
+                        if (this.extendConfig.range.min === null) { this.extendConfig.range = limits; }
+                        console.log(limits)
+                    }
 
-                        this.setSliderBar();
-                    });
-                }
-            } else if (layerType === 'ogcWms' && this.extendConfig.nbLayers === this.config.layers.length) {
-                // everything must be set inside configuration (range and limit)
-                this.setSliderBar();
+                    this.setSliderBar();
+                });
             }
+        } else if (layerType === 'ogcWms' && this.extendConfig.nbLayers === this.config.layers.length) {
+            // everything must be set inside configuration (range and limit)
+            this.setSliderBar();
         }
     }
 
