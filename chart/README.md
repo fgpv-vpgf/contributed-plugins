@@ -19,6 +19,10 @@ Measure1 = (2011-03-16,0.01),(2011-03-21,2.49),(2011-03-28,0.54),(2011-04-01,0.1
 Measure2 = (2011-03-21,0.173),(2011-03-28,0.069),(2011-04-01,0.023),(2011-04-11,0.080),(2011-04-18,0.030),(2011-04-26,0.005)
 Each couple of values (yyyy-mm-dd,data) is a point on the line chart with the date as the x value and the data as the y value. Thois sample will create a line chart with 2 lines.
 
+You can also have a customized details panel to show useful data. It can take links, images, data from the the feature. It is based on the Markdown notation and uses
+[Showdown](https://github.com/showdownjs/showdown) library to parse the markdown from the configuration file to the details panel. To use the value of a field from the feature,
+use the field name wrapped inside {{}} (e.g. {{label}}).
+
 [Demo page](https://jolevesq.github.io/contributed-plugins/chart/samples/chart-index.html)
 
 ## How to use the plugin
@@ -60,7 +64,11 @@ Inside your configuration file you need
               "split": ";",
               "prefix": "Custom",
               "suffix": "Color"
-            }]
+            }],
+            "details": {
+              "enabled": true,
+              "value": "## What a nice pie chart\n**Useful data listed below**\n * Label field value: {{label}}\n * Data: {{data}}\n\n\n![sd-logo](https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png 'sd logo')\n\n[Get Showdown!](https://github.com/showdownjs/showdown)"
+            }
         }]
     }
 }
@@ -90,6 +98,9 @@ layers: array of layers to use to create chart
     - split: character to use to slit values inside a field (e.g. "val1:val2:val3" will use : as split character)
     - prefix: string prefix to add to data hover
     - suffix: string suffix to add to data hover
+  - details: object to handle details panel customization
+    - enabled: boolean to specify if the details panel should be customize for this layer
+    - value: string with the custom details in markdown notation
 
 
 Inside your html, add this to your head section then replace href and src with your path.

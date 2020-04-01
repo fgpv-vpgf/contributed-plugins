@@ -134,7 +134,12 @@ export class ChartLoader {
      * @function destroyChart
      */
     destroyChart() {
-        if (this._chart) { this._chart.destroy(); }
+        // we need to also remove the canvas because if not, data is still on canvas
+        if (this._chart) {
+            this._panel.body.find('#rvChart').remove();
+            this._panel.body.find('.rv-chart-panel').append('<canvas id="rvChart" class="rv-chart"></canvas>');
+            this._chart.destroy();
+        }
     }
 
     /**
