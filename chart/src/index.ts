@@ -30,15 +30,16 @@ export default class Chart {
         // manage details panel to modify values for graph layer
         this._panelDetails = new DetailsManager(mapApi);
 
+        // get chart config and add language
+        this.config = this._RV.getConfig('plugins').chart;
+        this.config.language = this._RV.getCurrentLang();
+
         // create panel
         this._panel = this._mapApi.panels.create('chart');
         this._panel.element.css(this._panelOptions);
         this._panel.body = CHART_TEMPLATE;
         this._panel.header.closeButton;
-
-        // get chart config and add language
-        this.config = this._RV.getConfig('plugins').chart;
-        this.config.language = this._RV.getCurrentLang();
+        this._panel.header.title = this.config.title;
 
         // create chart loader class
         this._loader = new ChartLoader(this._mapApi, this.config);
@@ -60,11 +61,21 @@ export default class Chart {
                 this._panelDetails.details = this.config.layers[0].details.value;
                 this._panelDetails.feature = feat.data;
 
+                // set aria label
+                $('#rvChart').attr('aria-label', Chart.prototype.translations[this._RV.getCurrentLang()].chartAria);
+
+                // creat the chart from chart type
                 if (this.config.type === 'pie') {
                     this._loader.createPieChart(feat);
-                } else if (this.config.type === 'bar' || this.config.type === 'line') {
+                } else if (this.config.type === 'bar') {
                     this._loader.createBarChart(feat);
+                } else if (this.config.type === 'line') {
+                    this._loader.createLineChart(feat);
                 }
+
+                // set focus on the close button.
+                const element = $('#chart .rv-header .md-button')[0];
+                (<any>element).rvFocus();
             })
         });
     }
@@ -72,7 +83,17 @@ export default class Chart {
 
 export default interface Chart {
     _RV: any;
-    config: any
+    config: any;
+    translations: any;
 }
+
+Chart.prototype.translations = {
+    'en-CA': {
+        chartAria: 'Representation of the element\'s dataset using a graph.'
+    },
+    'fr-CA': {
+        chartAria: 'Représentation du jeu de données de l\'élément à l\'aide d\'un graphique.'
+    }
+};
 
 (<any>window).chart = Chart;

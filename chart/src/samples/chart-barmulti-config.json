@@ -296,7 +296,11 @@
               "split": ";",
               "prefix": "Custom data 2",
               "suffix": "Color(2)"
-            }]
+            }],
+            "details": {
+              "enabled": false,
+              "value": ""
+            }
         }]
       }
     }

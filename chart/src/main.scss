@@ -2,11 +2,19 @@
 
 // overwrite nouislider class
 .noUi-marker-horizontal.noUi-marker-large {
-    height: 10px;;
+    height: 10px;
+}
+
+.noUi-marker-vertical.noUi-marker-large {
+    width: 10px;
 }
 
 .noUi-horizontal {
     height: 10px;
+}
+
+.noUi-vertical {
+    width: 10px;
 }
 
 .noUi-horizontal .noUi-handle {
@@ -14,16 +22,33 @@
     width: 26px;
 }
 
-.noUi-handle:before {
+.noUi-vertical .noUi-handle {
+    height: 26px;
+    width: 20px;
+}
+
+.noUi-horizontal .noUi-handle:before {
     height: 10px;
     top: 4px;
     left: 10px;
 }
 
-.noUi-handle:after {
+.noUi-horizontal .noUi-handle:after {
     height: 10px;
     top: 4px;
     left: 12px;
+}
+
+.noUi-vertical .noUi-handle:before {
+    width: 10px;
+    top: 10px;
+    left: 4px;
+}
+
+.noUi-vertical .noUi-handle:after {
+    width: 10px;
+    top: 12px;
+    left: 4px;
 }
 
 .noUi-handle {
@@ -44,21 +69,45 @@
     bottom: initial;
 }
 
+.noUi-vertical .noUi-tooltip {
+    left: 20px;
+    bottom: initial;
+    right: auto;
+}
+
 input:focus + .noUi-tooltip { display: block; }
 
 // chart panel
 .rv-chart-panel {
-    padding: 0px 10px 70px 10px;
     height: 100%;
     overflow: hidden;
-}
+    display: flex;
+    padding: 0 10px;
 
-.rv-chart {
-    height: 100% !important;
-}
+    & .rv-chart-sliderY {
+        padding-right: 50px;
+        display: flex;
+        & #nouisliderY {
+            height: 60%;
+            align-self: center;
+        }
+    }
 
-.rv-chart-slider {
-    margin: 15px; 
+    & .rv-chart-canvas {
+        height: 100% !important;
+        display: flex;
+        width: 100%;
+    }
+
+    & .rv-chart-sliderX {
+        justify-content: center;
+        display: flex;
+        height: 60px;
+
+        & #nouisliderX {
+            width: 90%;
+        }
+    }
 }
 
 // custom details panel

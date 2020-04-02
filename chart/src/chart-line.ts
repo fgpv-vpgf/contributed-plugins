@@ -1,9 +1,46 @@
 import { ChartLoader } from './chart-loader';
 
+const _ = require('lodash');
+
 /**
- * Creates bar charts.
+ * Creates line charts.
  */
-export class ChartBar {
+export class ChartLine {
+    private _data: object[] = [];
+    private _rangex: any = {
+        min: -1,
+        max: -1
+    };
+    private _rangey: any = {
+        min: -1,
+        max: -1
+    };
+
+    /**
+     * Get datasets
+     * @property datasets
+     * @return {Object} original datasets (not filtered one)
+     */
+    get datasets(): object[] {
+        return this._data;
+    }
+    /**
+     * Get range for x axis
+     * @property rangeX
+     * @return {Object} the min and max values for the datasets x axis
+     */
+    get rangeX(): any {
+        return this._rangex;
+    }
+    /**
+     * Get range for y axis
+     * @property rangeY
+     * @return {Object} the min and max values for the datasets y axis
+     */
+    get rangeY(): any {
+        return this._rangey;
+    }
+
     /**
      * Chart bar constructor
      * @constructor
@@ -11,7 +48,7 @@ export class ChartBar {
      * @param {Object} attrs the feature attributes
      */
     constructor(config: any, attrs: object) {
-       // set chart options
+        // set chart options
         this.title = config.title;
         this.type = config.type;
         this.options = {
@@ -50,7 +87,25 @@ export class ChartBar {
             dataset.backgroundColor = `${colors[i]}80`;
             dataset.borderColor = colors[i];
             dataset.borderWidth = 2;
+
+            // keep the original value so we can use a slider to refine
+            // use lodash to deep clone the object so we dont mess the original object
+            this._data.push(_.cloneDeep(dataset.data));
+            this.setRanges(dataset, 'x');
+            this.setRanges(dataset, 'y');
         }
+    }
+
+    setRanges(dataset: object[], axis: string) {
+        // set ranges for the datasets to use with the slider for x axis
+        const range = (axis === 'x') ? this._rangex : this._rangey;
+        let minVal = _.min((<any>dataset).data.map((rec) => { return rec[axis] }));
+        let maxVal = _.max((<any>dataset).data.map((rec) => { return rec[axis] }));
+        minVal = (typeof minVal === 'string') ? parseFloat(minVal) : minVal;
+        maxVal =(typeof maxVal === 'string') ? parseFloat(maxVal) : maxVal;
+
+        if (range.min === -1 || range.min >= minVal) { range.min = minVal; }
+        if (range.max === -1 || range.max <= maxVal) { range.max = maxVal; }
     }
 
     /**
@@ -70,6 +125,11 @@ export class ChartBar {
 
             optsAxe.type = 'category';
             optsAxe.labels = ticks;
+        } else if (config.type === 'linear') {
+            optsAxe.type = 'linear';
+        } else if (config.type === 'date') {
+            optsAxe.type = 'time';
+            optsAxe.distribution = 'serie';
         }
 
         // axe gridlines display
@@ -98,7 +158,7 @@ export class ChartBar {
     }
 }
 
-export interface ChartBar {
+export interface ChartLine {
     options: any;
     type: string;
     data: any;
