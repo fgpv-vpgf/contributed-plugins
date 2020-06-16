@@ -7,7 +7,7 @@ export class ChartBar {
     /**
      * Chart bar constructor
      * @constructor
-     * @param {Any} config the slider configuration
+     * @param {Any} config the chart configuration
      * @param {Object} attrs the feature attributes
      */
     constructor(config: any, attrs: object) {
@@ -22,9 +22,8 @@ export class ChartBar {
         };
 
         // set data options
-        // TODO: deal with layer id... for now id must be 0. In relality, we will check if the id is the one provided by configuration
         const colors = config.options.colors === '' ? ChartLoader.defaultColors : config.options.colors.split(';');
-        const layerData = config.layers.find(i => i.id === '0');
+        const layerData = config.layers.find(i => i.id === (<any>attrs).layerId);
         this.setData(layerData, attrs, colors, config.axis.xAxis.type);
 
         // set labels options

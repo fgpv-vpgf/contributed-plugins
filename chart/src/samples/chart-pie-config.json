@@ -102,6 +102,20 @@
           "layerType": "esriFeature",
           "fileType": "geojson",
           "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart.json"
+        },
+        {
+          "id": "2",
+          "name": "Graphics Second",
+          "layerType": "esriFeature",
+          "fileType": "geojson",
+          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart-second.json"
+        },
+        {
+          "id": "3",
+          "name": "Graphics Unused",
+          "layerType": "esriFeature",
+          "fileType": "geojson",
+          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart-unused.json"
         }
       ],
       "extentSets": [
@@ -286,6 +300,25 @@
             "details": {
               "enabled": true,
               "value": "## What a nice pie chart\n**Useful data listed below**\n * Label field value: {{label}}\n * Data: {{data}}\n\n\n![sd-logo](https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png 'sd logo')\n\n[Get Showdown!](https://github.com/showdownjs/showdown)"
+            }
+        }, {
+            "id": "2",
+            "data": [{
+              "type": "single",
+              "measure": "data",
+              "label": {
+                "type": "config",
+                "values": "",
+                "split": ";"
+              },
+              "regex": "",
+              "split": ";",
+              "prefix": "Custom Second",
+              "suffix": "Color Second"
+            }],
+            "details": {
+              "enabled": false,
+              "value": ""
             }
         }]
       }

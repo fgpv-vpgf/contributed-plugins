@@ -7,7 +7,7 @@ export class ChartPie {
     /**
      * Chart bar constructor
      * @constructor
-     * @param {Any} config the slider configuration
+     * @param {Any} config the chart configuration
      * @param {Object} attrs the feature attributes
      */
     constructor(config: any, attrs: object) {
@@ -17,8 +17,7 @@ export class ChartPie {
         this.options = this.setOptions(config.options.cutOut);
 
         // set data options
-        // TODO: deal with layer id... for now id must be 0. In relality, we will check if the id is the one provided by configuration
-        const layerData = config.layers.find((i: any) => i.id === '0');
+        const layerData = config.layers.find((i: any) => i.id === (<any>attrs).layerId);
         this.data = ChartLoader.parse(layerData, attrs, config.colors);
 
         // set labels options

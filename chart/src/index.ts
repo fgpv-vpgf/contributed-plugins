@@ -51,14 +51,17 @@ export default class Chart {
         });
 
         // subscribe to click event when user click on data to trigger chart creation
-        this._mapApi.click.subscribe(pt => {
+        // wrap it inside a timeout because of timing issue. click event is not a memeber of _mapApi if not...
+        setTimeout(() => this._mapApi.click.subscribe(pt => {
             this._panel.close();
             pt.features.subscribe(feat => {
-                // set layer name, details values and feature
-                // TODO make it work with more then one layer on the map with graphic
-                this._panelDetails.layerName = 'Graphics';
-                this._panelDetails.enabled = this.config.layers[0].details.enabled;
-                this._panelDetails.details = this.config.layers[0].details.value;
+                // set layer name, details values and feature from selected feature
+                const config = this.findDetailsconfig(feat.layerId, this.config.layers);
+                
+                // set details panel
+                this._panelDetails.layerName = (<any>config).name;
+                this._panelDetails.enabled = (<any>config).details.enabled;
+                this._panelDetails.details = (<any>config).details.value;
                 this._panelDetails.feature = feat.data;
 
                 // set aria label
@@ -77,7 +80,20 @@ export default class Chart {
                 const element = $('#chart .rv-header .md-button')[0];
                 (<any>element).rvFocus();
             })
-        });
+        }), 1000);
+    }
+
+    /**
+    * Set details panel value
+    * @function findDetailsconfig
+    * @param {String} id the layer id for this feature
+    * @param {Object[]} layersConfig the chart layers configuration array
+    * @returns {Object} the details panel values
+    */
+    findDetailsconfig(id: string, layersConfig: object[]): object {
+        const layers = this._RV.getConfig('map').layers.find((i: any) => i.id === id);
+        const config = layersConfig.find((i: any) => i.id === id);
+        return { name: layers.name, details: (<any>config).details };
     }
 }
 
