@@ -3,7 +3,7 @@ export const SLIDER_TEMPLATE = `
 <div rv-focus-member class="rv-rangeslider">
     <div class="slider-content">
         <div class="slider-bar">
-            <div><div id="nouislider" class="slider-widget"></div><span class="slider-units">test</span></div>
+            <div><div id="nouislider" class="slider-widget"></div><span class="slider-units"></span></div>
             <div class="slider-controls"></div>
         </div>
         <div class="slider-desc">
