@@ -32,7 +32,7 @@
         "gh-pages": "2.2.0",
         "debounce": "1.2.0",
         "file-saver": "2.0.0",
-        "lodash": "4.17.15",
+        "lodash": "4.17.19",
         "vanilla-picker": "2.10.0"
     },
     "devDependencies": {
