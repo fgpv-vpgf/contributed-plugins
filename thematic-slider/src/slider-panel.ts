@@ -5,6 +5,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 export class SliderPanel {
     private _mapApi: any;
+    private _altText: string;
     private _panelSlider: any;
     private _panelOptionsSlider: object = { bottom: '0em', width: '400px', top: '50px' };
 
@@ -37,6 +38,15 @@ export class SliderPanel {
         this._description.next(newValue);
     }
 
+    // observable to detect play/pause modification
+    static _legendState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    static getLegendState(): Observable<boolean> {
+        return this._legendState.asObservable();
+    }
+    private static setLegendState(newValue: boolean): void {
+        this._legendState.next(newValue);
+    }
+
     // observable to detect first or last step
     static _end: BehaviorSubject<string> = new BehaviorSubject<string>('down');;
     static getLastStep(): Observable<string> {
@@ -57,18 +67,19 @@ export class SliderPanel {
      * @constructor
      * @param {Any} mapApi the viewer api
      * @param {Any} config the slider configuration
+     * @param {String} altText the alternate text ot add to legend image
      */
-    constructor(mapApi: any, config: any) {
+    constructor(mapApi: any, config: any, altText: string) {
         this._mapApi = mapApi;
+        this._altText = altText
 
         // create panel
         this._panelSlider = this._mapApi.panels.create('thematicSlider');
         this._panelSlider.element.css(this._panelOptionsSlider);
         this._panelSlider.body = SLIDER_TEMPLATE;
 
-        // init panel title and description with the first element
+        // set layers from config
         this._layers = config.layers;
-        this.setPanelInfo();
 
         // check if all layers are loaded before starting the animation
         this._mapApi.layersObj.layerAdded.subscribe((addedLayer: any) => {
@@ -77,6 +88,22 @@ export class SliderPanel {
 
             // if all layers are loaded
             if (this._layerNb === this._layers.length) {
+                // set Legend state (open by default)
+                SliderPanel.setLegendState(true);
+
+                // init panel title and description with the first element
+                this.setPanelInfo();
+
+                // apply a timeout with 1000, if not, the legend section is not aviallable
+                setTimeout(() => {
+                    this.setPanelLegend();
+
+                    // check if the panel should be open and if the slider is in autorun
+                    if (config.open) { this.open(); }
+                    if (config.autorun) { this.play(true); }
+                }, 1000);
+
+                // set layer visibility
                 this.setLayerVisibility();
 
                 // set slider control (loop and stack) value
@@ -86,10 +113,6 @@ export class SliderPanel {
                 // check what controls we need (nothing, description or both)
                 const initControls:string = (config.slider && config.description) ? 'both' : config.description ? 'desc' : '';
                 this.addControls(initControls);
-
-                // check if the panel should be open and if the slider is in autorun
-                if (config.open) { this.open(); }
-                if (config.autorun) { this.play(true); }
             }
         });
 
@@ -125,8 +148,100 @@ export class SliderPanel {
      * @function setPanelInfo
      */
     private setPanelInfo() {
+        // set title
         this._panelSlider.header.title = this.active.title;
+
+        // set panel content, it will create the legend section
         SliderPanel.setDescription({ desc: this.active.description, index: `${this._index + 1}/${this._layers.length}` });
+    }
+
+    /**
+     * Set the panel legend with the active layer
+     * @function setPanelLegend
+     */
+    private setPanelLegend() {
+        // if legend element array is empty, create default legend, otherwise use configuration
+        let stack = '';
+        if (this.active.legend.length === 0) {
+            stack = this.getDefaultLegend();
+        } else {
+            stack = this.getCustomLegend();
+        }
+
+        if ($('.rv-thslider-legend').length > 0) {
+            $('.rv-thslider-legend')[0].innerHTML = stack;
+        }
+    }
+
+    getCustomLegend(): string {
+        let stack = '';
+        for (let entry of this.active.legend) {
+            const image = (entry as any).image;
+
+            // get ratio
+            if (image.width > 150) {
+                image.height = image.height * (150 / image.width);
+                image.width = 150;
+            }
+
+            stack += `<div class="rv-thslider-symbol" style="min-height:${image.height}px">
+                        <img style="padding-right:10px;width:${image.width}px;height:${image.height}px" src="${image.url}" alt="${this._altText}" title="${(entry as any).label}">
+                        <span>${(entry as any).label}</span>
+                    </div>`
+        }
+
+        return stack
+    }
+
+    /**
+     * Get the default legend when it is not define inside configuration
+     * @function getDefaultLegend
+     * @return {String} the html to add to legend section
+     */
+    private getDefaultLegend(): string {
+        // add the legend to description panel, first find the right entry
+        let stack = '';
+        const that = this;
+        const legendBlocks = this._mapApi.layersObj._layersArray[this._index]._mapInstance._legendBlocks.entries.find((entry) => {
+            return entry._layerRecordId === that._layers[that._index].id;
+        });
+
+        // Check block type and loop through nodes
+        if (legendBlocks.blockType === 'node') {
+            stack = this.getSymbology(legendBlocks._symbologyStack.stack);
+        } else {
+            for (let entry of legendBlocks.entries) {
+                if (entry.blockType === 'node') {
+                    stack += this.getSymbology(entry._symbologyStack.stack);
+                }
+            }
+        }
+
+        return stack;
+    }
+
+    /**
+     * Get the symbology stack to add to legend section
+     * @function getSymbology
+     * @param {Object} stack symbology stack from legend entry block
+     * @return {String} the html to add to legend section
+     */
+    private getSymbology(stack: any): string  {
+        let legend = '';
+
+        const parser = new DOMParser();
+        for (let svg of stack) {
+            // get view box so we can modify image size
+            const doc = parser.parseFromString(svg.svgcode, 'text/html');
+            const size = doc.querySelector('svg').getAttribute('viewBox').split(' ').slice(2).map((x) => { return parseInt(x, 10); })
+
+            legend += `<div class="rv-thslider-symbol" style="min-height:${size[1]}px">
+                            ${[svg.svgcode.slice(0, 5), `style="min-width:${size[0]}px;min-height:${size[1]}px"`, svg.svgcode.slice(4)].join('')}
+                            <span>${svg.name}</span>
+                        </div>`
+        }
+
+        return legend;
     }
 
     /**
@@ -170,7 +285,7 @@ export class SliderPanel {
         }
 
         // if not stack, use only the active layer
-        // if stack, set visible all layers from 0  to the active one
+        // if stack, set visible all layers from 0 to the active one
         if (!this._stack) {
             this._mapApi.layersObj.getLayersById(this.active.id).forEach(layer => layer.visibility = true);
         } else {
@@ -221,6 +336,7 @@ interface Layers {
     id: string;
     duration: number;
     title: string;
+    legend: object[];
     description: string;
 }
 

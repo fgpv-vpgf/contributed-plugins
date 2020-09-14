@@ -6,6 +6,18 @@ export const SLIDER_TEMPLATE = `
 // description controller template
 export const DESCRIPTION_TEMPLATE = `
 <div class="rv-thslider-desc-control" ng-controller="DescriptionCtrl as ctrl">
+    <md-button
+        class="md-icon-button rv-button-40 rv-icon-20"
+        ng-click="ctrl.isLegend = !ctrl.isLegend"
+        aria-label="{{ ctrl.isLegend ? 'toc.label.group.collapse' : 'toc.label.group.expand' | translate }}">
+        <md-icon class="rv-transform-default rv-rotate--180" ng-class="{ 'rv-rotate--180' : ctrl.isLegend }" md-svg-src="hardware:keyboard_arrow_down" role="img" aria-hidden="true" style="">
+        <md-tooltip md-direction="top">{{ ctrl.isLegend ? 'toc.label.group.collapse' : 'toc.label.group.expand' | translate }}</md-tooltip>
+    </md-button>
+
+    <div ng-show="ctrl.isLegend">
+        <div class="rv-thslider-legend"></div>
+        <md-divider></md-divider>
+    </div>
     <div class="rv-thslider-desc">{{ ctrl.description }}</div>
     <span class="rv-thslider-index">{{ ctrl.index }}</span>
 </div>`;

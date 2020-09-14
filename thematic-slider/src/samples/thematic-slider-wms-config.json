@@ -91,26 +91,40 @@
       },
       "layers": [
         {
-          "id": "0",
-          "name": "Hydro",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/20"
-        },
-        {
-          "id": "1",
-          "name": "Petroleum",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/24"
+            "id": "wms",
+            "layerType": "ogcWms",
+            "url": "http://webservices.maps.canada.ca/arcgis/services/NRCan/earthquakes_en/MapServer/WmsServer",
+            "name": "Real WMS",
+            "layerEntries": [
+              {
+                  "id": "3",
+                  "name": "Sample",
+                  "currentStyle": "default"
+              }]
+          },
+          {
+          "layerType": "ogcWms",
+          "suppressGetCapabilities": true,
+          "layerEntries": [
+              {
+                  "init": true,
+                  "id": "CABIN",
+                  "name": "CABIN"
+              }
+          ],
+          "name": "Cabin",
+          "id": "wms2",
+          "url": "https://cabin-rcba.ec.gc.ca/cabin_ows.asp"
         },
         {
           "id": "2",
-          "name": "Solar",
+          "name": "solar",
           "layerType": "esriFeature",
           "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/26"
         },
         {
           "id": "3",
-          "name": "Wind",
+          "name": "wind",
           "layerType": "esriFeature",
           "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/27"
         }
@@ -268,38 +282,38 @@
     },
     "plugins": {
       "thematicSlider": {
-        "open": false,
+        "open": true,
         "autorun": false,
-        "loop": false,
+        "loop": true,
         "description": true,
         "slider": true,
         "stack": false,
         "layers": [
-          { "id": "0",
-            "duration": 3000,
-            "title": "Hydro Electric",
-            "legend": [],
-            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et pulvinar odio, id tincidunt mi. Phasellus dictum nulla tortor, vitae facilisis arcu blandit eget. Duis eget aliquet quam. Mauris maximus malesuada tortor, vitae sollicitudin orci. Maecenas eu tellus molestie, ornare lorem eget, semper lectus. Phasellus vitae elementum nisi. Nunc vulputate, lectus et accumsan tincidunt, nibh quam vehicula eros, at tempus neque libero sed orci. In nunc arcu, tincidunt in condimentum sed, congue a dolor. Morbi vulputate magna et ante fermentum auctor. Nunc suscipit ultrices lorem ac finibus. Vivamus convallis nisi lorem, quis tempor urna tincidunt nec. Donec quis urna eget nunc elementum tincidunt. Etiam iaculis ornare sapien, sed blandit sapien dictum quis. Praesent cursus nec eros eu volutpat."
-          }, {
-            "id": "1",
-            "duration": 3000,
-            "title": "Petroleum",
-            "legend": [],
-            "description": "Aliquam tempus nec nisl a maximus. Ut congue volutpat tempor. Suspendisse maximus odio tortor, nec finibus sapien cursus id. Nullam tristique massa sit amet egestas auctor. Aliquam pharetra libero sed nibh interdum luctus. Duis nec vulputate arcu. Maecenas in sem vel lectus iaculis dignissim. Quisque ultricies aliquam velit, vitae rhoncus diam lobortis ac. Ut vel arcu sit amet neque pharetra vestibulum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut massa enim. Fusce vitae mauris nulla. Donec pellentesque nisi quis convallis pretium."
-          }, {
-            "id": "2",
-            "duration": 3000,
-            "title": "Solar",
-            "legend": [],
-            "description": "Morbi imperdiet mauris id dignissim ultricies. Etiam aliquet, lorem nec euismod vehicula, mauris est euismod lorem, ut vestibulum magna nunc quis mauris. Phasellus non felis auctor, consequat dui egestas, aliquam lectus. Quisque aliquet vitae felis sit amet porta. Donec lectus est, posuere ac dui sit amet, ornare aliquet neque. Maecenas a libero tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam sollicitudin velit eget nulla malesuada sagittis. Integer at tempor metus, fermentum sagittis arcu."
-          }, {
-            "id": "3",
-            "duration": 5000,
-            "title": "Wind",
-            "legend": [],
-            "description": "In purus urna, auctor eget magna eu, pretium molestie lectus. Aliquam erat volutpat. Phasellus vitae justo finibus, sollicitudin ipsum egestas, interdum orci. Mauris tristique, nisi ac finibus tempus, purus sem luctus sem, ac eleifend ex enim porttitor nulla. Mauris eu nulla tristique, varius mi sit amet, interdum magna. Cras felis nunc, vulputate non ante eu, mollis eleifend ipsum. Vestibulum cursus mauris risus, ut auctor lacus rutrum accumsan. Maecenas ex dolor, dictum nec nisl eu, blandit lobortis enim. Nullam congue lacinia mollis. Vivamus nec lectus quis elit malesuada vestibulum in nec ipsum. Nulla eu urna ut elit finibus facilisis a ut purus. Ut mattis nulla ac sem interdum, sed semper tellus pulvinar."
-          }
-        ]
+            { "id": "wms",
+              "duration": 3000,
+              "title": "WMS",
+              "legend": [],
+              "description": "My description 1"
+            }, {
+              "id": "wms2",
+              "duration": 3000,
+              "title": "WMS 2",
+              "legend": [],
+              "description": "My description 2"
+            }, {
+              "id": "2",
+              "duration": 3000,
+              "title": "Solar",
+              "legend": [],
+              "description": "My description 3"
+            }, {
+              "id": "3",
+              "duration": 5000,
+              "title": "Wind",
+              "legend": [],
+              "description": "My description 4"
+            }
+          ]
       }
     }
   }
