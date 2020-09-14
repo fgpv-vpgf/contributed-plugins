@@ -330,36 +330,43 @@
           { "id": "0",
             "duration": 5000,
             "title": "1867 Confederation",
+            "legend": [],
             "description": "In 1867 the colonies of Canada, Nova Scotia and New Brunswick united in a federal state. The provinces of Nova Scotia and New Brunswick retain their established boundaries, and Canada is divided into the provinces of Ontario and Quebec."
           }, {
             "id": "1",
             "duration": 5000,
             "title": "1870",
+            "legend": [],
             "description": "In 1870, Canada acquires Rupert's Land and the North-Western Territory and changes their name to the North-West Territories. From part of them, Manitoba is created as the fifth province."
           }, {
             "id": "2",
             "duration": 5000,
             "title": "1871",
+            "legend": [],
             "description": "In 1871, British Columbia joins the federation as a province, with the boundaries it attained in 1866."
           }, {
             "id": "3",
             "duration": 5000,
             "title": "1873",
+            "legend": [],
             "description": "In 1873, Prince Edward Island joins Confederation as the seventh province. Prince Edward Island agreed to join Confederation after an agreement in which Canada promised to buy out absentee landowners, to take over the railway debts, and to establish communications between the island and the mainland."
           }, {
             "id": "4",
             "duration": 5000,
             "title": "1874",
+            "legend": [],
             "description": "New provisional boundaries are assigned to northern Ontario. Ontario's western boundary, which was established in 1870 when the province of Manitoba was created, caused many disputes between Ontario and Manitoba. In 1874, the Government of Canada sets provisional provincial boundaries which extend the territory of Ontario both to the west and to the north."
           }, {
             "id": "5",
             "duration": 5000,
             "title": "1876",
+            "legend": [],
             "description": "The District of Keewatin is formed from part of the North-West Territories in 1876. This is done in order to provide government for the area to the west of Ontario and to the east and north of Manitoba. The district is to be temporary."
           }, {
             "id": "6",
             "duration": 5000,
             "title": "1880",
+            "legend": [],
             "description": "In 1880, an Imperial Order in Council transfers to Canada all of the British territories and possessions left in North America (except for the colony of Newfoundland), and also the islands next to these territories and possessions."
           }
         ]

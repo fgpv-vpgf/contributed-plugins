@@ -3,6 +3,7 @@ import { SliderPanel } from './slider-panel';
 export default class ThematicSlider {
     private _button: any;
     private _panel: SliderPanel;
+    private _panelDetails: any;
 
     /**
     * Plugin init
@@ -11,6 +12,13 @@ export default class ThematicSlider {
     */
     init(mapApi: any) {
         this.mapApi = mapApi;
+
+        // set details panel event on opening and closing to show/hide details and thematic panel
+        this._panelDetails = mapApi.panelRegistryObj.details;
+        this._panelDetails.opening.subscribe(() => { 
+            document.getElementById('thematicSlider').style.zIndex = '-10'; });
+        this._panelDetails.closing.subscribe(() => { 
+            document.getElementById('thematicSlider').style.zIndex = '50'; });
 
         // get config and add language
         this.config = this._RV.getConfig('plugins').thematicSlider;
@@ -48,14 +56,14 @@ export default class ThematicSlider {
     }
 
     /**
-    * Disable main app bar buttons except sidenav when thematic slider is open to avoid collision
+    * Disable main app bar toc buttons to avoid collision
     * @function setButtonState
     * @param {Boolean} disable disable or not the buttons
     */
     setButtonState(disable: boolean) {
-        const buttons = $('.main-appbar button:not([rv-help="sidenav-button"])');
+        const buttons = $('.main-appbar button');
         buttons.each((index: number, button: any) => {
-            button.disabled = disable;
+            if (button.getAttribute('rv-help') === 'toc-button') { button.disabled = disable; }
         });
     }
 }

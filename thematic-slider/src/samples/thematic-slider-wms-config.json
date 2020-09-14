@@ -91,16 +91,30 @@
       },
       "layers": [
         {
-          "id": "0",
-          "name": "hydrop",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/20"
-        },
-        {
-          "id": "1",
-          "name": "etroleum",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/24"
+            "id": "wms",
+            "layerType": "ogcWms",
+            "url": "http://webservices.maps.canada.ca/arcgis/services/NRCan/earthquakes_en/MapServer/WmsServer",
+            "name": "Real WMS",
+            "layerEntries": [
+              {
+                  "id": "3",
+                  "name": "Sample",
+                  "currentStyle": "default"
+              }]
+          },
+          {
+          "layerType": "ogcWms",
+          "suppressGetCapabilities": true,
+          "layerEntries": [
+              {
+                  "init": true,
+                  "id": "CABIN",
+                  "name": "CABIN"
+              }
+          ],
+          "name": "CABIN",
+          "id": "wms2",
+          "url": "https://cabin-rcba.ec.gc.ca/cabin_ows.asp"
         },
         {
           "id": "2",
@@ -269,37 +283,37 @@
     "plugins": {
       "thematicSlider": {
         "open": true,
-        "autorun": true,
+        "autorun": false,
         "loop": true,
-        "description": false,
-        "slider": false,
-        "stack": true,
+        "description": true,
+        "slider": true,
+        "stack": false,
         "layers": [
-          { "id": "0",
-            "duration": 3000,
-            "title": "",
-            "legend": [],
-            "description": ""
-          }, {
-            "id": "1",
-            "duration": 3000,
-            "title": "",
-            "legend": [],
-            "description": ""
-          }, {
-            "id": "2",
-            "duration": 3000,
-            "title": "",
-            "legend": [],
-            "description": ""
-          }, {
-            "id": "3",
-            "duration": 5000,
-            "title": "",
-            "legend": [],
-            "description": ""
-          }
-        ]
+            { "id": "wms",
+              "duration": 3000,
+              "title": "WMS",
+              "legend": [],
+              "description": "My description 1"
+            }, {
+              "id": "wms2",
+              "duration": 3000,
+              "title": "WMS 2",
+              "legend": [],
+              "description": "My description 2"
+            }, {
+              "id": "2",
+              "duration": 3000,
+              "title": "Solar",
+              "legend": [],
+              "description": "My description 3"
+            }, {
+              "id": "3",
+              "duration": 5000,
+              "title": "Wind",
+              "legend": [],
+              "description": "My description 4"
+            }
+          ]
       }
     }
   }

@@ -269,35 +269,70 @@
     "plugins": {
       "thematicSlider": {
         "open": true,
-        "autorun": true,
+        "autorun": false,
         "loop": true,
-        "description": false,
-        "slider": false,
+        "description": true,
+        "slider": true,
         "stack": true,
         "layers": [
           { "id": "0",
             "duration": 3000,
             "title": "",
-            "legend": [],
-            "description": ""
+            "legend": [{
+                "image": {
+                    "url": "https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png",
+                    "width": 251,
+                    "height": 49
+                },
+                "label": "Dummy image"
+            }],
+            "description": "Custom legend for number 1"
           }, {
             "id": "1",
             "duration": 3000,
             "title": "",
-            "legend": [],
-            "description": ""
+            "legend": [{
+                "image": {
+                    "url": "https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png",
+                    "width": 251,
+                    "height": 49
+                },
+                "label": "Dummy image"
+            }],
+            "description": "Custom legend for number 2 same as number 1"
           }, {
             "id": "2",
             "duration": 3000,
             "title": "",
-            "legend": [],
-            "description": ""
+            "legend": [{
+                "image": {
+                    "url": "https://avatars0.githubusercontent.com/u/139426?s=200&v=4",
+                    "width": 200,
+                    "height": 200
+                },
+                "label": "Another dummy label"
+            }],
+            "description": "Custom legend for number 3"
           }, {
             "id": "3",
             "duration": 5000,
             "title": "",
-            "legend": [],
-            "description": ""
+            "legend": [{
+                "image": {
+                    "url": "https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png",
+                    "width": 251,
+                    "height": 49
+                },
+                "label": "Dummy image"
+            }, {
+                "image": {
+                    "url": "https://avatars0.githubusercontent.com/u/139426?s=200&v=4",
+                    "width": 200,
+                    "height": 200
+                },
+                "label": "Another dummy label"
+            }],
+            "description": "Custom legend for number 4 with more then one elements"
           }
         ]
       }
