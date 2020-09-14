@@ -1,6 +1,20 @@
 // set plugin sass style
-#thematicSlider {
-    z-index: 50 !important;
+#thematicSlider .panel-body {
+    height: calc(100% - 86px);
+}
+
+.rv-thslider-legend {
+    padding: 5px 10px;
+    padding-bottom: 20px;
+
+    .rv-thslider-symbol {
+        display: flex;
+        height: 32px;
+
+        span {
+            align-self:center;
+        }
+    }
 }
 
 .rv-thslider-bar-control {

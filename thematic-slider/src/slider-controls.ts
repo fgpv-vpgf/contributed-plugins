@@ -31,6 +31,11 @@ export class SliderControls {
                     this.description = value.desc;
                     this.index = value.index;
                 });
+
+                // get legend state from observable and force update
+                SliderPanel.getLegendState().subscribe(value => {
+                    this.isLegend = value;
+                });
             });
 
             this._panelControls.push(this.compileTemplate(DESCRIPTION_TEMPLATE));
