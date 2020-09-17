@@ -273,10 +273,19 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
+        "autorun": false,
+        "loop": false,
         "controls": ["lock", "delay", "refresh"],
         "params": {
           "delay": 3000,
           "type": "number",
+          "rangeType": "dual",
+          "stepType": "dynamic",
+          "precision": 2,
+          "interval": -1,
+          "range": { "min": null, "max": null },
+          "limit": { "min": null, "max": null },
+          "limits": [],
           "units": "Total MW",
           "description": "This slider let's you see by hydro electric total power."
         },

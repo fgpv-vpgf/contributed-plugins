@@ -105,7 +105,7 @@
           "tolerance": 5,
           "imageFormat": "png32",
           "singleEntryCollapse": false,
-          "suppressGetCapabilities": false,
+          "suppressGetCapabilities": true,
           "state": {
               "opacity": 1,
               "visibility": true,
@@ -137,8 +137,7 @@
           ],
           "name": "wms",
           "id": "wms",
-          "url": "https://webservices.maps.canada.ca/arcgis/services/ELECTIONS/federal_electoral_districts_boundaries_2013_fr/MapServer/WMSServer",
-          "featureInfoMimeType": "text/html",
+          "url": "https://webservices.maps.canada.ca/arcgis/services/ELECTIONS/elections_canada_2019_en/MapServer/WMSServer",
           "legendMimeType": "image/png"
       }
       ],
@@ -296,13 +295,19 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
+        "autorun": false,
+        "loop": false,
         "controls": ["lock", "loop", "delay", "refresh", "export"],
         "params": {
           "delay": 3000,
-          "range": { "min": 90, "max": 100 },
-          "limit": { "min": 0, "max": 400 },
           "type": "number",
-          "units": ""
+          "rangeType": "dual",
+          "stepType": "dynamic",
+          "precision": 0,
+          "range": { "min": 0, "max": 1000 },
+          "limit": { "min": 0, "max": 10000 },
+          "units": "",
+          "description": ""
         },
         "layers": [{
             "id": "wms",

@@ -29,6 +29,7 @@ export class SliderControls {
 
         mapApi.agControllerRegister('LockSliderCtrl', function() {
             this.isLocked = slider.lock;
+            this.isDual = slider.dual;
 
             // toggle lock setting to lock left anchor
             this.lock = () => {

@@ -11,10 +11,15 @@ Inside your configuration file you need
 "plugins": {
     "rangeSlider": {
         "open": true,
+        "autorun": false,
+        "loop": true,
         "controls": ["lock", "loop", "delay", "export", "refresh"],
         "params": {
           "delay": 3000,
-          "limit": { "min": 1109108871000, "max": 1111505342000 },
+          "rangeType": "dual",
+          "stepType": "dynamic",
+          "precision": 0,
+          "limit": { "min": 1109108871000, "max": 1111505342000, staticItems: [] },
           "range": { "min": 1109108871000, "max": 1111505342000 },
           "type": "date",
           "units": "string",
@@ -30,6 +35,8 @@ Inside your configuration file you need
 
 Configuration parameters
 - open: boolean to set the controls panel (description and slider) open by default
+- autorun: boolean to start the animation automatically (if true, open should be true as well)
+- loop: boolean to restart automatically the animation when it reaches the end of the array
 - controls: string array who contains needed controls. Order inside the array has no effect.
     - lock: lock or unlock left anchor when step or play
     - loop: loop the animation
@@ -38,18 +45,29 @@ Configuration parameters
     - refresh: reset the slider with the default values
 - params: object to set default values for the slider
     - delay: delay between animations in milliseconds
+    - rangeType: The type of range (single for one handle or dual for 2 handles (range))
+    - stepType: The type of step (dynamic for open values or static from a list of values)
+    - precision: The precision of numeric data or 'date' - 'hour' for date data 
     - range: object who contains the range values
         - min: The minimal value for the range. If not set, minimum limit will be use. Must be set for WMS layers
         - max: The maximum value for the range. If not set, maximum limit will be use. Must be set for WMS layers
-    - limit:
+    - limit: object who contains the limit values (use when step type is dynamic)
         - min: The minimal value for the limit. Must be set for WMS layers. If not set, layer min and max value will be use.
         - max: The maximum value for the limit. Must be set for WMS layers. If not set, layer min and max value will be use.
-    - type: type of slider (date or number). If date is selected, range and limit must be in milliseconds.
+        - staticItems: Array of values to set the inner limits (use when step type is static)
+    - type: type of slider (date, wmst or number). If date or wmst is selected, range and limit must be in milliseconds. The wmst is the type date for wmst layer type. Because they are ogcWMS at first there is no way know if it is a wms or wmst.
     - units: units label to add add the right of the slider bar.
     - descriptions: description to add to the slider info section. By default, layer name and field will be there.
 - layers: array of layers to use inside the slider
     - id: layer id as define in layer section
     - field: field name of the field to use to filter with the range slider. It must be the field name, not the alias.
+
+NOTE: You can't have a rangeType 'single' with a stepType 'dynamic.
+
+NOTE: To have the slider initialize the values from the layers, layer must be ESRI type with dual range type and dynamic limit. Whit the other type of range and limit, it is better to define the limit with multiple that can
+      be divided by the step (range max - range min).
+
+Milliseconds to date converter: https://currentmillis.com/
 
 Inside your html, add this to your head section then replace href and src with your path.
 ```

@@ -273,12 +273,17 @@
     "plugins": {
       "rangeSlider": {
         "open": false,
+        "autorun": false,
+        "loop": false,
         "controls": ["lock", "delay", "refresh"],
         "params": {
           "delay": 3000,
+          "rangeType": "dual",
+          "stepType": "dynamic",
           "range": { "min": 1400, "max": 1900 },
           "type": "number",
-          "units": "Total MW"
+          "units": "Total MW",
+          "description": ""
         },
         "layers": [{
           "id": "0",
