@@ -24,7 +24,6 @@
     "version": "2.0",
     "language": "en",
     "services":{
-      "corsEverywhere": true,
       "proxyUrl":"https://maps.canada.ca/wmsproxy/ws/wmsproxy/executeFromProxy",
       "geometryUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/Geometry/GeometryServer",
       "exportMapUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
@@ -50,7 +49,7 @@
         "mapElements": {},
         "legend": {},
         "footnote": {
-          "value": "This is a footnote added from the configuration file. The note is very long so it should wrap on multiple lines when it reaches a certain limit in size. Maybe some user will want to use this as aplace holder to put a lot of information so we need to be able to wrap this content. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce aliquet ante quis aliquet feugiat. Cras eget semper nunc, eu placerat purus. Nunc sed lacinia enim, ut sollicitudin quam. Nunc quis finibus massa, eget maximus enim. Donec ac nisl libero. Nunc eu pharetra arcu. Fusce luctus, magna cursus gravida tristique, risus nisi porttitor magna, ac dictum ipsum dui vel nulla. Integer id ornare augue. Quisque condimentum velit quis elementum porta. Sed dui enim, iaculis cursus diam volutpat, laoreet porta quam. Sed nec aliquet magna. Curabitur commodo fringilla metus, eu posuere sapien mollis nec."
+          "value": "This is a footnote added from the configuration file. The note is very long so it should wrap on multiple lines when it reaches a certain limit in size. Maybe some user will want to use this as a place holder to put a lot of information so we need to be able to wrap this content. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce aliquet ante quis aliquet feugiat. Cras eget semper nunc, eu placerat purus. Nunc sed lacinia enim, ut sollicitudin quam. Nunc quis finibus massa, eget maximus enim. Donec ac nisl libero. Nunc eu pharetra arcu. Fusce luctus, magna cursus gravida tristique, risus nisi porttitor magna, ac dictum ipsum dui vel nulla. Integer id ornare augue. Quisque condimentum velit quis elementum porta. Sed dui enim, iaculis cursus diam volutpat, laoreet porta quam. Sed nec aliquet magna. Curabitur commodo fringilla metus, eu posuere sapien mollis nec."
         }
       }
     },
@@ -87,51 +86,31 @@
         "root": {
           "name": "root",
           "children": [
+            {
+              "name": "A Group with a hidden layer",
+              "expanded": true,
+              "children": [
+                {
+                  "layerId": "0",
+                  "hidden": true
+                },
+                {
+                  "layerId": "powerplant100mw-naturalGas"
+                }
+              ]
+            },
+            {
+              "layerId": "GeoChron"
+            }
           ]
         }
       },
       "layers": [
         {
-          "id": "wms",
-          "layerType": "ogcWms",
-          "url": "http://webservices.maps.canada.ca/arcgis/services/NRCan/earthquakes_en/MapServer/WmsServer",
-          "name": "Real WMS",
-          "controls": ["data", "visibility", "opacity", "reload"],
-          "layerEntries": [
-            {
-                "id": "3",
-                "name": "Sample",
-                "currentStyle": "default"
-            }]
-        },
-        {
-        "layerChoice": "ogcWms",
-        "layerType": "ogcWms",
-        "suppressGetCapabilities": true,
-        "layerEntries": [
-            {
-                "init": true,
-                "id": "CABIN",
-                "name": "CABIN"
-            }
-        ],
-        "name": "CABIN",
-        "id": "wms2",
-        "url": "https://cabin-rcba.ec.gc.ca/cabin_ows.asp"
-    },
-        {
-          "id": "wfs",
-          "layerType": "ogcWfs",
-          "url": "http://geo.weather.gc.ca/geomet-beta/features/collections/ahccd-trends/items?measurement_type__type_mesure=temp_max&period__periode=Jan&startindex=0&limit=1000",
-          "name": "Homogenized mean temperature",
-          "nameField": "station_name",
-          "state": {
-            "opacity": 1,
-            "visibility": true
-          },
-          "xyInAttribs": true,
-          "colour": "#f04116",
-          "controls": ["data", "visibility", "opacity"]
+          "id": "1",
+          "name": "Natural Gas",
+          "layerType": "esriFeature",
+          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/21"
         }
       ],
       "extentSets": [
@@ -290,18 +269,22 @@
         "open": true,
         "autorun": false,
         "loop": false,
-        "controls": ["lock", "loop", "delay", "refresh", "export"],
+        "controls": ["lock", "delay", "refresh", "loop"],
         "params": {
           "delay": 3000,
-          "range": { "min": 2013, "max": 2014 },
-          "limit": { "min": 2000, "max": 2018 },
           "type": "number",
+          "rangeType": "dual",
+          "stepType": "static",
+          "interval": 50,
+          "intervalUnit": "",
+          "range": { "min": 400, "max": 1000 },
+          "limit": { "min": 200, "max": 2100, "staticItems": [400, 750, 1000, 1375, 1550, 1800, 2000] },
           "units": "",
           "description": ""
         },
         "layers": [{
-            "id": "wms2",
-            "field": "year"
+          "id": "1",
+          "field": "OBJECTID"
         }]
       }
     }

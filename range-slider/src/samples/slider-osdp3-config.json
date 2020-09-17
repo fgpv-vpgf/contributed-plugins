@@ -31,10 +31,9 @@
             },
             "scaleBar": {
                 "enabled": true
-            },
-            "areaOfInterest": []
+            }
         },
-        "initialBasemapId": "bb32d78a",
+        "initialBasemapId": "f7f9f166",
         "extentSets": [
             {
                 "id": "EXT_NRCAN_Lambert_3978",
@@ -332,6 +331,93 @@
                 }
             },
             {
+                "id": "48fc375c",
+                "name": "Transport without labels",
+                "description": "This Canadian basemap provides geographic context with an emphasis on transportation networks and without labels.  From Natural Resources Canada.",
+                "altText": "Transport without labels",
+                "thumbnailUrl": "",
+                "layers": [
+                    {
+                        "id": "CBME_CBCE_HS_RO_3978",
+                        "layerType": "esriFeature",
+                        "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBME_CBCE_HS_RO_3978/MapServer",
+                        "opacity": 1
+                    },
+                    {
+                        "id": "CBMT_CBCT_GEOM_3978",
+                        "layerType": "esriFeature",
+                        "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3978/MapServer",
+                        "opacity": 0.75
+                    }
+                ],
+                "tileSchemaId": "cad53536",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": false
+                    }
+                }
+            },
+            {
+                "id": "431b5b89",
+                "name": "Grey",
+                "description": "This Canadian basemap provides geographic context with a minimalist appearance. From Natural Resources Canada.",
+                "altText": "Grey",
+                "layers": [
+                    {
+                        "id": "SMR",
+                        "layerType": "esriFeature",
+                        "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/Simple/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "cad53536",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": false
+                    }
+                }
+            },
+            {
+                "id": "18e13bfd",
+                "name": "Transport with labels",
+                "description": "This worldwide basemap provides geographic context with bilingual labels and an emphasis on transportation networks. From Natural Resources Canada.",
+                "typeSummary": "",
+                "altText": "Transport with labels",
+                "thumbnailUrl": "",
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true,
+                        "value": ""
+                    },
+                    "logo": {
+                        "enabled": false,
+                        "value": "",
+                        "link": ""
+                    }
+                },
+                "layers": [
+                    {
+                        "id": "WorldTransportLabel",
+                        "layerType": "esriFeature",
+                        "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3857/MapServer",
+                        "opacity": 1
+                    },
+                    {
+                        "id": "WorldLabel",
+                        "layerType": "esriFeature",
+                        "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_TXT_3857/MapServer",
+                        "opacity": 1
+                    }
+                ]
+            },
+            {
                 "id": "bb32d78a",
                 "name": "Transport without labels",
                 "description": "This worldwide basemap provides geographic context with an emphasis on transportation networks and without labels. From Natural Resources Canada.",
@@ -358,22 +444,215 @@
                         "opacity": 1
                     }
                 ]
+            },
+            {
+                "id": "e448891a",
+                "name": "Imagery",
+                "description": "This worldwide basemap provides one meter or better satellite and aerial imagery in many parts of the world and lower resolution satellite imagery for the rest. From ESRI.",
+                "altText": "Imagery",
+                "layers": [
+                    {
+                        "id": "World_Imagery",
+                        "layerType": "esriFeature",
+                        "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "id": "b5c5be99",
+                "name": "Physical",
+                "description": "This worldwide basemap presents the Natural Earth physical map at 1.24km per pixel for most of the world and 500m for the United States. From ESRI.",
+                "altText": "Physical",
+                "layers": [
+                    {
+                        "id": "World_Physical_Map",
+                        "layerType": "esriFeature",
+                        "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "id": "ae2713e8",
+                "name": "Street Map",
+                "description": "This worldwide street basemap presents highway-level data.  From ESRI.",
+                "altText": "Street Map",
+                "layers": [
+                    {
+                        "id": "World_Street_Map",
+                        "layerType": "esriFeature",
+                        "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "id": "06acee3b",
+                "name": "Shaded relief",
+                "description": "This worldwide basemap provides geographic context using a shaded relief.  From ESRI.",
+                "altText": "Shaded relief",
+                "layers": [
+                    {
+                        "id": "World_Shaded_Relief",
+                        "layerType": "esriFeature",
+                        "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": true
+                    }
+                }
+            },
+            {
+                "id": "c53f8920",
+                "name": "Topographic",
+                "description": "This worldwide basemap provides geographic context with an emphasis on topography.  From ESRI.",
+                "altText": "Topographic",
+                "layers": [
+                    {
+                        "id": "World_Topographic",
+                        "layerType": "esriFeature",
+                        "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer",
+                        "opacity": 1
+                    }
+                ],
+                "tileSchemaId": "e0ceca1d",
+                "attribution": {
+                    "text": {
+                        "enabled": true
+                    },
+                    "logo": {
+                        "enabled": true
+                    }
+                }
             }
         ],
         "layers": [
             {
                 "layerChoice": "ogcWms",
                 "layerType": "ogcWms",
-                "suppressGetCapabilities": true,
+                "tolerance": 5,
+                "outfields": "*",
+                "controls": [
+                    "opacity",
+                    "visibility",
+                    "boundingBox",
+                    "query",
+                    "snapshot",
+                    "metadata",
+                    "boundaryZoom",
+                    "refresh",
+                    "reload",
+                    "remove",
+                    "settings",
+                    "data",
+                    "styles"
+                ],
+                "disabledControls": [],
+                "enableStructuredDelete": false,
+                "state": {
+                    "opacity": 1,
+                    "visibility": true,
+                    "boundingBox": false,
+                    "query": true,
+                    "snapshot": false,
+                    "hovertips": true
+                },
+                "name": "RADAR_1KM_RSNO",
+                "id": "RADAR_1KM_RSNO***f8efe3ce",
+                "url": "https://geo.weather.gc.ca/geomet",
                 "layerEntries": [
                     {
-                        "id": "nexrad-n0r-wmst",
-                        "name": "time"
+                        "outfields": "*",
+                        "stateOnly": false,
+                        "table": {
+                            "title": "",
+                            "maximize": false,
+                            "lazyFilter": false,
+                            "applyMap": false,
+                            "showFilter": true,
+                            "filterByExtent": false,
+                            "searchStrictMatch": false,
+                            "printEnabled": false,
+                            "columns": [
+                                {
+                                    "visible": true,
+                                    "searchable": true,
+                                    "filter": {
+                                        "value": "",
+                                        "static": false
+                                    }
+                                }
+                            ]
+                        },
+                        "controls": [
+                            "opacity",
+                            "visibility",
+                            "boundingBox",
+                            "query",
+                            "snapshot",
+                            "metadata",
+                            "boundaryZoom",
+                            "refresh",
+                            "reload",
+                            "remove",
+                            "settings",
+                            "data",
+                            "styles"
+                        ],
+                        "disabledControls": [],
+                        "state": {
+                            "opacity": 1,
+                            "visibility": true,
+                            "boundingBox": true,
+                            "query": true,
+                            "snapshot": true,
+                            "hovertips": true
+                        },
+                        "init": true,
+                        "allStyles": [
+                            ""
+                        ],
+                        "id": "RADAR_1KM_RSNO",
+                        "name": ""
                     }
                 ],
-                "name": "WMS-T",
-                "id": "wmst",
-                "url": "http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r-t.cgi"
+                "featureInfoMimeType": "text/plain",
+                "legendMimeType": "image/png"
             }
         ],
         "legend": {
@@ -476,12 +755,8 @@
                 "LAT/LNG"
             ],
             "settings": {
-                "categories": [
-                    ""
-                ],
-                "sortOrder": [
-                    ""
-                ],
+                "categories": [],
+                "sortOrder": [],
                 "maxResults": 100,
                 "officialOnly": false
             }
@@ -523,33 +798,46 @@
         "googleAPIKey": "",
         "esriLibUrl": ""
     },
-    "version": "2.5.0",
+    "version": "3.3.0",
     "language": "en-CA",
     "plugins": {
         "rangeSlider": {
+            "enable": true,
             "open": true,
             "autorun": false,
             "loop": false,
-            "enable": false,
             "controls": [
                 "lock",
-                "delay"
+                "delay",
+                "refresh",
+                "export",
+                "loop"
             ],
             "params": {
-                "delay": 3000,
-                "type": "wmst",
-                "rangeType": "dual",
-                "stepType": "dynamic",
-                "range": { "min": 1451192400000, "max": 1514350800000 },
-                "limit": { "min": 1167195600000, "max": 1514350800000 },
-                "units": "",
+                "type": "date",
+                "delay": "3000",
+                "range": {
+                    "min": 1597759200000,
+                    "max": 1597770000000
+                },
+                "limit": {
+                    "min": 1597759200000,
+                    "max": 1597770000000
+                },
                 "description": ""
-              },
-              "layers": [{
-                  "id": "wmst",
-                  "field": "TIME"
-              }]
+            },
+            "layers": [
+                {
+                    "id": "RADAR_1KM_RSNO***f8efe3ce",
+                    "field": "TIME"
+                }
+            ]
+        },
+        "coordInfo": {
+            "enable": false
+        },
+        "AreasOfInterest": {
+            "enable": false
         }
     }
 }
-

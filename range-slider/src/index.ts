@@ -4,6 +4,7 @@ import { SliderManager } from './slider-manager';
 export default class RangeSlider {
     private _button: any;
 
+
     /**
     * Plugin init
     * @function init
@@ -26,10 +27,13 @@ export default class RangeSlider {
             extendConfig.controls = config.controls;
             extendConfig.layers = config.layers;
             extendConfig.open = config.open;
+            extendConfig.loop = config.loop;
+            extendConfig.autorun = config.autorun;
         } else {
             extendConfig = RangeSlider.prototype.layerOptions;
         }
         extendConfig.language = this._RV.getCurrentLang();
+        extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
 
         // side menu button
         this._button = this.mapApi.mapI.addPluginButton(
@@ -37,8 +41,11 @@ export default class RangeSlider {
         );
         if (extendConfig.open) { this._button.isActive = true; }
 
-        // start slider creation
-        new SliderManager(mapApi, this.panel, extendConfig);
+        // get ESRI TimeExtent dependency (for image server) and start slider creation
+        let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
+        myBundlePromise.then(myBundle => {
+            new SliderManager(mapApi, this.panel, extendConfig, myBundle);
+        });
     }
 
     /**
@@ -65,7 +72,8 @@ export default interface RangeSlider {
 
 export interface Range {
     min: number,
-    max: number
+    max: number,
+    staticItems?: number[]
 }
 
 RangeSlider.prototype.panelOptions = {
@@ -77,13 +85,19 @@ RangeSlider.prototype.panelOptions = {
 
 RangeSlider.prototype.layerOptions = {
     open: true,
-    precision: 2,
+    autorun: false,
+    loop: false,
+    precision: '0',
     delay: 3000,
     lock: false,
-    loop: false,
     export: false,
+    rangeType: 'dual',
+    stepType: 'dynamic',
+    interval: 0,
+    intervalUnit: 'year',
     range: { min: null, max: null },
     limit: { min: null, max: null },
+    limits: [],
     type: 'date',
     layers: [],
     controls: ['lock', 'loop', 'delay', 'refresh']
@@ -108,7 +122,8 @@ RangeSlider.prototype.translations = {
             gif: 'GIF',
             tooltip: {
                 gif: 'If enabled, click \"Play\" to start then \"Pause\" to finish then disable the control to export GIF'
-            }
+            },
+            esriImageNote: 'NOTE: Only the last handle will affect the layer visibility. The first handle is use to set the interval for controls.'
         }
     },
 
@@ -130,7 +145,8 @@ RangeSlider.prototype.translations = {
             gif: 'GIF',
             tooltip: {
                 gif: 'Si activé, cliquez sur \"Jouer\" pour démarrer, puis sur \"Pause\" pour terminer et désactiver le contrôle pour exporter le GIF'
-            }
+            },
+            esriImageNote: 'REMARQUE: seule la dernière molette affectera la visibilité de la couche. La première molette est utilisée pour définir l\'intervalle pour les contrôles.'
         }
     }
 };

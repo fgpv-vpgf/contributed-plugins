@@ -24,7 +24,6 @@
     "version": "2.0",
     "language": "en",
     "services":{
-      "corsEverywhere": true,
       "proxyUrl":"https://maps.canada.ca/wmsproxy/ws/wmsproxy/executeFromProxy",
       "geometryUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/Geometry/GeometryServer",
       "exportMapUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
@@ -87,51 +86,43 @@
         "root": {
           "name": "root",
           "children": [
+            {
+              "name": "A Group with a hidden layer",
+              "expanded": true,
+              "children": [
+                {
+                  "layerId": "0",
+                  "hidden": true
+                },
+                {
+                  "layerId": "powerplant100mw-naturalGas"
+                }
+              ]
+            },
+            {
+              "layerId": "GeoChron"
+            }
           ]
         }
       },
       "layers": [
         {
-          "id": "wms",
-          "layerType": "ogcWms",
-          "url": "http://webservices.maps.canada.ca/arcgis/services/NRCan/earthquakes_en/MapServer/WmsServer",
-          "name": "Real WMS",
-          "controls": ["data", "visibility", "opacity", "reload"],
-          "layerEntries": [
-            {
-                "id": "3",
-                "name": "Sample",
-                "currentStyle": "default"
-            }]
+          "id": "0",
+          "name": "Electric Transmission Line",
+          "layerType": "esriFeature",
+          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/1"
         },
         {
-        "layerChoice": "ogcWms",
-        "layerType": "ogcWms",
-        "suppressGetCapabilities": true,
-        "layerEntries": [
-            {
-                "init": true,
-                "id": "CABIN",
-                "name": "CABIN"
-            }
-        ],
-        "name": "CABIN",
-        "id": "wms2",
-        "url": "https://cabin-rcba.ec.gc.ca/cabin_ows.asp"
-    },
+          "id": "powerplant100mw-naturalGas",
+          "name": "Natural Gas Pipeline",
+          "layerType": "esriFeature",
+          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/2"
+        },
         {
-          "id": "wfs",
-          "layerType": "ogcWfs",
-          "url": "http://geo.weather.gc.ca/geomet-beta/features/collections/ahccd-trends/items?measurement_type__type_mesure=temp_max&period__periode=Jan&startindex=0&limit=1000",
-          "name": "Homogenized mean temperature",
-          "nameField": "station_name",
-          "state": {
-            "opacity": 1,
-            "visibility": true
-          },
-          "xyInAttribs": true,
-          "colour": "#f04116",
-          "controls": ["data", "visibility", "opacity"]
+          "id": "GeoChron",
+          "name": "GeoChron",
+          "layerType": "esriFeature",
+          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/GSCC/Geochronology/MapServer/0"
         }
       ],
       "extentSets": [
@@ -290,18 +281,20 @@
         "open": true,
         "autorun": false,
         "loop": false,
-        "controls": ["lock", "loop", "delay", "refresh", "export"],
+        "controls": ["lock", "delay", "export", "refresh"],
         "params": {
-          "delay": 3000,
-          "range": { "min": 2013, "max": 2014 },
-          "limit": { "min": 2000, "max": 2018 },
-          "type": "number",
-          "units": "",
-          "description": ""
+          "delay": 6000,
+          "type": "date",
+          "rangeType": "dual",
+          "stepType": "static",
+          "precision": "date",
+          "range": { "min": 1114602128000, "max": 1244805838000 },
+          "limit": { "min": 1072958400000, "max": 1486048116000, "staticItems": [1072958400000, 1091731771000, 1094574856000, 1102714899000, 1114602128000, 1244805838000] },
+          "units": ""
         },
         "layers": [{
-            "id": "wms2",
-            "field": "year"
+            "id": "GeoChron",
+            "field": "LAST_UPDATED"
         }]
       }
     }

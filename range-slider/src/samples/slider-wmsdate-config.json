@@ -296,13 +296,19 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
+        "autorun": false,
+        "loop": false,
         "controls": ["lock", "loop", "delay", "refresh", "export"],
         "params": {
           "delay": 3000,
+          "type": "date",
+          "rangeType": "dual",
+          "stepType": "dynamic",
+          "precision": "date",
           "range": { "min": 504939600000, "max": 631170000000 },
           "limit": { "min": 504939600000, "max": 1577854800000 },
-          "type": "date",
-          "units": ""
+          "units": "",
+          "description": ""
         },
         "layers": [{
             "id": "wms",

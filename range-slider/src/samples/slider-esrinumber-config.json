@@ -262,13 +262,17 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
+        "autorun": true,
+        "loop": true,
         "controls": ["lock", "loop", "delay", "refresh", "export"],
         "params": {
           "delay": 3000,
-          "range": { "min": -120, "max": -115 },
-          "limit": { "min": -120, "max": -90 },
           "type": "number",
-          "units": "Longitude"
+          "rangeType": "dual",
+          "stepType": "dynamic",
+          "range": { "min": -120, "max": -115 },
+          "limit": { "min": -120, "max": -90, "staticItems": [] },
+          "units": "Longitudemaxmaxmax"
         },
         "layers": [{
             "id": "0",

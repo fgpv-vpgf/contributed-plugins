@@ -32,7 +32,8 @@ export const LOCK_BAR_TEMPLATE = `
     <md-button
         aria-label="{{ !ctrl.isLocked ? 'plugins.rangeSlider.bar.lock' : 'plugins.rangeSlider.bar.unlock' | translate }}"
         class="md-icon-button primary"
-        ng-click="ctrl.lock()">
+        ng-click="ctrl.lock()"
+        ng-if="ctrl.isDual">
         <md-tooltip>{{ !ctrl.isLocked ? 'plugins.rangeSlider.bar.lock' : 'plugins.rangeSlider.bar.unlock' | translate }}</md-tooltip>
         <md-icon ng-if="ctrl.isLocked">${createSVG('lock')}</md-icon>
         <md-icon ng-if="!ctrl.isLocked">${createSVG('lockOpen')}</md-icon>
@@ -46,7 +47,8 @@ export const LOOP_BAR_TEMPLATE = `
         class="md-icon-button primary"
         ng-click="ctrl.loop()">
         <md-tooltip>{{ !ctrl.isLooped ? 'plugins.rangeSlider.bar.loop' : 'plugins.rangeSlider.bar.unloop' | translate }}</md-tooltip>
-        <md-icon>${createSVG('loop')}</md-icon>
+        <md-icon ng-if="ctrl.isLooped">${createSVG('loop')}</md-icon>
+        <md-icon ng-if="!ctrl.isLooped">${createSVG('unloop')}</md-icon>
     </md-button>
 </div>`;
 
@@ -129,6 +131,7 @@ function createSVG(icon): string {
         'lock': '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>',
         'lockOpen': '<path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>',
         'loop': '<path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"></path>',
+        'unloop': '<g><line id="svg_1" y2="21" x2="21" y1="3" x1="3" stroke-width="1.5" stroke="#607d8b" fill="none"/></g><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"></path>',
         'next': '<path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"></path>',
         'previous': '<path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"></path>',
         'play': '<path d="M8 5v14l11-7z"></path>',

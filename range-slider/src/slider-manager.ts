@@ -21,6 +21,7 @@ export class SliderManager {
     private _mapApi: any;
     private _panel: any;
     private _config: any;
+    private _myBundle: any;
     private _slider: SliderBar;
     private _attRead: number = 0;
 
@@ -30,11 +31,13 @@ export class SliderManager {
      * @param {Any} mapApi the viewer api
      * @param {Any} panel the slider panel
      * @param {Any} config the slider configuration
+     * @param {Any} myBundle the esri dependencies bundle
      */
-    constructor(mapApi, panel, config) {
+    constructor(mapApi: any, panel: any, config: any, myBundle: any) {
         this._mapApi = mapApi;
         this._panel = panel;
         this._config = config;
+        this._myBundle = myBundle;
 
         // get array of id(s) and set layer(s)
         let ids: string[] = this._config.layers.map(layer => layer.id);
@@ -42,6 +45,9 @@ export class SliderManager {
         let nbLayers: number = 0;
 
         // when a layer is added to the check if it is a needed one
+        // TODO: There is a bug in 3.3.x where the aray of layer is not define for WMS-T sample and make it crash. Use version 3.2 solve the problem for the moment
+        // but is not a suitable solution. Will have to get back to ECCC
+        // Happend only with http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r-t.cgi
         this._mapApi.layersObj.layerAdded.subscribe((layer: any) => {
             // if it is the right layer, add it to the array of layers
             if (ids.indexOf(layer.id) !== -1) {
@@ -57,7 +63,14 @@ export class SliderManager {
 
                     const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` }).join(', ');
                     document.getElementsByClassName('slider-desc-layers')[0].textContent = layersInfo;
-                    document.getElementsByClassName('slider-desc-info')[0].textContent =  this._config.description;
+
+                    // add the description from config file and check if it is a esri image layer and add the note
+                    const imageIndex = layers.findIndex(item => { return item.layer._layerType === 'esriImage'; });
+                    const sliderImage: string[] = [];
+                    if (imageIndex >= 0) { sliderImage.push(this._config.translations.bar.esriImageNote)}
+                    if (this._config.description !== '') { sliderImage.unshift(this._config.description); }
+
+                    document.getElementsByClassName('slider-desc-info')[0].textContent =  `${sliderImage.join(', ')}`;
                 }
             } else if (ids.length === 0) {
                 // if there is no configured layer, check if the new added layer has a time info
@@ -92,7 +105,7 @@ export class SliderManager {
      */
     initializeSlider(layers: Layer[]): void {
         // initialize slider bar
-        this._slider = new SliderBar(this._mapApi, this._config);
+        this._slider = new SliderBar(this._mapApi, this._config, this._myBundle);
 
         // if limit are set, we do not have to query attributes to find this info so start slider
         // NOTE: WMS layer always need to have limit define
@@ -166,9 +179,10 @@ export class SliderManager {
         // initialiaze slider bar
         this._slider.startSlider(this._config.type, this._config.language);
 
-        // set bar controls then open the panel
+        // set bar controls then check if the panel should be open and if the slider is in autorun
         this.setBarControls(this._config.controls);
         if (this._config.open) { this._panel.open(); }
+        if (this._config.autorun) { this._slider.play(true); }
     }
 
     /**

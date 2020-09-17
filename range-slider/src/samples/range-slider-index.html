@@ -25,15 +25,23 @@
         <section id="header">
             <div class="row">
                 <select id="selectConfig" class="tool">
-                    <option value="slider-default-config.json">01. EsriFeature layer default limit and range</option>
-                    <option value="slider-esrinumber-config.json">02. EsriDynamic layer with number field</option>
-                    <option value="slider-esridate-config.json">03. EsriFeature layer with date field</option>
-                    <option value="slider-wmsnumber-config.json">04. WMS layer with number field</option>
-                    <option value="slider-wmsdate-config.json">05. WMS layer with date field</option>
-                    <option value="slider-esrinumber-multilayer-config.json">06. EsriFeature multi layers with number field (closed by default)</option>
-                    <option value="slider-realwmst-config.json">07. WMS-T layer with date</option>
-                    <option value="slider-no-config.json">08. No config, use ESRI time aware layer</option>
-                    <option value="slider-realwmsnumber-config.json">09. Real WMS - Not Working -</option>
+                    <option value="slider-default-config.json">01. EsriFeature layer default limit and range (dual range, dynamic limit)</option>
+                    <option value="slider-dual-static-config.json">02. EsriFeature layer (dual range, static limit)</option>
+                    <option value="slider-single-static-config.json">03. EsriFeature layer (single range, static limit)</option>
+                    <option value="slider-esrinumber-config.json">04. EsriDynamic layer with number field (autorun with loop)</option>
+                    <option value="slider-esridate-dual-dynamic-config.json">05. EsriFeature layer with date field (dual range, dynamic limit)</option>
+                    <option value="slider-esridate-dual-static-config.json">06. EsriFeature layer with date field (dual range, static limit)</option>
+                    <option value="slider-esridate-single-static-config.json">07. EsriFeature layer with date field (single range, static limit)</option>
+                    <option value="slider-wmsnumber-config.json">08. WMS layer with number field</option>
+                    <option value="slider-wmsdate-config.json">09. WMS layer with date field</option>
+                    <option value="slider-esrinumber-multilayer-config.json">10. EsriFeature multi layers with number field (closed by default)</option>
+                    <option value="slider-realwmst-config.json">11. WMS-T layer with date</option>
+                    <option value="slider-no-config.json">12. No config, use ESRI time aware layer</option>
+                    <option value="slider-realwmsnumber-config.json">13. Real WMS - Not Working -</option>
+                    <option value="slider-osdp1-config.json">14. OSDP use case 1</option>
+                    <option value="slider-osdp2-config.json">15. OSDP use case 2</option>
+                    <option value="slider-osdp3-config.json">16. OSDP use case 3</option>
+                    <option value="slider-osdp4-config.json">17. OSDP use case 4 (ESRI image layer - single range, dynamic limit)</option>
                 </select>
             </div>
          </section>
@@ -107,6 +115,6 @@
             }
         </script>
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Object.entries,Object.values,Array.prototype.find,Array.prototype.findIndex,Array.prototype.values,Array.prototype.includes,HTMLCanvasElement.prototype.toBlob,String.prototype.repeat,String.prototype.codePointAt,String.fromCodePoint,NodeList.prototype.@@iterator,Promise,Promise.prototype.finally"></script>
-        <script src="../../fgpv/rv-main.js"></script>
+        <script src="../../fgpv/rv-main3.2.js"></script>
     </body>
 </html>

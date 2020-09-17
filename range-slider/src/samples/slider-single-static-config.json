@@ -107,22 +107,10 @@
       },
       "layers": [
         {
-          "id": "0",
-          "name": "Electric Transmission Line",
+          "id": "1",
+          "name": "Natural Gas",
           "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/1"
-        },
-        {
-          "id": "powerplant100mw-naturalGas",
-          "name": "Natural Gas Pipeline",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/2"
-        },
-        {
-          "id": "GeoChron",
-          "name": "GeoChron",
-          "layerType": "esriFeature",
-          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/GSCC/Geochronology/MapServer/0"
+          "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/NACEI/energy_infrastructure_of_north_america_en/MapServer/21"
         }
       ],
       "extentSets": [
@@ -279,16 +267,24 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
-        "controls": ["lock", "delay", "export", "refresh"],
+        "autorun": false,
+        "loop": false,
+        "controls": ["lock", "delay", "refresh", "loop"],
         "params": {
-          "delay": 6000,
-          "range": { "min": 1109108871000, "max": 1111505342000 },
-          "type": "date",
-          "units": ""
+          "delay": 3000,
+          "type": "number",
+          "rangeType": "single",
+          "stepType": "static",
+          "interval": 50,
+          "intervalUnit": "",
+          "range": { "min": 441, "max": null },
+          "limit": { "min": 200, "max": 2095, "staticItems": [441, 610, 933, 1352, 1674, 1905, 1962] },
+          "units": "",
+          "description": ""
         },
         "layers": [{
-            "id": "GeoChron",
-            "field": "LAST_UPDATED"
+          "id": "1",
+          "field": "OBJECTID"
         }]
       }
     }

@@ -1,12 +1,12 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "lib": ["es5", "es2015", "dom", "scripthost"],
+        "lib": ["dom", "scripthost", "es6", "es2016", "es2017.object"],
         "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": false,
         "outDir": "../dist/range-slider",
-        "target": "es5",
+        "target": "es6",
         "types": ["jquery", "node"]
     },
     "include": ["./**/*.ts"],
