@@ -4,6 +4,50 @@
     color: #999;
 }
 
+@mixin small-padding {
+    padding: 0px !important;
+}
+
+@mixin min-ui {
+    #rangeSlider {
+        margin-left: auto !important;
+        margin-right: 60px !important;
+        width: fit-content !important;
+        top: calc(100% - 110px) !important;
+        height: 40px !important;
+
+        .panel-body {
+            @include small-padding;
+
+            .rv-rangeslider {
+                @include small-padding;
+
+                .slider-content {
+                    width: min-content;
+
+                    .slider-bar {
+                        @include small-padding;
+
+                        .slider-bar-noui, .slider-desc {
+                            display: none !important;
+                        }
+
+                        .slider-controls {
+                            .slider-export-control, .slider-refresh-control, .slider-lock-control, .slider-delay-control, .slider-desc-control {
+                                display: none !important;
+                            }
+                        }
+                    }
+
+                    .slider-desc {
+                        display: none !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
 // overwrite nouislider class
 .noUi-marker-horizontal.noUi-marker-large {
     height: 10px;;
@@ -50,30 +94,35 @@
 
 input:focus + .noUi-tooltip { display: block; }
 
-// smaller then medium mobile
-@media (max-width: 374px) {
-    .slider-delay-control {
-        display: none!important;
+// smaller then tablet
+@media screen and (max-width: 768px) {
+    @include min-ui;
+
+    .slider-minmax-control {
+        display: none !important;
     }
 }
 
-// smaller then laptop
-@media (max-width: 1023px) {
-    .slider-export-control, .slider-refresh-control {
-        display: none!important;
-    }
-
-    .slider-loop-control {
+// Small than a laptop (large format), larger than a tablet
+@media screen and (max-width: 1439px) and (min-width: 769px) {
+    .slider-export-control {
         display: none!important;
     }
 
     #rangeSlider {
-        margin-left: 10px!important;
-        opacity: 1!important;
+        margin-left: 10px !important;
     }
 }
 
 // range slider style
+.slider-min-ui {
+    @include min-ui;
+
+    .slider-controls {
+        margin-right: 30px;
+    }
+}
+
 #rangeSlider {
     opacity: 0.7;
 
@@ -96,6 +145,17 @@ input:focus + .noUi-tooltip { display: block; }
         width: 100%;
         flex-direction: row;
 
+        .slider-minmax-control {
+            right: 0px;
+            position: absolute;
+            top: 0px;
+            transform: translate(8px, -4px) rotate(225deg);
+
+            .slider-max-control-icon {
+                transform: rotate(180deg);
+            }
+        }
+
         .slider-settings {
 
             .slider-global {
@@ -110,17 +170,23 @@ input:focus + .noUi-tooltip { display: block; }
         }
 
         .slider-bar {
+            display: flex;
+            flex-direction: column;
             width: 100%;
             padding: 10px 35px;
 
+            .slider-bar-noui {
+                width: 100%;
+                height: 50px;
+            }
+
             .slider-controls {
                 display: flex;
-                margin-top: 40px;
 
                 .slider-bar-control {
                     display: flex;
                     align-items: center;
-                    height: 50px;
+                    height: 40px;
 
                     md-input-container {
                         display: inline-block;
@@ -158,11 +224,11 @@ input:focus + .noUi-tooltip { display: block; }
             }
 
             .slider-widget {
-                width: 95%;
+                width: 93%;
             }
 
             .slider-units {
-                right: 10px;
+                right: 40px;
                 position: absolute;
                 @include text-color;
                 word-break: break-all;

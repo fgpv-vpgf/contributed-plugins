@@ -652,7 +652,8 @@
                     }
                 ],
                 "featureInfoMimeType": "text/plain",
-                "legendMimeType": "image/png"
+                "legendMimeType": "image/png",
+                "suppressGetCapabilities": true
             }
         ],
         "legend": {
