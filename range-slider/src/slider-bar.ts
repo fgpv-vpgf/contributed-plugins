@@ -587,7 +587,9 @@ export class SliderBar {
             }
         }
 
-        return parseFloat(value.toFixed(this._precision));
+        // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
+        const precision = (this._precision < 0) ? 0 : this._precision;
+        return parseFloat(value.toFixed(precision));
     }
 
     /**
@@ -618,53 +620,9 @@ export class SliderBar {
             }
         }
 
-        return parseFloat(value.toFixed(this._precision));
-    }
-
-    setLeftAnchorStatic(values: number, direction: string, step: number): number {
-        let value: number = 0;
-        const limit: Range = this.limit;
-
-        if (direction === 'up') {
-            // right anchor needs to be lower or equal to max limit
-            if (Math.ceil(values[1] + step) > limit.max) {
-                value = limit.max;
-            } else {
-                value = values[1] + step;
-            }
-        } else {
-            // right anchor needs to be higher then min limit + step (down = minus step)
-            if (Math.floor(values[1] + step) < limit.min - step) {
-                value = limit.min - step;
-            } else {
-                value = values[1] + step;
-            }
-        }
-
-        return parseFloat(value.toFixed(this._precision));
-    }
-
-    setRightAnchorStatic(values: number, direction: string, step: number): number {
-        let value: number = 0;
-        const limit: Range = this.limit;
-
-        if (direction === 'up') {
-            // right anchor needs to be lower or equal to max limit
-            if (Math.ceil(values[1] + step) > limit.max) {
-                value = limit.max;
-            } else {
-                value = values[1] + step;
-            }
-        } else {
-            // right anchor needs to be higher then min limit + step (down = minus step)
-            if (Math.floor(values[1] + step) < limit.min - step) {
-                value = limit.min - step;
-            } else {
-                value = values[1] + step;
-            }
-        }
-
-        return parseFloat(value.toFixed(this._precision));
+        // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
+        const precision = (this._precision < 0) ? 0 : this._precision;
+        return parseFloat(value.toFixed(precision));
     }
 
     /**

@@ -77,7 +77,7 @@ export interface Range {
 }
 
 RangeSlider.prototype.panelOptions = {
-    top: 'calc(100% - 235px)',
+    top: 'calc(100% - 245px)',
     height: '185px',
     'margin-right': '60px',
     'margin-left': '420px'
@@ -106,6 +106,8 @@ RangeSlider.prototype.layerOptions = {
 RangeSlider.prototype.translations = {
     'en-CA': {
         title: 'Range Slider',
+        minimize: 'Minimize the slider interface',
+        maximize: 'Maximize the slider interface',
         bar: {
             show: 'Show slider information',
             hide: 'Hide slider information',
@@ -129,6 +131,8 @@ RangeSlider.prototype.translations = {
 
     'fr-CA': {
         title: 'Curseur de plage',
+        minimize: 'Minimiser l\'interface du curseur',
+        maximize: 'Maximizer l\'interface du curseur',
         bar: {
             show: 'Afficher l\'information du curseur de plage',
             hide: 'Cacher l\'information du curseur de plage',

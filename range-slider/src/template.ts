@@ -3,7 +3,7 @@ export const SLIDER_TEMPLATE = `
 <div rv-focus-member class="rv-rangeslider">
     <div class="slider-content">
         <div class="slider-bar">
-            <div><div id="nouislider" class="slider-widget"></div><span class="slider-units"></span></div>
+            <div class="slider-bar-noui"><div id="nouislider" class="slider-widget"></div><span class="slider-units"></span></div>
             <div class="slider-controls"></div>
         </div>
         <div class="slider-desc">
@@ -11,6 +11,18 @@ export const SLIDER_TEMPLATE = `
             <span class="slider-desc-info"></span>
         </div>
     </div>
+</div>`;
+
+// minimize control
+export const MIN_MAX_TEMPLATE = `
+<div class="slider-bar-control slider-minmax-control" ng-controller="MinMaxSliderCtrl as ctrl">
+    <md-button
+        aria-label="{{ !ctrl.isMax ? 'plugins.rangeSlider.maximize' : 'plugins.rangeSlider.minimize' | translate }}"
+        class="md-icon-button rv-button-24 slider-max-control-icon"
+        ng-click="ctrl.show()">
+        <md-tooltip>{{ !ctrl.isMax ? 'plugins.rangeSlider.maximize' : 'plugins.rangeSlider.minimize' | translate }}</md-tooltip>
+        <md-icon md-svg-src="community:apple-keyboard-control"></md-icon>
+    </md-button>
 </div>`;
 
 // description control
@@ -127,7 +139,8 @@ export const EXPORT_BAR_TEMPLATE = `
 
 function createSVG(icon): string {
     const svg = {
-        'histo': '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>',
+        'minimize': '<path d="M0 0h24v24H0V0z" fill="#FFFFFF"></path><path d="M6 19h12v2H6z"></path>',
+        'maximize': '<path d="M0 0h24v24H0V0z" fill="#FFFFFF"></path><path d="M3 3h18v2H3z"></path>',
         'lock': '<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>',
         'lockOpen': '<path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"></path>',
         'loop': '<path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"></path>',

@@ -1,3 +1,7 @@
+import {
+    MIN_MAX_TEMPLATE
+} from './template';
+
 import { SliderBar } from './slider-bar';
 
 const { detect } = require('detect-browser');
@@ -15,6 +19,16 @@ export class SliderControls {
     constructor(mapApi: any, panel: any, templates: string[], slider: SliderBar) {
         this.mapApi = mapApi;
 
+        mapApi.agControllerRegister('MinMaxSliderCtrl', function() {
+            this.isMax = true;
+
+            this.show = () => {
+                this.isMax = !this.isMax;
+                document.getElementById('rangeSlider').parentElement.classList.toggle('slider-min-ui');
+                document.getElementById('rangeSlider').getElementsByClassName('slider-minmax-control')[0].children[0].classList.toggle('slider-max-control-icon');
+            };
+        });
+
         mapApi.agControllerRegister('DescSliderCtrl', function() {
             this.isShow = true;
 
@@ -23,7 +37,7 @@ export class SliderControls {
 
                 const slider = document.getElementById('rangeSlider');
                 slider.style.height = (this.isShow) ? '185px' : '125px';
-                slider.style.top = (this.isShow) ? 'calc(100% - 235px)' : 'calc(100% - 175px)';
+                slider.style.top = (this.isShow) ? 'calc(100% - 245px)' : 'calc(100% - 185px)';
             };
         });
 
@@ -109,6 +123,9 @@ export class SliderControls {
                 barControls.append(this.compileTemplate(template));
             }
         }
+
+        // add the minimize maximize button to slider
+        panel.body.find('.slider-content').prepend(this.compileTemplate(MIN_MAX_TEMPLATE));
     }
 
     /**
