@@ -52,6 +52,10 @@ Inside your configuration file you need
         },
         "layers": [{
             "id": "0",
+            "nameField": "myField",
+            "type": "link",
+            "linkUrl": "https://...",
+            "linkField": "linkField",
             "data": [{
               "type": "single",
               "measure": "data",
@@ -86,10 +90,17 @@ options: chart options
   - colors: array of hexadecimal color values to use to display the chart
   - cutOut: percentage to cut for the hole in a pie chart
 layers: array of layers to use to create chart
-  - id: layer id as define in layer section
+  - id: layer id as define in layer section.
+  - nameField: the field use to set the value in the selector (when multiple features creates each one a chart).
+  - type: the type of info (inline for items inside the layer or link for items inside a link table).
+  - linkUrl: url of the link table (only needed for type link).
+  - linkField: the field name for the link between the layer and the table (only needed for type link).
   - data: array of datasets for this layer to use to create the chart
-    - type: "single" if there is only one value inside the field or "combine" if we use date axis and date and value are part of the field
+    - type: "single" if there is only one value inside the field, "combine" if we use date axis and date and value are part of the field. For linked table, it needs to be "combine".
     - measure: field name to use for the measure to create the chart. It must be the field name, not the alias.
+    - linkType: how data is structure inside the link table (single for one field for value and one for date OR multi if there is multiple datasets inside one field and the chart needs to parse)
+    - link: link field to link between layer and table
+    - date: data field
     - label: object to customize the label creation
       - type: how to retreive the labels from (field or config)
       - values: config = string of values to use separated by semi colon (e.g "lbl1;lbl2;lbl3") or field = field name

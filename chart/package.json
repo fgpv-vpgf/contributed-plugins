@@ -27,12 +27,12 @@
         "deploy": "gh-pages -d ../dist"
     },
     "dependencies": {
-        "ag-grid-community": "19.0.0",
         "chart.js": "2.8.0",
+        "chartjs-adapter-date-fns": "1.0.0",
+        "date-fns": "2.16.1",
         "gh-pages": "2.2.0",
         "lodash": "^4.17.20",
         "nouislider": "13.1.5",
-        "rxjs": "6.4.0",
         "showdown": "1.9.1"
     },
     "devDependencies": {

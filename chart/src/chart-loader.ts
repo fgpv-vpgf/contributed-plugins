@@ -3,7 +3,9 @@ import { ChartBar } from './chart-bar';
 import { ChartLine } from './chart-line';
 
 import {
-    CANVAS_TEMPLATE
+    CHART_TEMPLATE,
+    CANVAS_TEMPLATE,
+    NO_DATA_TEMPLATE
 } from './template';
 
 import * as chartjs from 'chart.js';
@@ -14,7 +16,6 @@ import * as nouislider from 'nouislider';
  */
 export class ChartLoader {
     private _chart: chartjs;
-    private _config: any;
     private _mapApi: any;
     private _panel: any;
     private _sliderX: any;
@@ -42,14 +43,14 @@ export class ChartLoader {
         '#008080',
         '#e6beff',
         '#9a6324',
-        '#fffac8',
+        '#b0ad8d',
         '#800000',
         '#aaffc3',
-        '#808000',
+        '#b0b000',
         '#ffd8b1',
-        '#000075',
+        '#02025e',
         '#808080',
-        '#ffffff',
+        '#a1d1e3',
         '#000000'
     ];
 
@@ -57,11 +58,9 @@ export class ChartLoader {
      * Chart loader constructor
      * @constructor
      * @param {Any} mapApi the viewer api
-     * @param {Any} config the slider configuration
      */
-    constructor(mapApi: any, config: any) {
+    constructor(mapApi: any) {
         this._mapApi = mapApi;
-        this._config = config;
         this._panel = this._mapApi.panels.getById('chart');
     }
 
@@ -72,85 +71,131 @@ export class ChartLoader {
      * @param {Number} min minimum value for slider
      * @param {Number} max maximum value for slider
      * @param {String} xType the x axis type, date or linear
+     * @param {String} language the viewer language
      */
-    initSlider(slider: any, min: number, max: number, type: string) {
+    initSlider(slider: any, min: number, max: number, type: string, language: string) {
         const delta = Math.abs(max - min);
-        nouislider.create(slider,
-            {
-                start: [min, max],
-                connect: true,
-                behaviour: 'drag-tap',
-                tooltips: [{ to: (value: number) => value.toFixed(2), from: Number },
-                        { to: (value: number) => value.toFixed(2), from: Number }],
-                range: { min, max },
-                orientation: (slider.id.slice(-1) === 'X') ? 'horizontal' : 'vertical',
-                direction: (slider.id.slice(-1) === 'X') ? 'ltr' : 'rtl',
-                step: 1,
-                pips: {
-                    mode: 'steps',
-                    //values: (delta % 2) ? [0, 20, 40, 60, 80, 100] : [0, 20, 50, 75, 100],
-                    density: Math.floor(delta / 4) * 25,
-                    stepped: true
-                }
-            });
 
-        // parse the pips labels
-        this.parsePips(slider.id.slice(-1), type, min, max);
-
-        // trap the on change event when user use handles
-        let that = this;
-        slider.noUiSlider.on('set.one', function(values: string[]) {;
-            // set min and max from the slider values
-            let min: any = parseFloat(values[0]);
-            let max: any = parseFloat(values[1]);
-
-            const axis = (this.options.orientation === 'horizontal') ? 'x' : 'y';
-            const type = (axis === 'x') ? (<any>that)._xType : (<any>that)._yType;
-
+        // create a slider only if there is thing to slide.
+        // * at the moment, we only support year for sliding dates
+        if (delta > 0) {
+            nouislider.create(slider,
+                {
+                    start: [min, max],
+                    behaviour: 'drag-tap',
+                    connect: true,
+                    snap: false,
+                    tooltips: this.setTooltips(type, language),
+                    range: { min: Math.round(min), max: Math.ceil(max) },
+                    orientation: (slider.id.slice(-1) === 'X') ? 'horizontal' : 'vertical',
+                    direction: (slider.id.slice(-1) === 'X') ? 'ltr' : 'rtl',
+                    step: (slider.id.slice(-1) === 'X') ? 604800000 : 0.1,
+                    pips: {
+                        mode: 'positions',
+                        values: [0, 25, 50, 75, 100],
+                        density: 3,
+                        format: {
+                            to: (value: number) => { return this.formatPips(value, type, language); },
+                            from: Number
+                        }
+                    }
+                });
+    
             // parse the pips labels
-            that.parsePips(axis, type, min, max);
+            this.setSliderRanges(slider.id.slice(-1), type, min, max);
+    
+            // trap the on change event when user use handles
+            let that = this;
+            slider.noUiSlider.on('set.one', function(values: string[]) {;
+                // set min and max from the slider values
+                let min: any = parseFloat(values[0]);
+                let max: any = parseFloat(values[1]);
 
-            // loop trought datasets to filter the data
-            for (let [i, dataset] of that._chart.data.datasets.entries()) {
-                dataset.data = that.parseRange((<any>that)._xRange, (<any>that)._yRange, that._lineChartOptions.datasets[i]);
-            }
-
-            // update the chart
-            that._chart.update();
-        });
-
-        // add handles to focus cycle
-        $('.noUi-handle-lower').attr('tabindex', '-2');
-        $('.noUi-handle-upper').attr('tabindex', '-2');
+                const axis = (this.options.orientation === 'horizontal') ? 'x' : 'y';
+                const type = (axis === 'x') ? (<any>that)._xType : (<any>that)._yType;
+    
+                // parse the pips labels
+                that.setSliderRanges(axis, type, min, max);
+    
+                // loop trought datasets to filter the data
+                for (let [i, dataset] of that._chart.data.datasets.entries()) {
+                    dataset.data = that.parseDatasetsRange((<any>that)._xRange, (<any>that)._yRange, that._lineChartOptions.datasets[i]);
+                }
+    
+                // update the chart
+                that._chart.update();
+            });
+    
+            // add handles to focus cycle
+            $('.noUi-handle-lower').attr('tabindex', '-2');
+            $('.noUi-handle-upper').attr('tabindex', '-2');
+        }
     }
 
     /**
-     * Parse the graph pips labels value
+     * Set pips (slider labels) format
+     * @function formatPips
+     * @param {Any} value the value to display (number, string or date)
+     * @param {String} lang the language to use
+     * @return {any} value the formated value
+     */
+    formatPips(value: any, type, lang: string): any {
+        if (type === 'linear') {
+            value = value.toFixed(2);
+        } else if (type === 'date') {
+            let date = new Date(value);
+
+            if (lang === 'en-FR') {
+                value = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+            } else {
+                value = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * Format tooltips
+     * @function setTooltips
+     * @param {string} type type of tooltips (will be pass to format pips function) 
+     * @param {string} language the viewer language
+     * @return {Object[]} tooltips as an array of tooltip object
+     */
+    setTooltips(type: string, language: string): object[] {
+        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }]
+        tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number })
+
+        return tooltips;
+    }
+
+    /**
+     * Parse the graph pips labels value and set slider range
      * @function parsePips
      * @param {String} axis axis to parse labels for (x or y)
      * @param {Date} type the type of axis (linear or date)
      * @param {Any} min min range to parse the value
      * @param {Any} max max range to parse the value
      */
-    parsePips(axis: string, type: string, min: any, max: any) {
+    setSliderRanges(axis: string, type: string, min: any, max: any) {
         let range = (axis.toLowerCase() === 'x') ? this._xRange : this._yRange;
         if (axis.toLowerCase() === 'x') {
             this._xType = type;
         } else {
             this._yType = type;
         }
-        range.min = (type === 'date') ? new Date(`${min}-01-01:00:00:00`) : min;
-        range.max = (type === 'date') ? new Date(`${max}-12-31:00:00:00`) : max;
+        range.min = (type === 'date') ? new Date(min) : min;
+        range.max = (type === 'date') ? new Date(max) : max;
     }
 
     /**
      * Parse the graph value with the range from the slider
-     * @function parseRange
+     * @function parseDatasetsRange
      * @param {Any} xRange x range values to filter
      * @param {Any} yRange y range values to filter
      * @param {Any} data data to filter
      */
-    parseRange(xRange: any, yRange: any, data: any): object[] {
+    parseDatasetsRange(xRange: any, yRange: any, data: any): object[] {
         const parsed = [];
 
         for (let value of data) {
@@ -163,10 +208,21 @@ export class ChartLoader {
     }
 
     /**
+     * Destroy the slider and chart
+     * @function destroy
+     */
+    destroy() {
+        this.destroyChart();
+        this.destroySlider();
+
+        this._panel.body.find('.rv-chart-nodata').css('display', 'none');
+    }
+
+    /**
      * Destroy the slider
      * @function destroySlider
      */
-    destroySlider() {
+    private destroySlider() {
         if (typeof this._sliderX !== 'undefined' && this._sliderX.noUiSlider) { this._sliderX.noUiSlider.destroy(); }
         if (typeof this._sliderY !== 'undefined' && this._sliderY.noUiSlider) { this._sliderY.noUiSlider.destroy(); }
     }
@@ -175,22 +231,27 @@ export class ChartLoader {
      * Destroy the chart
      * @function destroyChart
      */
-    destroyChart() {
+    private destroyChart() {
         // we need to also remove the canvas because if not, data is still on canvas
         if (this._chart) {
             this._panel.body.find('#rvChart').remove();
             this._panel.body.find('.rv-chart-canvas').prepend(CANVAS_TEMPLATE);
             this._chart.destroy();
         }
+
+        // put back the original body. Will overide the nodata div
+        // this._panel.body = CHART_TEMPLATE;
     }
 
     /**
      * Create pie chart
      * @function createPieChart
      * @param {Object} attrs attributes to use for the graph
+     * @param {Any} config the configuration for the chart
      */
-    createPieChart(attrs: object) {
-        this._pieChartOptions = new ChartPie(this._config, attrs);
+    createPieChart(attrs: object, config: any) {
+        this.destroy();
+        this._pieChartOptions = new ChartPie(config, attrs);
         this.draw(this._pieChartOptions);
     }
 
@@ -198,9 +259,11 @@ export class ChartLoader {
      * Create bar chart
      * @function createBarChart
      * @param {Object} attrs attributes to use for the graph
+     * @param {Any} config the configuration for the chart
      */
-    createBarChart(attrs: object) {
-        this._barChartOptions = new ChartBar(this._config, attrs);
+    createBarChart(attrs: object, config: any) {
+        this.destroy();
+        this._barChartOptions = new ChartBar(config, attrs);
         this.draw(this._barChartOptions);
     }
 
@@ -208,25 +271,28 @@ export class ChartLoader {
      * Create line chart
      * @function createLineChart
      * @param {Object} attrs attributes to use for the graph
+     * @param {Any} config the configuration for the chart
      */
-    createLineChart(attrs: object) {
-        this._lineChartOptions = new ChartLine(this._config, attrs);
+    createLineChart(attrs: object, config: any) {
+        this.destroy();
+
+        this._lineChartOptions = new ChartLine(config, attrs);
         this.draw(this._lineChartOptions);
 
         // if it is a line chart, we assume they use date as x values so we add a date slider
-        if (this._config.type === 'line' && (this._config.axis.xAxis.type === 'date' || this._config.axis.xAxis.type === 'linear')) {
+        if (this._lineChartOptions.datasets.length !== 0 && (config.axis.xAxis.type === 'date' || config.axis.xAxis.type === 'linear')) {
             this._sliderX = document.getElementById('nouisliderX');
             const rangeX = this._lineChartOptions.rangeX;
 
-            if (this._config.axis.xAxis.type === 'date') {
-                rangeX.min = rangeX.min.getFullYear();
-                rangeX.max = rangeX.max.getFullYear()
+            if (config.axis.xAxis.type === 'date') {
+                rangeX.min = rangeX.min.getTime();
+                rangeX.max = rangeX.max.getTime()
             }
-            this.initSlider(this._sliderX, rangeX.min, rangeX.max, this._config.axis.xAxis.type);
+            this.initSlider(this._sliderX, rangeX.min, rangeX.max, config.axis.xAxis.type, config.language);
 
             this._sliderY = document.getElementById('nouisliderY');
             const rangeY = this._lineChartOptions.rangeY;
-            this.initSlider(this._sliderY, rangeY.min, rangeY.max, this._config.axis.yAxis.type);
+            this.initSlider(this._sliderY, rangeY.min, rangeY.max, config.axis.yAxis.type, config.language);
         }
     }
 
@@ -236,11 +302,13 @@ export class ChartLoader {
      * @param {Any} opts the chart options
      */
     draw(opts: any): void {
-        // extend chart options with global ones
-        const extendOptions = { ...opts.options, ...this.getGlobalOptions() };
-
-        this._panel.open();
-        this._chart = new chartjs('rvChart', { type: opts.type, data: opts.data, options: extendOptions });
+        if (opts.data.datasets.length !== 0) {
+            // extend chart options with global ones then create
+            const extendOptions = { ...opts.options, ...this.getGlobalOptions() };
+            this._chart = new chartjs('rvChart', { type: opts.type, data: opts.data, options: extendOptions });
+        } else {
+            this._panel.body.find('.rv-chart-nodata').css('display', 'block');
+        }
     }
 
     /**
@@ -248,7 +316,7 @@ export class ChartLoader {
      * @function getGlobalOptions
      * @return {Object} the global options
      */
-    getGlobalOptions(): object {
+    private getGlobalOptions(): object {
         return {
             maintainAspectRatio: false,
             responsive: true,
@@ -261,10 +329,14 @@ export class ChartLoader {
             title: {
                 display: false
             },
+            legend: {
+                onHover: () => { this._panel.body.find('.rv-chart-hidedata-tooltip').css('display', 'block'); },
+                onLeave: () => { this._panel.body.find('.rv-chart-hidedata-tooltip').css('display', 'none'); }
+            },
             showLines: true,
             elements: {
                 point: {
-                    radius: 0,
+                    radius: 1,
                     hoverRadius: 10,
                     hitRadius: 5000 // to make the hover/tooltip work as one item from each dataset some tweaking needs to be done. This need to be very high to contain the whole graph
                 },
@@ -282,6 +354,7 @@ export class ChartLoader {
             },
             tooltips: {
                 position: 'average',
+                caretPadding: 10,
                 intersect: true,
                 mode: 'nearest',
                 axis: 'x', // this need to be set to select all values to a specified x
@@ -337,7 +410,7 @@ export class ChartLoader {
             const fieldData = data.measure;
             const prefix = data.prefix;
             const suffix = data.suffix;
-            const values = attrs.data.find(i => i.key === fieldData).value;
+            const values = attrs.data.find(i => i.field === fieldData).value;
 
             // if regex is provided, it is because there is multiple datasets in the value field
             // only do this for single type where we can have more then 1 dataset by field
@@ -345,35 +418,37 @@ export class ChartLoader {
             let parseValues = (data.regex !== '' && data.type === 'single') ?
                 values.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean) : [values];
 
-            // loop trough array of data inside a field values
-            for (let [i, parse] of parseValues.entries()) {
-                // add values and colors
-                const item: any = {
-                    data: [],
-                    label: data.label.values !== '' ? this.getLabels(data.label, attrs, i)[i] : '',
-                    backgroundColor: colors,
-                    suffix: suffix,
-                    prefix: prefix
-                };
-
-                // loop trough values
-                if (data.type === 'single') {
-                    parse = parse.toString().split(data.split);
-                    for (let value of parse) {
-                        item.data.push(value);
+            // loop trough array of data inside a field values, first check if there is data to parse
+            if (parseValues[0] !== null) {
+                for (let [i, parse] of parseValues.entries()) {
+                    // add values and colors
+                    const item: any = {
+                        data: [],
+                        label: data.label.values !== '' ? this.getLabels(data.label, attrs, i)[i] : '',
+                        backgroundColor: colors,
+                        suffix: suffix,
+                        prefix: prefix
+                    };
+    
+                    // loop trough values
+                    if (data.type === 'single') {
+                        parse = parse.toString().split(data.split);
+                        for (let value of parse) {
+                            item.data.push(value);
+                        }
+                    } else if (data.type === 'combine') {
+                        let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
+                        for (let val of parseCombValues) {
+                            let splitVal = val.split(data.split);
+    
+                            // force time to get the right day or use number
+                            let valueParsed = (xType === 'linear') ? splitVal[0] : parseDate(splitVal[0]);
+                            item.data.push({ x: valueParsed, y: splitVal[1] });
+                        }
                     }
-                } else if (data.type === 'combine') {
-                    let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
-                    for (let val of parseCombValues) {
-                        let splitVal = val.split(data.split);
-
-                        // force time to get the right day or use number
-                        let valueParsed = (xType === 'linear') ? splitVal[0] : parseDate(splitVal[0]);
-                        item.data.push({ x: valueParsed, y: splitVal[1] });
-                    }
+    
+                    parsed.datasets.push(item);
                 }
-
-                parsed.datasets.push(item);
             }
         }
 
@@ -392,7 +467,7 @@ export class ChartLoader {
         let labels = config.split !== '' ? config.values.split(config.split) : config.values;
         if (config.type === 'field') {
             const field = (labels instanceof Array) ? labels[0] : labels;
-            const temp = attrs.data.find((i: any) => i.key === field).value;
+            const temp = attrs.data.find((i: any) => i.field === field).value;
             labels = config.split !== '' ? temp.split(config.split) : temp;
         }
 

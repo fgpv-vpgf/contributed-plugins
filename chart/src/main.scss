@@ -76,18 +76,51 @@
 }
 
 // chart panel
+#chart {
+    & .rv-header-content {
+        display: contents;
+    }
+}
+
 .rv-chart-panel {
     height: 100%;
     overflow: hidden;
     display: flex;
     padding: 0 10px;
 
+    // no data message
+    & .rv-chart-nodata {
+        text-align: center;
+        top: 50%;
+        position: absolute;
+        width: 100%;
+        font-size: 24px;
+        display: none;
+    }
+
+    // legend tooltip
+    & .rv-chart-hidedata-tooltip {
+        display: none;
+        position: absolute;
+        background-color: white;
+        left: 40%;
+        top: 30px;
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    & .rv-chart-loading {
+        display: none;
+    }
+
     & .rv-chart-sliderY {
-        padding-right: 50px;
         display: flex;
+        height: 80%;
+        padding-right: 100px;
         & #nouisliderY {
-            height: 60%;
+            height: inherit;
             align-self: center;
+            margin: 0 auto;
         }
     }
 
@@ -115,4 +148,10 @@
     & body {
         background-color: #FFF;
     }
+}
+
+// chart selector
+.rv-chart-select {
+    padding: 0 30px;
+    width: 200px;
 }

@@ -91,31 +91,13 @@
       "layers": [
         {
           "id": "0",
-          "name": "Graphics",
-          "layerType": "esriFeature",
-          "fileType": "geojson",
-          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart.json"
-        },
-        {
-          "id": "1",
-          "name": "Graphics Double",
-          "layerType": "esriFeature",
-          "fileType": "geojson",
-          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart.json"
-        },
-        {
-          "id": "2",
-          "name": "Graphics Second",
-          "layerType": "esriFeature",
-          "fileType": "geojson",
-          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart-second.json"
-        },
-        {
-          "id": "3",
-          "name": "Graphics Unused",
-          "layerType": "esriFeature",
-          "fileType": "geojson",
-          "url": "https://raw.githubusercontent.com/fgpv-vpgf/contributed-plugins/master/chart/src/samples/geoJSON/pieChart-unused.json"
+          "name": "Water Quality",
+          "layerType": "esriDynamic",
+          "url": "https://maps-stage.services.geo.ca/server_serveur/rest/services/NRCAN/Water_Quality_Test2/MapServer",
+          "layerEntries": [{
+            "index": 0,
+            "name": "Points"
+          }]
         }
       ],
       "extentSets": [
@@ -271,52 +253,48 @@
     },
     "plugins": {
       "chart": {
-        "type": "pie",
-        "title": "My Custom Tilte",
-        "labelsPie": {
-          "type": "config",
-          "values": "lbl 1;lbl 2;lbl 3;lbl 4;lbl 5;lbl 6; lbl 7",
-          "split": ";"
+        "type": "line",
+        "title": "my chart",
+        "axis": {
+          "xAxis": {
+            "type": "date",
+            "title": "Dates",
+            "values": "",
+            "split": ""
+          },
+          "yAxis": {
+            "type": "linear",
+            "title": "MG/L",
+            "values": "",
+            "split": ""
+          }
         },
         "options": {
-          "colors": "#aaffc3;#808000;#ffd8b1;#000075;#e6194b;#3cb44b;#ffe119",
+          "colors": "",
           "cutOut": 0
         },
         "layers": [{
             "id": "0",
-            "nameField": "OBJECTID",
+            "nameField": "Site_number",
+            "type": "link",
+            "linkUrl": "https://maps-stage.services.geo.ca/server_serveur/rest/services/NRCAN/Water_Quality_Test2/MapServer/1",
+            "linkField": "Site_number",
             "data": [{
-              "type": "single",
-              "measure": "data",
-              "label": {
-                "type": "config",
-                "values": "",
-                "split": ";"
-              },
-              "regex": "",
-              "split": ";",
-              "prefix": "Custom",
-              "suffix": "Color"
-            }],
-            "details": {
-              "enabled": true,
-              "value": "## What a nice pie chart\n**Useful data listed below**\n * Label field value: {{label}}\n * Data: {{data}}\n\n\n![sd-logo](https://raw.githubusercontent.com/showdownjs/logo/master/dist/logo.readme.png 'sd logo')\n\n[Get Showdown!](https://github.com/showdownjs/showdown)"
-            }
-        }, {
-            "id": "2",
-            "nameField": "OBJECTID",
-            "data": [{
-              "type": "single",
-              "measure": "data",
-              "label": {
-                "type": "config",
-                "values": "",
-                "split": ";"
-              },
-              "regex": "",
-              "split": ";",
-              "prefix": "Custom Second",
-              "suffix": "Color Second"
+                "type": "combine",
+                "linkType": "multi",
+                "link": "Site_number",
+                "measure": "VALUE_VALEUR",
+                "values": "VARIABLE_NAME",
+                "date": "DATE",
+                "label": {
+                  "type": "config",
+                  "values": "",
+                  "split": ""
+                },
+                "regex": "\\(|\\),\\(|\\)",
+                "split": ",",
+                "prefix": "",
+                "suffix": "MG/L"
             }],
             "details": {
               "enabled": false,

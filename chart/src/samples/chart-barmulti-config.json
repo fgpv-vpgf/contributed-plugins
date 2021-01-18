@@ -272,6 +272,7 @@
         },
         "layers": [{
             "id": "0",
+            "nameField": "OBJECTID",
             "data": [{
               "type": "single",
               "measure": "data1",

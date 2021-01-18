@@ -271,12 +271,13 @@
         },
         "layers": [{
             "id": "0",
+            "nameField": "Location_Emplacement",
             "data": [{
               "type": "combine",
-              "measure": "Measure 2 (Data)",
+              "measure": "measure2_data",
               "label": {
                 "type": "field",
-                "values": "Measure 2 (Name)",
+                "values": "measure2_name",
                 "split": ""
               },
               "regex": "\\(|\\),\\(|\\)",
@@ -285,10 +286,10 @@
               "suffix": "mBq / m3"
             }, {
               "type": "combine",
-              "measure": "Measure 3 (Data)",
+              "measure": "measure3_data",
               "label": {
                 "type": "field",
-                "values": "Measure 3 (Name)",
+                "values": "measure3_name",
                 "split": ""
               },
               "regex": "\\(|\\),\\(|\\)",

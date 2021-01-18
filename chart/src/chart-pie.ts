@@ -21,7 +21,7 @@ export class ChartPie {
         this.data = ChartLoader.parse(layerData, attrs, config.colors);
 
         // set labels options
-        // if more labels are provided then the first datasets number of values, they will be striketrought
+        // if mor ite labels are provided then the first datasets number of values, they will be striketrought
         this.data.labels = ChartLoader.getLabels(config.labelsPie, attrs);
 
         // add default colors if not set from config or data
@@ -73,6 +73,7 @@ interface dataset {
 }
 
 export interface ChartPie {
+    _RV: any;
     options: any;
     type: string;
     data: any;

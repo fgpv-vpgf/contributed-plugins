@@ -1,3 +1,7 @@
+// import date-fns locale:
+import 'chartjs-adapter-date-fns';
+import {fr} from 'date-fns/locale';
+
 import { ChartLoader } from './chart-loader';
 
 const _ = require('lodash');
@@ -51,6 +55,7 @@ export class ChartLine {
         // set chart options
         this.title = config.title;
         this.type = config.type;
+        this.language = config.language;
         this.options = {
             scales: {
                 xAxes: [],
@@ -83,6 +88,12 @@ export class ChartLine {
 
         // for each dataset, set options
         for (let [i, dataset] of this.data.datasets.entries()) {
+             // convert data to number
+            for (let [j, item] of dataset.data.entries()) {
+                dataset.data[j].y = parseFloat(item.y);
+            }
+
+            // set line style
             dataset.backgroundColor = `${colors[i]}80`;
             dataset.borderColor = colors[i];
             dataset.borderWidth = 2;
@@ -134,16 +145,17 @@ export class ChartLine {
             optsAxe.type = 'linear';
         } else if (config.type === 'date') {
             optsAxe.type = 'time';
-            optsAxe.distribution = 'serie';
-        }
-
-        // axe gridlines display
-        if (axe === 'xAxes') {
-            optsAxe.gridLines = {
-                display: true,
-                drawTicks: true,
-                drawBorder: false,
-                drawOnChartArea: false
+            optsAxe.distribution = 'linear'; // TODO: sometime linear is better, sometimes series. Add a switcher...
+            optsAxe.time ={
+                minUnit: 'day'
+            };
+            // scale options language if French
+            if (this.language === 'fr-CA') {
+                optsAxe.adapters = {
+                    date: {
+                        locale: fr
+                    }
+                };
             }
         }
 
@@ -153,11 +165,21 @@ export class ChartLine {
             autoSkipPadding: 100
         }
 
+        // axe gridlines display
+        if (axe === 'xAxes') {
+            optsAxe.gridLines = {
+                display: true,
+                drawTicks: true,
+                drawBorder: false,
+                drawOnChartArea: false
+            };
+        }
+
         // axe title
         optsAxe.scaleLabel = {
             display: true,
             labelString: config.title
-        }
+        };
 
         return optsAxe;
     }
@@ -168,5 +190,6 @@ export interface ChartLine {
     type: string;
     data: any;
     title: string;
+    language: string;
     ranges: any;
 }
