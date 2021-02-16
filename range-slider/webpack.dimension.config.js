@@ -2,14 +2,14 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const pluginName = 'range-slider';
+const pluginName = 'dimension-slider';
 
 module.exports = function (variable = {}, argv) {
   const config = {
     mode: argv.mode,
     devtool: argv.mode === 'development' ? 'source-map' : false,
 
-    entry: ['./src/loader.js'],
+    entry: [`./src/${pluginName}/loader.js`],
 
     output: {
       path: path.join(__dirname, `../dist/${pluginName}`),
@@ -47,9 +47,9 @@ module.exports = function (variable = {}, argv) {
       new CopyWebpackPlugin({
         patterns: [
           {
-            from: 'src/samples/*.+(html|json)',
-            to: 'samples/[name].[ext]',
-            toType: 'template',
+            from: `src/${pluginName}/samples/*.+(html|json)`,
+            to: `samples/[name].[ext]`,
+            toType: 'template'
           },
           {
             from: '../fgpv/*.+(js|css)',

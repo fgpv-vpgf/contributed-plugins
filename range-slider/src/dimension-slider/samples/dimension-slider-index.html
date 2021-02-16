@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width,initial-scale=1" name="viewport" />
+        <title>Plugin: Dimension Slider</title>
+
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .myMap {
+                height: 100%;
+            }
+        </style>
+
+        <link rel="stylesheet" href="../../fgpv/rv-styles.css" />
+        <link rel="stylesheet" href="../dimension-slider.css" />
+        <script src="../dimension-slider.js"></script>
+    </head>
+
+    <body>
+        <section id="header">
+            <div class="row">
+                <select id="selectConfig" class="tool">
+                    <option value="slider-default-config.json">01. EsriFeature layer default limit and range (dual range, dynamic limit)</option>
+                </select>
+            </div>
+         </section>
+        <div
+            class="myMap"
+            id="mapSlider"
+            is="rv-map"
+            rv-config="slider-esrinumber-config.json"
+            rv-langs='["en-CA", "fr-CA"]'
+            rv-plugins="dimensionSlider"
+        >
+            <noscript>
+                <p>
+                    This interactive map requires JavaScript. To view this content please enable JavaScript in your
+                    browser or download a browser that supports it.
+                </p>
+                <p></p>
+
+                <p>
+                    Cette carte interactive nécessite JavaScript. Pour voir ce contenu, s'il vous plaît, activer
+                    JavaScript dans votre navigateur ou télécharger un navigateur qui le prend en charge.
+                </p>
+            </noscript>
+        </div>
+
+        <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+        <script>
+            var SAMPLE_KEY = 'sample';
+            var currentUrl = new URL(window.location.href);
+
+            document.getElementById('selectConfig').addEventListener('change', changeConfig);
+            loadSample();
+
+             // Find and load the sample specified in the key `sample`.  If `sample` is not provided, defaults to first sample.
+            function loadSample() {
+                var params = new URLSearchParams(currentUrl.search);
+                var sampleIndex =  params.get(SAMPLE_KEY) - 1;
+                var selectElem = document.getElementById('selectConfig');
+                var sampleMapElem = document.getElementById('mapSlider');
+                if (params.has(SAMPLE_KEY) && sampleIndex >= 0 && selectElem.item(sampleIndex)) {
+                    var previousSample = sessionStorage.getItem('sample');
+                    if (previousSample !== undefined) { // first time loading
+                        sampleMapElem.setAttribute('rv-config', previousSample);
+                        selectElem.value = previousSample;
+                        var newElem = selectElem.item(sampleIndex);
+                        var newSample = newElem.value;
+                        if (newElem && previousSample !== newSample) { // reload if not the same as the previous sample
+                            var newSample = newElem.value;
+                            sampleMapElem.setAttribute('rv-config', newSample);
+                            sessionStorage.setItem('sample', newSample);
+                            location.reload();
+                        }
+                    }
+                } else { // the key `sample` is provided
+                    var sampleIndex = 0;
+                    params.set('sample', sampleIndex + 1);
+                    sessionStorage.setItem('sample', newSample);
+                    var newUrl = currentUrl.origin + currentUrl.pathname + '?' + params.toString();
+                    window.location.href = newUrl;
+                }
+            }
+
+            // change and load the new config
+            function changeConfig() {
+                var currentSample = document.getElementById('selectConfig').value; // load existing config
+                sessionStorage.setItem('sample', currentSample); // store new config
+                var params = new URLSearchParams(currentUrl.search);
+                params.set('sample', document.getElementById('selectConfig').selectedIndex + 1);
+                var newUrl = currentUrl.origin + currentUrl.pathname + '?' + params.toString();
+                window.location.href = newUrl;
+            }
+        </script>
+        <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Object.entries,Object.values,Array.prototype.find,Array.prototype.findIndex,Array.prototype.values,Array.prototype.includes,HTMLCanvasElement.prototype.toBlob,String.prototype.repeat,String.prototype.codePointAt,String.fromCodePoint,NodeList.prototype.@@iterator,Promise,Promise.prototype.finally"></script>
+        <script src="../../fgpv/rv-main3.2.js"></script>
+    </body>
+</html>

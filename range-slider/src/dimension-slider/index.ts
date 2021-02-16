@@ -1,15 +1,12 @@
-import { SLIDER_TEMPLATE } from './template';
-import { SliderManager } from './slider-manager';
+import { SLIDER_TEMPLATE } from '../template';
+import { SliderManager } from '../slider-manager';
 
-export default class RangeSlider {
-    protected _button: any;
+import RangeSlider from '../index'
 
+export default class DimensionSlider extends RangeSlider {
 
-    /**
-    * Plugin init
-    * @function init
-    * @param {Any} mapApi the viewer api
-    */
+    // private _button: any;
+
     init(mapApi: any) {
         this.mapApi = mapApi;
 
@@ -19,25 +16,25 @@ export default class RangeSlider {
         this.panel.body = SLIDER_TEMPLATE;
 
         // get slider configuration then add/merge needed configuration
-        const config = this._RV.getConfig('plugins').rangeSlider;
+        const config = this._RV.getConfig('plugins').dimensionSlider;
 
         let extendConfig: any = {}
         if (typeof config !== 'undefined') {
-            extendConfig = { ...RangeSlider.prototype.layerOptions, ...config.params };
+            extendConfig = { ...DimensionSlider.prototype.layerOptions, ...config.params };
             extendConfig.controls = config.controls;
             extendConfig.layers = config.layers;
             extendConfig.open = config.open;
             extendConfig.loop = config.loop;
             extendConfig.autorun = config.autorun;
         } else {
-            extendConfig = RangeSlider.prototype.layerOptions;
+            extendConfig = DimensionSlider.prototype.layerOptions;
         }
         extendConfig.language = this._RV.getCurrentLang();
-        extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
+        extendConfig.translations = DimensionSlider.prototype.translations[this._RV.getCurrentLang()];
 
         // side menu button
         this._button = this.mapApi.mapI.addPluginButton(
-            RangeSlider.prototype.translations[this._RV.getCurrentLang()].title, this.onMenuItemClick()
+            DimensionSlider.prototype.translations[this._RV.getCurrentLang()].title, this.onMenuItemClick()
         );
         if (extendConfig.open) { this._button.isActive = true; }
 
@@ -48,42 +45,85 @@ export default class RangeSlider {
         });
     }
 
-    /**
-    * Event to fire on side menu item click. Open/Close the panel
-    * @function onMenuItemClick
-    * @return {function} the function to run
-    */
-   onMenuItemClick() {
-        return () => {
-            this._button.isActive = !this._button.isActive;
-            this._button.isActive ? this.panel.open() : this.panel.close();
-        };
-    }
+  //   /**
+  //   * Plugin init
+  //   * @function init
+  //   * @param {Any} mapApi the viewer api
+  //   */
+  //   init(mapApi: any) {
+  //       this.mapApi = mapApi;
+
+  //       // create panel
+  //       this.panel = this.mapApi.panels.create('rangeSlider');
+  //       this.panel.element.css(RangeSlider.prototype.panelOptions);
+  //       this.panel.body = SLIDER_TEMPLATE;
+
+  //       // get slider configuration then add/merge needed configuration
+  //       const config = this._RV.getConfig('plugins').rangeSlider;
+
+  //       let extendConfig: any = {}
+  //       if (typeof config !== 'undefined') {
+  //           extendConfig = { ...RangeSlider.prototype.layerOptions, ...config.params };
+  //           extendConfig.controls = config.controls;
+  //           extendConfig.layers = config.layers;
+  //           extendConfig.open = config.open;
+  //           extendConfig.loop = config.loop;
+  //           extendConfig.autorun = config.autorun;
+  //       } else {
+  //           extendConfig = RangeSlider.prototype.layerOptions;
+  //       }
+  //       extendConfig.language = this._RV.getCurrentLang();
+  //       extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
+
+  //       // side menu button
+  //       this._button = this.mapApi.mapI.addPluginButton(
+  //           RangeSlider.prototype.translations[this._RV.getCurrentLang()].title, this.onMenuItemClick()
+  //       );
+  //       if (extendConfig.open) { this._button.isActive = true; }
+
+  //       // get ESRI TimeExtent dependency (for image server) and start slider creation
+  //       let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
+  //       myBundlePromise.then(myBundle => {
+  //           new SliderManager(mapApi, this.panel, extendConfig, myBundle);
+  //       });
+  //   }
+
+  //   /**
+  //   * Event to fire on side menu item click. Open/Close the panel
+  //   * @function onMenuItemClick
+  //   * @return {function} the function to run
+  //   */
+  //  onMenuItemClick() {
+  //       return () => {
+  //           this._button.isActive = !this._button.isActive;
+  //           this._button.isActive ? this.panel.open() : this.panel.close();
+  //       };
+  //   }
 }
 
-export default interface RangeSlider {
-    mapApi: any,
-    _RV: any,
-    translations: any,
-    panel: any,
-    panelOptions: any,
-    layerOptions: any
-}
+// export default interface DimensionSlider {
+//     mapApi: any,
+//     _RV: any,
+//     translations: any,
+//     panel: any,
+//     panelOptions: any,
+//     layerOptions: any
+// }
 
-export interface Range {
-    min: number,
-    max: number,
-    staticItems?: number[]
-}
+// export interface Range {
+//     min: number,
+//     max: number,
+//     staticItems?: number[]
+// }
 
-RangeSlider.prototype.panelOptions = {
+DimensionSlider.prototype.panelOptions = {
     top: 'calc(100% - 245px)',
     height: '185px',
     'margin-right': '60px',
     'margin-left': '420px'
 };
 
-RangeSlider.prototype.layerOptions = {
+DimensionSlider.prototype.layerOptions = {
     open: true,
     autorun: false,
     loop: false,
@@ -94,6 +134,7 @@ RangeSlider.prototype.layerOptions = {
     rangeType: 'dual',
     stepType: 'dynamic',
     interval: 0,
+    intervalUnit: 'year',
     range: { min: null, max: null },
     limit: { min: null, max: null },
     limits: [],
@@ -102,9 +143,9 @@ RangeSlider.prototype.layerOptions = {
     controls: ['lock', 'loop', 'delay', 'refresh']
 };
 
-RangeSlider.prototype.translations = {
+DimensionSlider.prototype.translations = {
     'en-CA': {
-        title: 'Range Slider',
+        title: 'Dimension Slider',
         minimize: 'Minimize the slider interface',
         maximize: 'Maximize the slider interface',
         bar: {
@@ -114,8 +155,6 @@ RangeSlider.prototype.translations = {
             unlock: 'Unlock left anchor',
             loop: 'Animate in loop',
             unloop: 'Do not animate in loop',
-            forward: 'Animate forward',
-            reverse: 'Animate backward',
             previous: 'Previous',
             play: 'Play',
             pause: 'Pause',
@@ -131,7 +170,7 @@ RangeSlider.prototype.translations = {
     },
 
     'fr-CA': {
-        title: 'Curseur de plage',
+        title: 'Curseur de dimension',
         minimize: 'Minimiser l\'interface du curseur',
         maximize: 'Maximizer l\'interface du curseur',
         bar: {
@@ -141,8 +180,6 @@ RangeSlider.prototype.translations = {
             unlock: 'Déverrouiller la molette gauche',
             loop: 'Animer en boucle',
             unloop: 'Ne pas animer en boucle',
-            forward: 'Animer normalement',
-            reverse: 'Animer à rebours',
             previous: 'Précédent',
             play: 'Jouer',
             pause: 'Pause',
@@ -158,4 +195,4 @@ RangeSlider.prototype.translations = {
     }
 };
 
-(<any>window).rangeSlider = RangeSlider;
+(<any>window).dimensionSlider = DimensionSlider;
