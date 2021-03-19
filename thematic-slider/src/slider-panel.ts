@@ -88,7 +88,8 @@ export class SliderPanel {
             this._layers.find((layer: any) => { if (layer.id === addedLayer.id) { this._layerNb++; }});
 
             // if all layers are loaded
-            if (this._layerNb === this._layers.length) {
+            if ((this._layerNb === this._layers.length) && (this._layers.find((layer: any) => layer.id === addedLayer.id)))
+            {
                 // set Legend state (open by default)
                 SliderPanel.setLegendState(true);
 
