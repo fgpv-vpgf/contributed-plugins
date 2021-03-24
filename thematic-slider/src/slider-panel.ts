@@ -286,9 +286,11 @@ export class SliderPanel {
         }
 
         // set panel info and layers visibility
-        this.setPanelInfo();
-        this.setPanelLegend(direction);
-        this.setLayerVisibility();
+        if (!lastStep)  {
+            this.setPanelInfo();
+            this.setPanelLegend(direction);
+            this.setLayerVisibility();
+        };
 
         // check if you need to enable/disable step buttons and push the info to the observable
         const enableButtons = (this._index > 0 && this._index < this._layers.length - 1) ? '' : (this._index === 0) ? 'down' : 'up';
@@ -328,12 +330,17 @@ export class SliderPanel {
 
         if (isPlaying) {
             // if index = last, re init the slider.
-            // otherwise, continue where it is
-            this._index =  (this._index === this._layers.length - 1) ? 0 : this._index;
-            this.setPanelInfo();
+            // otherwise,continue where it is
+
+            let last = this._index =  (this._index === this._layers.length - 1) ? 0 : this._index;
 
             // timeout function to play the slider with the duration provided within configuration
             setTimeout(this.setPlayInterval, this.active.duration, this);
+    
+            // step will increase this._index by 1. subtract -1,else on entry causing setPanelLegend to not display 1st image
+            if (last ===  0)  {
+                this._index = this._index -1;
+            }
 
         } else { clearInterval(this._playTimeout); }
     }
