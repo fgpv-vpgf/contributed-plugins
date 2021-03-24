@@ -1,8 +1,17 @@
+const webpack = require('webpack');
+const package = require('./package.json');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const childProcess = require('child_process');
 
 const pluginName = 'swiper';
+
+// get version numbers and the hash of the current commit
+const [major, minor, patch] = package.version.split('.');
+const hash = JSON.stringify(childProcess.execSync('git rev-parse HEAD').toString().trim());
 
 module.exports = function(variable={}, argv) {
     const config = {
@@ -39,7 +48,18 @@ module.exports = function(variable={}, argv) {
             ]
         },
 
+        optimization: {
+            minimize: true,
+            minimizer: [
+              new TerserPlugin({
+                extractComments: false
+              })
+            ]
+        },
+
         plugins: [
+            new CleanWebpackPlugin(),
+
             new MiniCssExtractPlugin({
                 filename:  `./${pluginName}.css`
             }),
@@ -54,7 +74,12 @@ module.exports = function(variable={}, argv) {
                     from: '../fgpv/*.+(js|css)',
                     to: '../fgpv'
                 }
-            ]})
+            ]}),
+
+            new webpack.BannerPlugin({
+                banner: `Plugin ${pluginName}: ${major}.${minor}.${patch} - ${hash}`,
+                include: /\.js$/
+              })
         ],
 
         devServer: {

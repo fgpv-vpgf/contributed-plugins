@@ -21,7 +21,7 @@
         "access": "public"
     },
     "scripts": {
-        "build": "webpack --mode=production --config=webpack.config.js && npm run sass",
+        "build": "npm version patch && webpack --mode=production --config=webpack.config.js && npm run sass",
         "serve": "webpack serve --progress --hot --mode=development --config webpack.config.js",
         "sass": "bash ./compileSass.sh",
         "deploy": "gh-pages -d ../dist"
@@ -34,6 +34,7 @@
     "devDependencies": {
         "@types/jquery": "3.3.29",
         "@types/node": "10.12.21",
+        "clean-webpack-plugin": "3.0.0",
         "copy-webpack-plugin": "6.1.0",
         "css-loader": "2.1.0",
         "mini-css-extract-plugin": "0.5.0",
