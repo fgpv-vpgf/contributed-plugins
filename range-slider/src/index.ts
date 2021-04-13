@@ -26,9 +26,12 @@ export default class RangeSlider {
             extendConfig.open = config.open;
             extendConfig.loop = config.loop;
             extendConfig.autorun = config.autorun;
+            extendConfig.maximize = typeof config.maximize !== 'undefined' ? config.maximize : RangeSlider.prototype.layerOptions.maximize;
+            extendConfig.maximizeDesc = typeof config.maximizeDesc !== 'undefined' ? config.maximizeDesc : RangeSlider.prototype.layerOptions.maximizeDesc;
         } else {
             extendConfig = RangeSlider.prototype.layerOptions;
         }
+        
         extendConfig.language = this._RV.getCurrentLang();
         extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
 
@@ -64,12 +67,14 @@ RangeSlider.prototype.panelOptions = {
 
 RangeSlider.prototype.layerOptions = {
     open: true,
+    maximize: true,
     autorun: false,
     loop: false,
     precision: '0',
     delay: 3000,
     lock: false,
     export: false,
+    maximizeDesc: true,
     rangeType: 'dual',
     stepType: 'dynamic',
     interval: 0,

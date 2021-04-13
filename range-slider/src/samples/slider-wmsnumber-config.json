@@ -295,6 +295,8 @@
     "plugins": {
       "rangeSlider": {
         "open": true,
+        "maximize": false,
+        "maximizeDesc": false,
         "autorun": false,
         "loop": false,
         "controls": ["lock", "loop", "delay", "refresh", "export"],

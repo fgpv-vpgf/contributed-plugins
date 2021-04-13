@@ -20,24 +20,38 @@ export class SliderControls {
         this.mapApi = mapApi;
 
         mapApi.agControllerRegister('MinMaxSliderCtrl', function() {
-            this.isMax = true;
-
-            this.show = () => {
-                this.isMax = !this.isMax;
+            const setHTML = () => {
                 document.getElementById('rangeSlider').parentElement.classList.toggle('slider-min-ui');
                 document.getElementById('rangeSlider').getElementsByClassName('slider-minmax-control')[0].children[0].classList.toggle('slider-max-control-icon');
+            };
+
+            this.isMax = slider.maximize;
+            setTimeout(() => {
+                if (!this.isMax) setHTML();
+            }, 0);
+
+            this.show = () => {
+                slider.maximize = !slider.maximize;
+                this.isMax = slider.maximize;
+                setHTML();
             };
         });
 
         mapApi.agControllerRegister('DescSliderCtrl', function() {
-            this.isShow = true;
+            const setHTML = () => {
+                const sliderElem = document.getElementById('rangeSlider');
+                sliderElem.style.height = (this.isShow) ? '185px' : '125px';
+                sliderElem.style.top = (this.isShow) ? 'calc(100% - 245px)' : 'calc(100% - 185px)';
+            };
+
+            this.isShow = slider.maximizeDesc;
+            setHTML();
 
             this.show = () => {
-                this.isShow = !this.isShow;
+                slider.maximizeDesc = !slider.maximizeDesc;
+                this.isShow = slider.maximizeDesc;;
 
-                const slider = document.getElementById('rangeSlider');
-                slider.style.height = (this.isShow) ? '185px' : '125px';
-                slider.style.top = (this.isShow) ? 'calc(100% - 245px)' : 'calc(100% - 185px)';
+                setHTML();
             };
         });
 

@@ -34,6 +34,7 @@ export class SliderBar {
         this._playState.next(newValue);
     }
 
+
     // array of images to export as Gif
     private _gifImages = []
 
@@ -57,6 +58,8 @@ export class SliderBar {
         this._slider.loop = config.loop;
         this._slider.range = config.range;
         this._slider.export = config.export;
+        this._slider.maximize = config.maximize;
+        this._slider.maximizeDesc = config.maximizeDesc;
 
         this._slider.reverse = false;
 
@@ -361,6 +364,36 @@ export class SliderBar {
      */
     get export(): boolean {
         return this._slider.export;
+    }
+
+    /**
+     * Set slider maximize state
+     * @property minimize
+     */
+     set maximize(maximize: boolean) {
+        this._slider.maximize = maximize;
+    }
+    /**
+     * Get slider maximize state
+     * @property minimize
+     */
+    get maximize(): boolean {
+        return this._slider.maximize;
+    }
+
+    /**
+     * Set slider description state
+     * @property maximizeDesc
+     */
+     set maximizeDesc(maximizeDesc: boolean) {
+        this._slider.maximizeDesc = maximizeDesc;
+    }
+    /**
+     * Get slider description state
+     * @property maximizeDesc
+     */
+    get maximizeDesc(): boolean {
+        return this._slider.maximizeDesc;
     }
 
     /**
