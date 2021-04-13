@@ -26,6 +26,8 @@ export class SliderManager {
     private _slider: SliderBar;
     private _attRead: number = 0;
 
+    private _button: any;
+
      /**
      * Slider manager constructor
      * @constructor
@@ -72,6 +74,9 @@ export class SliderManager {
                     if (this._config.description !== '') { sliderImage.unshift(this._config.description); }
 
                     document.getElementsByClassName('slider-desc-info')[0].textContent =  `${sliderImage.join(', ')}`;
+
+                    // side menu button
+                    this.createButtonMenu();
                 }
             } else if (ids.length === 0) {
                 // if there is no configured layer, check if the new added layer has a time info
@@ -93,10 +98,36 @@ export class SliderManager {
 
                         // add one item to ids so a new layer will not initialize a new slider
                         ids = ['done'];
+
+                        // side menu button
+                        this.createButtonMenu();
                     }
                 })
             }
         });
+    }
+
+    /**
+     * Create the menu button once slider is initialized
+     */
+    createButtonMenu() {
+        this._button = this._mapApi.mapI.addPluginButton(
+            // RangeSlider.prototype.translations[this._RV.getCurrentLang()].title,
+            this._config.translations.title, this.onMenuItemClick()
+        );
+        if (this._config.open) { this._button.isActive = true; }
+    }
+
+    /**
+    * Event to fire on side menu item click. Open/Close the panel
+    * @function onMenuItemClick
+    * @return {function} the function to run
+    */
+   onMenuItemClick() {
+        return () => {
+            this._button.isActive = !this._button.isActive;
+            this._button.isActive ? this._panel.open() : this._panel.close();
+        };
     }
 
     /**

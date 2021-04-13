@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const package = require('./package.json');
 const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
+// const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -48,15 +48,6 @@ module.exports = function(variable={}, argv) {
             ]
         },
 
-        optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                extractComments: false
-              })
-            ]
-        },
-
         plugins: [
             new CleanWebpackPlugin(),
 
@@ -79,7 +70,7 @@ module.exports = function(variable={}, argv) {
             new webpack.BannerPlugin({
                 banner: `Plugin ${pluginName}: ${major}.${minor}.${patch} - ${hash}`,
                 include: /\.js$/
-              })
+            })
         ],
 
         devServer: {
@@ -93,6 +84,17 @@ module.exports = function(variable={}, argv) {
             watchContentBase: true
         }
     };
+
+    if (argv.mode === 'production') {
+        config.optimization = {
+            minimize: true,
+            minimizer: [
+              new TerserPlugin({
+                extractComments: false
+              })
+            ]
+        }
+    }
 
     return config;
 };

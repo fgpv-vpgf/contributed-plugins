@@ -2,9 +2,6 @@ import { SLIDER_TEMPLATE } from './template';
 import { SliderManager } from './slider-manager';
 
 export default class RangeSlider {
-    private _button: any;
-
-
     /**
     * Plugin init
     * @function init
@@ -35,29 +32,11 @@ export default class RangeSlider {
         extendConfig.language = this._RV.getCurrentLang();
         extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
 
-        // side menu button
-        this._button = this.mapApi.mapI.addPluginButton(
-            RangeSlider.prototype.translations[this._RV.getCurrentLang()].title, this.onMenuItemClick()
-        );
-        if (extendConfig.open) { this._button.isActive = true; }
-
         // get ESRI TimeExtent dependency (for image server) and start slider creation
         let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
         myBundlePromise.then(myBundle => {
             new SliderManager(mapApi, this.panel, extendConfig, myBundle);
         });
-    }
-
-    /**
-    * Event to fire on side menu item click. Open/Close the panel
-    * @function onMenuItemClick
-    * @return {function} the function to run
-    */
-   onMenuItemClick() {
-        return () => {
-            this._button.isActive = !this._button.isActive;
-            this._button.isActive ? this.panel.open() : this.panel.close();
-        };
     }
 }
 

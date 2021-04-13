@@ -48,15 +48,6 @@ module.exports = function(variable={}, argv) {
             ]
         },
 
-        optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                extractComments: false
-              })
-            ]
-        },
-
         plugins: [
             new CleanWebpackPlugin(),
 
@@ -79,7 +70,7 @@ module.exports = function(variable={}, argv) {
             new webpack.BannerPlugin({
                 banner: `Plugin ${pluginName}: ${major}.${minor}.${patch} - ${hash}`,
                 include: /\.js$/
-              })
+            })
         ],
 
         devServer: {
@@ -93,6 +84,17 @@ module.exports = function(variable={}, argv) {
             watchContentBase: true
         }
     };
+
+    if (argv.mode === 'production') {
+      config.optimization = {
+        minimize: true,
+        minimizer: [
+          new TerserPlugin({
+            extractComments: false,
+          }),
+        ],
+      };
+    }
 
     return config;
 };
