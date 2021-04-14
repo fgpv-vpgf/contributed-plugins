@@ -11,9 +11,11 @@ Inside your configuration file you need
 "plugins": {
     "rangeSlider": {
         "open": true,
+        "maximize": true,
+        "maximizeDesc": true,
         "autorun": false,
         "loop": true,
-        "controls": ["lock", "loop", "delay", "export", "refresh"],
+        "controls": ["lock", "loop", "delay", "export", "refresh", "reverse"],
         "params": {
           "delay": 3000,
           "rangeType": "dual",
@@ -35,6 +37,8 @@ Inside your configuration file you need
 
 Configuration parameters
 - open: boolean to set the controls panel (description and slider) open by default
+- maximize: boolean to specify if the slider is maximized by default,
+- maximizeDesc: boolean to specify if the description section is maximized by default,
 - autorun: boolean to start the animation automatically (if true, open should be true as well)
 - loop: boolean to restart automatically the animation when it reaches the end of the array
 - controls: string array who contains needed controls. Order inside the array has no effect.

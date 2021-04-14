@@ -287,7 +287,7 @@
           "limit": { "min": null, "max": null },
           "limits": [],
           "units": "Total MW",
-          "description": "This slider let's you see by hydro electric total power."
+          "description": "This slider let's you see by hydro electric total power. If we put a string who exceed the description size panified by the ui, the text will not display properly. You will miss information that may be useful. To solve this, we are using ellipsis so we make sure everything you need is there."
         },
         "layers": [{
           "id": "0",

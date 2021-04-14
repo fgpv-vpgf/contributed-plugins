@@ -64,8 +64,9 @@ export class SliderManager {
                 if (nbLayers === this._config.layers.length) {
                     this.initializeSlider(layers);
 
+                    const units = this._config.units !== '' ? ` - ${this._config.translations.bar.unit}: ${this._config.units}` : '';
                     const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` }).join(', ');
-                    document.getElementsByClassName('slider-desc-layers')[0].textContent = layersInfo;
+                    document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layersInfo} ${units}`;
 
                     // add the description from config file and check if it is a esri image layer and add the note
                     const imageIndex = layers.findIndex(item => { return item.layer._layerType === 'esriImage'; });

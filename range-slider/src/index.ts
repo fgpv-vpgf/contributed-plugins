@@ -110,6 +110,7 @@ RangeSlider.prototype.translations = {
             tooltip: {
                 gif: 'If enabled, click \"Play\" to start then \"Pause\" to finish then disable the control to export GIF'
             },
+            unit: "Units",
             esriImageNote: 'NOTE: Only the last handle will affect the layer visibility. The first handle is use to set the interval for controls.'
         }
     },
@@ -137,6 +138,7 @@ RangeSlider.prototype.translations = {
             tooltip: {
                 gif: 'Si activé, cliquez sur \"Jouer\" pour démarrer, puis sur \"Pause\" pour terminer et désactiver le contrôle pour exporter le GIF'
             },
+            unit: "Unitées",
             esriImageNote: 'REMARQUE: seule la dernière molette affectera la visibilité de la couche. La première molette est utilisée pour définir l\'intervalle pour les contrôles.'
         }
     }

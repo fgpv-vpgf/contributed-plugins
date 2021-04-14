@@ -76,6 +76,7 @@
 }
 
 .noUi-handle {
+    background-color: #929292;
     &:focus {
         .noUi-tooltip {
             display: block;
@@ -121,14 +122,14 @@ input:focus + .noUi-tooltip { display: block; }
     }
 }
 
-#rangeSlider:hover {
+#rangeSlider:hover, #rangeSlider:focus-within {
     opacity: 1;
 }
 
 .rv-rangeslider {
     display: flex;
     flex-direction: row;
-    padding: 10px;
+    padding: 5px 10px;
 
     .slider-content {
         overflow: hidden;
@@ -163,7 +164,7 @@ input:focus + .noUi-tooltip { display: block; }
             display: flex;
             flex-direction: column;
             width: 100%;
-            padding: 10px 35px;
+            padding: 5px 35px;
 
             .slider-bar-noui {
                 width: 100%;
@@ -218,6 +219,9 @@ input:focus + .noUi-tooltip { display: block; }
             }
 
             .slider-units {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
                 right: 40px;
                 position: absolute;
                 @include text-color;
@@ -232,6 +236,8 @@ input:focus + .noUi-tooltip { display: block; }
 
     .slider-desc {
         @include text-color;
+        overflow: auto;
+        height: 60px;
 
         span {
             display: block;

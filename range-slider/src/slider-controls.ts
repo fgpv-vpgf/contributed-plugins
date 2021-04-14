@@ -40,8 +40,8 @@ export class SliderControls {
         mapApi.agControllerRegister('DescSliderCtrl', function() {
             const setHTML = () => {
                 const sliderElem = document.getElementById('rangeSlider');
-                sliderElem.style.height = (this.isShow) ? '185px' : '125px';
-                sliderElem.style.top = (this.isShow) ? 'calc(100% - 245px)' : 'calc(100% - 185px)';
+                sliderElem.style.height = (this.isShow) ? '185px' : '120px';
+                sliderElem.style.top = (this.isShow) ? 'calc(100% - 240px)' : 'calc(100% - 180px)';
             };
 
             this.isShow = slider.maximizeDesc;
@@ -114,6 +114,10 @@ export class SliderControls {
         });
 
         mapApi.agControllerRegister('DelaySliderCtrl', function() {
+            SliderBar.getPlayState().subscribe(value => {
+                this.isPlay = value;
+            });
+
             // set selected delay
             this.selectedDelay = slider.delay;
             this.selectDelay = () => { slider.delay =  this.selectedDelay; }

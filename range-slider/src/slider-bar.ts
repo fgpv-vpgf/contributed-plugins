@@ -222,7 +222,7 @@ export class SliderBar {
             // if hours, add it to the label and change margin so label are inside
             if (this._precision === -2) {
                 value += ` - ${date.getHours()}:${((date.getMinutes() + 1).toString() as any).padStart(2, '0')}:${((date.getSeconds() + 1).toString() as any).padStart(2, '0')}`;
-                $('.slider-bar')[0].style.paddingLeft = '60px';
+                $('.slider-bar')[0].style.paddingLeft = '70px';
             }
         }
 

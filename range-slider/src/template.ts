@@ -6,7 +6,7 @@ export const SLIDER_TEMPLATE = `
             <div class="slider-bar-noui"><div id="nouislider" class="slider-widget"></div><span class="slider-units"></span></div>
             <div class="slider-controls"></div>
         </div>
-        <div class="slider-desc">
+        <div class="slider-desc" tabindex="-2">
             <span class="slider-desc-layers"></span>
             <span class="slider-desc-info"></span>
         </div>
@@ -125,7 +125,8 @@ export const DELAY_BAR_TEMPLATE = `
         <md-select
             aria-label="{{ 'plugins.rangeSlider.bar.delay' | translate }}"
             ng-model="ctrl.selectedDelay"
-            ng-change="ctrl.selectDelay()">
+            ng-change="ctrl.selectDelay()"
+            ng-disabled="ctrl.isPlay">
             <md-option ng-repeat="(key, value) in { 1000: '1 sec', 2000: '2 sec', 3000: '3 sec', 4000: '4 sec', 5000: '5 sec', 6000: '6 sec', 7000: '7 sec' }" ng-value="{{ key }}">
                 {{ value }}
             </md-option>

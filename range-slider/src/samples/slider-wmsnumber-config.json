@@ -299,7 +299,7 @@
         "maximizeDesc": false,
         "autorun": false,
         "loop": false,
-        "controls": ["lock", "loop", "delay", "refresh", "export"],
+        "controls": ["lock", "loop", "delay", "refresh", "reverse"],
         "params": {
           "delay": 3000,
           "type": "number",
