@@ -47,6 +47,11 @@ export class SliderManager {
         const layers: Layer[] = [];
         let nbLayers: number = 0;
 
+        // variable to check if same layer when laod with no config
+        let layerId = '';
+        let index = -1;
+        let timerId = undefined;
+
         // when a layer is added to the check if it is a needed one
         // TODO: There is a bug in 3.3.x where the aray of layer is not define for WMS-T sample and make it crash. Use version 3.2 solve the problem for the moment
         // but is not a suitable solution. Will have to get back to ECCC
@@ -65,8 +70,13 @@ export class SliderManager {
                     this.initializeSlider(layers);
 
                     const units = this._config.units !== '' ? ` - ${this._config.translations.bar.unit}: ${this._config.units}` : '';
-                    const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` }).join(', ');
-                    document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layersInfo} ${units}`;
+                    const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` });
+
+                    // remove duplicate (introduced by layer entries of dynamic or WMS)
+                    const layersInfoNo = layersInfo.filter(function(value, index, self) { 
+                        return self.indexOf(value) === index;
+                    }).join(', ');
+                    document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layersInfoNo} ${units}`;
 
                     // add the description from config file and check if it is a esri image layer and add the note
                     const imageIndex = layers.findIndex(item => { return item.layer._layerType === 'esriImage'; });
@@ -82,6 +92,11 @@ export class SliderManager {
             } else if (ids.length === 0) {
                 // if there is no configured layer, check if the new added layer has a time info
                 // if so, create the time slider from it
+                if (layerId === '') {
+                    index = (layer.type === 'esriFeature') ? 0 : layer._viewerLayer.layerInfos.length - 1;
+                    layerId = layer.id
+                }
+
                 new Promise(resolve => {
                     $.ajax({
                         url: (layer.type === 'esriFeature') ? `${layer.esriLayer.url}?f=json`: `${layer.esriLayer.url}/${layer._layerIndex}?f=json`,
@@ -90,18 +105,23 @@ export class SliderManager {
                         success: data => resolve(data)
                     });
                 }).then(data => {
+                    index--;
                     if (typeof (<any>data).timeInfo !== 'undefined') {
                         const layerInfo = { id: layer.id, field: (<any>data).timeInfo.startTimeField }
                         layers.push({ layer, layerInfo });
-                        this._config.layers = [layerInfo];
-                        this.initializeSlider(layers);
-                        document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layer.name} (${layerInfo.field})`;
+                        this._config.layers.push(layerInfo);
+
+                        if (typeof timerId === 'undefined') {
+                                timerId = setTimeout(() => this.launchInit(layers, layer.name, layerInfo.field), 3000);
+                        }
+
+                        if (index < 0) {
+                            clearTimeout(timerId);
+                            this.launchInit(layers, layer.name, layerInfo.field);
+                        }
 
                         // add one item to ids so a new layer will not initialize a new slider
                         ids = ['done'];
-
-                        // side menu button
-                        this.createButtonMenu();
                     }
                 })
             }
@@ -109,7 +129,23 @@ export class SliderManager {
     }
 
     /**
+     * Launch init for no config layers
+     * @function launchInit
+     * @param {Layer[]} layers array of layers to init
+     * @param {String} layer the layer name for description
+     * @param {String} field the field name for description
+     */
+    launchInit(layers: Layer[], name: string, field: string) {
+        this.initializeSlider(layers);
+        document.getElementsByClassName('slider-desc-layers')[0].textContent = `${name} (${field})`;
+
+        // side menu button
+        this.createButtonMenu();
+    }
+
+    /**
      * Create the menu button once slider is initialized
+     * @function createButtonMenu
      */
     createButtonMenu() {
         this._button = this._mapApi.mapI.addPluginButton(
