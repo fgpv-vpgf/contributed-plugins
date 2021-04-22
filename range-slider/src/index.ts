@@ -17,8 +17,30 @@ export default class RangeSlider {
 
         // get slider configuration then add/merge needed configuration
         const config = this._RV.getConfig('plugins').rangeSlider;
+        const extendConfig: any = this.parsePluginConfig(config);
 
+        // add layers info
+        extendConfig.viewerLayers = this._RV.getConfig('map').layers;
+
+        // add language and translation to configuration
+        extendConfig.language = this._RV.getCurrentLang();
+        extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
+
+        // get ESRI TimeExtent dependency (for image server) and start slider creation
+        let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
+        myBundlePromise.then(myBundle => {
+            new SliderManager(mapApi, this.panel, extendConfig, myBundle);
+        });
+    }
+
+    /**
+     * Parse and extend the configuration object for missing properties
+     * @param {any} config the configuration object
+     * @returns the extented config
+     */
+    parsePluginConfig(config:any): any {
         let extendConfig: any = {}
+
         if (typeof config !== 'undefined') {
             extendConfig = { ...RangeSlider.prototype.layerOptions, ...config.params };
             extendConfig.controls = config.controls;
@@ -32,14 +54,7 @@ export default class RangeSlider {
             extendConfig = RangeSlider.prototype.layerOptions;
         }
 
-        extendConfig.language = this._RV.getCurrentLang();
-        extendConfig.translations = RangeSlider.prototype.translations[this._RV.getCurrentLang()];
-
-        // get ESRI TimeExtent dependency (for image server) and start slider creation
-        let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
-        myBundlePromise.then(myBundle => {
-            new SliderManager(mapApi, this.panel, extendConfig, myBundle);
-        });
+        return extendConfig;
     }
 }
 
@@ -77,13 +92,15 @@ RangeSlider.prototype.layerOptions = {
     maximizeDesc: true,
     rangeType: 'dual',
     stepType: 'dynamic',
-    interval: 0,
+    startRangeEnd: false,
     range: { min: null, max: null },
     limit: { min: null, max: null },
     limits: [],
     type: 'date',
     layers: [],
-    controls: ['lock', 'loop', 'delay', 'refresh']
+    controls: ['lock', 'loop', 'delay', 'refresh'],
+    units: '',
+    description: ''
 };
 
 RangeSlider.prototype.translations = {

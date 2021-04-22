@@ -91,7 +91,7 @@
             "export": "false"
           }, {
             "infoType": "text",
-            "content": "Dynamic Layer url: https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/ks_earthquakes_since_2000/FeatureServer/",
+            "content": "Dynamic Layer url: https://gisp.dfo-mpo.gc.ca/arcgis/rest/services/FGP/MSDI_Dynamic_Current_Layer/MapServer/",
             "export": "false"
           }]
         }

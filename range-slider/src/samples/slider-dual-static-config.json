@@ -275,8 +275,6 @@
           "type": "number",
           "rangeType": "dual",
           "stepType": "static",
-          "interval": 50,
-          "intervalUnit": "",
           "range": { "min": 400, "max": 1000 },
           "limit": { "min": 200, "max": 2100, "staticItems": [400, 750, 1000, 1375, 1550, 1800, 2000] },
           "units": "",

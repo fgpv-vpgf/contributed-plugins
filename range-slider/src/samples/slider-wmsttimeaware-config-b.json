@@ -105,59 +105,54 @@
           ]
         }
       },
-      "layers": [{
-          "id": "acqplan",
-          "name": "Acquisition Plan Collection - active",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Acquisition_Plan/EGS_AcquisitionPlan_Collection_Active_en/MapServer/",
-          "layerEntries": [{
-            "index": 1,
-            "name": "Today"
-          },
-          {
-            "index": 2,
-            "name": "Futur - 12 tp 72 hours"
-          },
-          {
-            "index": 3,
-            "name": "Past - 12 to 72 hours"
-          }]
-        },
+      "layers": [
         {
           "id": "0",
-          "name": "Active flood - EMPTY",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Active_en/MapServer/",
+          "name": "Victoria",
+          "layerType": "ogcWms",
+          "featureInfoMimeType": "text/plain",
+          "url": "https://datacube.services.geo.ca/ows/aerial",
           "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
-            "index": 1,
-            "name": "In Canada"
-          },
-          {
-            "index": 2,
-            "name": "Flooded Area in Canada"
-          }]
+                "id": "victoria",
+                "name": "victoria"
+            }],
+          "suppressGetCapabilities": true
         },
         {
           "id": "1",
-          "name": "Current flood",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/",
+          "name": "Halifax",
+          "layerType": "ogcWms",
+          "featureInfoMimeType": "text/plain",
+          "url": "https://datacube.services.geo.ca/ows/aerial",
           "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
-            "index": 1,
-            "name": "In Canada"
-          },
-          {
-            "index": 2,
-            "name": "Flooded Area in Canada"
-          }]
+                "id": "halifax",
+                "name": "halifax"
+            }],
+          "suppressGetCapabilities": true
+        },
+        {
+          "id": "2",
+          "name": "Regina",
+          "layerType": "ogcWms",
+          "featureInfoMimeType": "text/plain",
+          "url": "https://datacube.services.geo.ca/ows/aerial",
+          "layerEntries": [{
+                "id": "regina",
+                "name": "regina"
+            }],
+          "suppressGetCapabilities": true
+        },
+        {
+          "id": "3",
+          "name": "Salish",
+          "layerType": "ogcWms",
+          "featureInfoMimeType": "text/plain",
+          "url": "https://datacube.services.geo.ca/ows/aerial",
+          "layerEntries": [{
+                "id": "salish",
+                "name": "salish"
+            }],
+          "suppressGetCapabilities": true
         }
       ],
       "extentSets": [
@@ -319,22 +314,32 @@
         "controls": ["lock", "loop", "refresh", "reverse"],
         "params": {
           "delay": 3000,
-          "type": "date",
-          "rangeType": "dual",
-          "stepType": "dynamic",
+          "type": "wmst",
+          "rangeType": "single",
+          "stepType": "static",
           "precision": "date",
           "range": { "min": null, "max": null },
-          "limit": { "min": 1577854800000, "max": 1619841600000 },
+          "limit": { "min": null, "max": null },
           "limits": [],
           "units": "",
-          "description": "Let see current and active flood from January 2020 to May 2021."
+          "description": "This slider limit and range is set by the wms getCapabilities."
         },
         "layers": [{
           "id": "0",
-          "field": "date_utc"
+          "field": "TIME",
+          "isTimeAware": true
         }, {
           "id": "1",
-          "field": "date_utc"
+          "field": "TIME",
+          "isTimeAware": true
+        }, {
+          "id": "2",
+          "field": "TIME",
+          "isTimeAware": true
+        }, {
+          "id": "3",
+          "field": "TIME",
+          "isTimeAware": true
         }]
       }
     }

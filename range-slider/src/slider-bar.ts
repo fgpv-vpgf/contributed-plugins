@@ -8,6 +8,10 @@ const domtoimage = require('dom-to-image');
 const gifshot = require('gifshot');
 const FileSaver = require('file-saver');
 
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
+
 export class SliderBar {
     private _slider: any;
     private _mapApi: any;
@@ -22,7 +26,8 @@ export class SliderBar {
     private _precision: number;
     private _stepType: string;
     private _rangeType: string;
-    private _interval: number;
+
+    private _sliderBarCtrl: any;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -34,215 +39,14 @@ export class SliderBar {
         this._playState.next(newValue);
     }
 
-
     // array of images to export as Gif
     private _gifImages = []
-
-    /**
-     * Slider bar constructor
-     * @constructor
-     * @param {Any} mapApi the viewer api
-     * @param {Any} config the slider configuration
-     */
-    constructor(mapApi: any, config: any, myBundle: any) {
-        this._mapApi = mapApi;
-        this._slider = document.getElementById('nouislider');
-        this._config = config;
-        this._myBundle = myBundle;
-        this._precision = (config.type === 'number') ? config.precision : (config.precision === 'date') ? -1 : -2;
-
-        // set dynamic values used in accessor
-        this._slider.delay = config.delay;
-        this._slider.lock = config.lock;
-        this._slider.dual = (config.rangeType === 'dual') ? true : false;
-        this._slider.loop = config.loop;
-        this._slider.range = config.range;
-        this._slider.export = config.export;
-        this._slider.maximize = config.maximize;
-        this._slider.maximizeDesc = config.maximizeDesc;
-
-        this._slider.reverse = false;
-
-        // set range and limits information. Will help to set the different slider (range (single or dual) and limit (dynamic or static))
-        this._stepType = config.stepType;
-        this._rangeType = config.rangeType;
-        this._interval = config.interval; // TODO: seems not really use, value is pass to a unction but it is always 0.... check
-
-        // set units label value
-        document.getElementsByClassName('slider-units')[0].textContent = config.units;
-    }
-
-    /**
-     * Start slider creation
-     * @function
-     * @param {String} type the type of slider (date, number or wmst)
-     * @param {String} language the viewerlanguage (en-CA or fr-CA)
-     */
-    startSlider(type: string, language: string): void {
-        // initialize the slider
-        const mapWidth = this._mapApi.fgpMapObj.width;
-        nouislider.create(this._slider,
-            {
-                start: (this._rangeType === 'dual') ? [this.range.min, this.range.max] : [this.range.min],
-                connect: true,
-                behaviour: 'drag-tap',
-                tooltips: this.setTooltips(type, language),
-                range: this.setNoUiBarRanges(mapWidth, this.limit, this._rangeType, this._stepType, this._interval),
-                step: (this._limit.max - this.limit.min) / 100,
-                snap: (this._stepType === 'static') ? true : false,
-                pips: {
-                    mode: 'range',
-                    density: (this._stepType === 'static') ? 100 : (mapWidth > 800) ? 5 : 10,
-                    format: {
-                        to: (value: number) => { return this.formatPips(value, type, language); },
-                        from: Number
-                    }
-                }
-            });
-
-        // remove overlapping pips. This can happen often with static limits and date
-        const items = $('.noUi-value');
-        let curIndex = 0;
-        let testIndex = 1;
-        // loop until are pips are not tested
-        while (testIndex !== items.length) {
-            // get div rectangle and check for collision
-            let d1 = (items[curIndex] as any).getBoundingClientRect();
-            let d2 = (items[testIndex] as any).getBoundingClientRect();
-            let ox = Math.abs(d1.x - d2.x) < (d1.x < d2.x ? d2.width : d1.width);
-            let oy = Math.abs(d1.y - d2.y) < (d1.y < d2.y ? d2.height : d1.height);
-
-            // if there is a collision, set display none and test with the next pips
-            if (ox && oy) {
-                items[testIndex].style.display = 'none';
-                testIndex++;
-            } else {
-                // if there is no  collision and reset the curIndex to be the one before the testIndex
-                curIndex = (testIndex - curIndex !== 1) ? testIndex : curIndex + 1;
-                testIndex++;
-            }
-        }
-
-        // add handles to focus cycle
-        document.getElementsByClassName('noUi-handle-lower')[0].setAttribute('tabindex', '-2');
-        if (this._rangeType === 'dual') { document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2'); }
-
-        // make sure range is set properly, there is a bug when slider is initialize without
-        // configuration from a time aware layer
-        if (this._slider.range.min === null) { this._slider.range = this.range; }
-
-        // set the initial definition query
-        this._slider.range = (this._rangeType === 'dual') ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min }
-        this.setDefinitionQuery(this._slider.range);
-
-        // trap the on change event when user use handles
-        let that = this;
-        this._slider.noUiSlider.on('set.one', function (values) {
-            // set ranges from handles (dual) or from first handle (single)
-            const ranges: number[] = values.map(Number);
-            that._slider.range = (that._rangeType === 'dual') ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] }
-            that.setDefinitionQuery(that._slider.range);
-
-            // update step from new range values
-            if (!that._slider.lock) { that._step = that._slider.range.max - that._slider.range.min; }
-        });
-    }
-
-    /**
-     * Set ranges
-     * @function setNoUiBarRanges
-     * @param {Number} width display width
-     * @param {Range} limit min and max limit to set
-     * @param {String} rangeType range type (dual or single)
-     * @param {String} stepType step type (dynamic or static)
-     * @param {Number} step step value to use for (single and dynamic)
-     * @return {Range} range the updated limits
-     */
-    setNoUiBarRanges(width: number, limit: Range, rangeType: string, stepType: string, step: number): Range {
-        let range: any = {}
-
-        const delta = Math.abs(this.limit.max - this.limit.min);
-        if (rangeType === 'dual' && stepType === 'dynamic') {
-            range.min = limit.min;
-            range.max = limit.max;
-            range['50%'] = limit.min + delta / 2;
-
-            if (width > 800) {
-                range['25%'] = limit.min + delta / 4;
-                range['75%'] = limit.min + (delta / 4) * 3;
-            }
-        } else if (rangeType === 'single' && stepType === 'dynamic') {
-            range.min = [limit.min, step];
-            range.max = [limit.max, step];
-
-            // to get rounded value to step
-            const mod50 = step - ((delta /2) % step);
-            range['50%'] = [limit.min + (delta / 2) + mod50, step];
-
-            if (width > 800) {
-                // to get rounded value to step
-                const mod25 = step - (limit.min + (delta /4)) % step;
-                const mod75 = step - (limit.min + (delta /4) * 3) % step;
-                range['25%'] = [limit.min + (delta / 4) + mod25, step];
-                range['75%'] = [limit.min + ((delta / 4) * 3) + mod75, step];
-            }
-        }  else if (stepType === 'static') {
-            range.min = limit.min;
-            range.max = limit.max;
-
-            const nbItems = limit.staticItems.length + 2;
-            for (let [i, item] of limit.staticItems.entries()) {
-                range[`${((item - range.min) / delta) * 100}%`] = item;
-            }
-        }
-
-        return range;
-    }
-
-    /**
-     * Set pips (slider labels) format
-     * @function formatPips
-     * @param {Any} value the value to display (number, string or date)
-     * @param {String} field the type of field
-     * @param {String} lang the language to use
-     * @return {any} value the formated value
-     */
-    formatPips(value: any, field: string, lang: string): any {
-        if (field === 'number') {
-            value = (Math.round(value * 100) / 100).toFixed(this._precision);
-        } else if (field === 'date' || field === 'wmst') {
-            let date = new Date(value);
-
-            if (lang === 'en-FR') {
-                value = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-            } else {
-                value = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-            }
-
-            // if hours, add it to the label and change margin so label are inside
-            if (this._precision === -2) {
-                value += ` - ${((date.getHours()).toString() as any).padStart(2, '0')}:${((date.getMinutes()).toString() as any).padStart(2, '0')}:${((date.getSeconds()).toString() as any).padStart(2, '0')}`;
-                $('.slider-bar')[0].style.paddingLeft = '70px';
-            }
-        }
-
-        return value;
-    }
-
-    setTooltips(type: string, language: string): object[] {
-        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }]
-        if (this._rangeType === 'dual') {
-            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number })
-        }
-
-        return tooltips;
-    }
 
     /**
      * Set slider range
      * @property range
      */
-    set range(value: Range) {
+     set range(value: Range) {
         this._range = value;
     }
     /**
@@ -397,6 +201,215 @@ export class SliderBar {
     }
 
     /**
+     * Slider bar constructor
+     * @constructor
+     * @param {Any} mapApi the viewer api
+     * @param {Any} config the slider configuration
+     */
+    constructor(mapApi: any, config: any, myBundle: any) {
+        this._mapApi = mapApi;
+        this._slider = document.getElementById('nouislider');
+        this._config = config;
+        this._myBundle = myBundle;
+        this._precision = (config.type === 'number') ? config.precision : (config.precision === 'date') ? -1 : -2;
+
+        // set dynamic values used in accessor
+        this._slider.delay = config.delay;
+        this._slider.lock = config.lock;
+        this._slider.dual = (config.rangeType === 'dual') ? true : false;
+        this._slider.loop = config.loop;
+        this._slider.range = config.range;
+        this._slider.export = config.export;
+        this._slider.maximize = config.maximize;
+        this._slider.maximizeDesc = config.maximizeDesc;
+
+        this._slider.reverse = false;
+
+        // controls
+        this._sliderBarCtrl = document.getElementsByClassName('slider-bar')[0];
+
+        // set range and limits information. Will help to set the different slider (range (single or dual) and limit (dynamic or static))
+        this._stepType = config.stepType;
+        this._rangeType = config.rangeType;
+
+        // set units label value
+        if (config.units) {
+            document.getElementsByClassName('slider-units')[0].textContent = config.units;
+        } else {
+            // remove units placeholder to save space
+            this._sliderBarCtrl.classList.add('no-units');
+        }
+    }
+
+    /**
+     * Start slider creation
+     * @function
+     * @param {String} type the type of slider (date, number or wmst)
+     * @param {String} language the viewerlanguage (en-CA or fr-CA)
+     */
+    startSlider(type: string, language: string): void {
+        // initialize the slider
+        const mapWidth = this._mapApi.fgpMapObj.width;
+        nouislider.create(this._slider,
+            {
+                start: (this._rangeType === 'dual') ? [this.range.min, this.range.max] : [this.range.min],
+                connect: true,
+                behaviour: 'drag-tap',
+                tooltips: this.setTooltips(type, language),
+                range: this.setNoUiBarRanges(mapWidth, this.limit, this._stepType),
+                step: (this._limit.max - this.limit.min) / 100,
+                snap: (this._stepType === 'static') ? true : false,
+                pips: {
+                    mode: 'range',
+                    density: (this._stepType === 'static') ? 100 : (mapWidth > 800) ? 5 : 10,
+                    format: {
+                        to: (value: number) => { return this.formatPips(value, type, language); },
+                        from: Number
+                    }
+                }
+            });
+
+        // remove overlapping pips. This can happen often with static limits and date
+        this.removePipsOverlaps();
+
+        // add handles to focus cycle
+        document.getElementsByClassName('noUi-handle-lower')[0].setAttribute('tabindex', '-2');
+        if (this._rangeType === 'dual') { document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2'); }
+
+        // make sure range is set properly, there is a bug when slider is initialize without
+        // configuration from a time aware layer
+        if (this._slider.range.min === null) { this._slider.range = this.range; }
+
+        // set the initial definition query
+        this._slider.range = (this._rangeType === 'dual') ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min }
+        this.setDefinitionQuery(this._slider.range);
+
+        // trap the on change event when user use handles
+        let that = this;
+        this._slider.noUiSlider.on('set.one', function (values) {
+            // set ranges from handles (dual) or from first handle (single)
+            const ranges: number[] = values.map(Number);
+            that._slider.range = (that._rangeType === 'dual') ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] }
+            that.setDefinitionQuery(that._slider.range);
+
+            // update step from new range values
+            if (!that._slider.lock) { that._step = that._slider.range.max - that._slider.range.min; }
+        });
+    }
+
+    /**
+     * Remove pips overlap
+     * @function removePipsOverlaps
+     */
+    removePipsOverlaps(): void {
+        const items = $('.noUi-value');
+        const markers = $('.noUi-marker');
+        let curIndex = 0;
+        let testIndex = 1;
+        // loop until are pips are not tested
+        while (testIndex !== items.length) {
+            // get div rectangle and check for collision
+            let d1 = (items[curIndex] as any).getBoundingClientRect();
+            let d2 = (items[testIndex] as any).getBoundingClientRect();
+            let ox = Math.abs(d1.x - d2.x) < (d1.x < d2.x ? d2.width : d1.width);
+            let oy = Math.abs(d1.y - d2.y) < (d1.y < d2.y ? d2.height : d1.height);
+            // if there is a collision, set classname and test with the next pips
+            if (ox && oy) {
+                items[testIndex].classList.add('noUi-value-overlap')
+                markers[testIndex].classList.add('noUi-marker-overlap')
+                testIndex++;
+            } else {
+                // if there is no  collision and reset the curIndex to be the one before the testIndex
+                curIndex = (testIndex - curIndex !== 1) ? testIndex : curIndex + 1;
+                testIndex++;
+            }
+        }
+    }
+
+    /**
+     * Set ranges
+     * @function setNoUiBarRanges
+     * @param {Number} width display width
+     * @param {Range} limit min and max limit to set
+     * @param {String} rangeType range type (dual or single)
+     * @param {String} stepType step type (dynamic or static)
+     * @param {Number} step step value to use for (single and dynamic)
+     * @return {Range} range the updated limits
+     */
+    setNoUiBarRanges(width: number, limit: Range, stepType: string): Range {
+        let range: any = {}
+
+        const delta = Math.abs(this.limit.max - this.limit.min);
+        if (stepType === 'dynamic') {
+            range.min = limit.min;
+            range.max = limit.max;
+            range['50%'] = limit.min + delta / 2;
+
+            if (width > 800) {
+                range['25%'] = limit.min + delta / 4;
+                range['75%'] = limit.min + (delta / 4) * 3;
+            }
+        }  else if (stepType === 'static') {
+            range.min = limit.min;
+            range.max = limit.max;
+
+            const nbItems = limit.staticItems.length + 2;
+            for (let [i, item] of limit.staticItems.entries()) {
+                range[`${((item - range.min) / delta) * 100}%`] = item;
+            }
+        }
+
+        return range;
+    }
+
+    /**
+     * Set pips (slider labels) format
+     * @function formatPips
+     * @param {Any} value the value to display (number, string or date)
+     * @param {String} field the type of field
+     * @param {String} lang the language to use
+     * @return {any} value the formated value
+     */
+    formatPips(value: any, field: string, lang: string): any {
+        if (field === 'number') {
+            value = (Math.round(value * 100) / 100).toFixed(this._precision);
+        } else if (field === 'date' || field === 'wmst') {
+            let date = new Date(value);
+
+            if (lang === 'en-FR') {
+                value = dayjs.utc(date).format('DD/MM/YYYY HH:mm:ss');
+            } else {
+                value = dayjs.utc(date).format('MM/DD/YYYY HH:mm:ss');
+            }
+
+            // if hours, add it to the label and change margin so label are inside
+            if (this._precision === -2) {
+                this._sliderBarCtrl.classList.add('hours-labels');
+            } else {
+                value = value.split(' ')[0];
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * Set tooltips
+     * @function setTooltips
+     * @param {String} type of tooltip (number or date)
+     * @param {String} language of tooltip (en-CA or fr-CA)
+     * @returns the tooltips
+     */
+    setTooltips(type: string, language: string): object[] {
+        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }]
+        if (this._rangeType === 'dual') {
+            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number })
+        }
+
+        return tooltips;
+    }
+
+    /**
      * Set play or pause on the slider
      * @function play
      * @param {Boolean} play true if slider is playing, false otherwise
@@ -491,6 +504,10 @@ export class SliderBar {
         });
     }
 
+    /**
+     * Export the animation to GIF
+     * @function exportToGIF
+     */
     exportToGIF() {
         // get map node + width and height set a maximum size to reduce file size... keep proportion
         const node: any = document.getElementsByClassName('rv-esri-map')[0];
@@ -708,50 +725,52 @@ export class SliderBar {
         // http://jsfiddle.net/ZkC5M/274/: http://gis.fba.org.uk/geoserver/RP_Workspace/wms?service=WMS&request=GetMap&version=1.1.1&layers=RP_Workspace:sites_view1&styles=&format=image/png&transparent=true&height=256&width=256&cql_filter=RMIGroup%20=%20%27Almond%20Catchment%20ARMI%27&srs=EPSG:3857&bbox=-1252344.2714243277,7514065.628545966,0,8766409.899970295
 
         for (let layer of this._config.layers) {
-            const myLayer = this._mapApi.layers.getLayersById(layer.id)[0];
-            const layerType = myLayer.type;
+            const mapLayers = this._mapApi.layers.getLayersById(layer.id);
 
-            if (layerType === 'esriDynamic' || layerType === 'esriFeature') {
-                if (this._config.type === 'number') {
-                    myLayer.setFilterSql('rangeSliderNumberFilter',
-                        `${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}`);
-                } else if (this._config.type === 'date') {
+            for (let mapLayer of mapLayers) {
+                const layerType = mapLayer.type;
+                if (layerType === 'esriDynamic' || layerType === 'esriFeature') {
+                    if (this._config.type === 'number') {
+                        mapLayer.setFilterSql('rangeSliderNumberFilter',
+                            `${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}`);
+                    } else if (this._config.type === 'date') {
+                        const dates = this.getDate(range);
+                        mapLayer.setFilterSql('rangeSliderDateFilter',
+                            `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`);
+                    }
+                } else if (layerType === 'esriImage') {
+                    // image server works differently. Instead of setting the query, we set the time extent for the map
+                    // because image server will work with single range type, we add 1 day to end date to create an array
                     const dates = this.getDate(range);
-                    myLayer.setFilterSql('rangeSliderDateFilter',
-                        `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`);
-                }
-            } else if (layerType === 'esriImage') {
-                // image server works differently. Instead of setting the query, we set the time extent for the map
-                // because image server will work with single range type, we add 1 day to end date to create an array
-                const dates = this.getDate(range);
-                const timeExtent = new this._myBundle.timeExtent();
-                timeExtent.startTime = new Date(dates[0]);
-                timeExtent.endTime = new Date(dates[1]);
-                this._mapApi.esriMap.setTimeExtent(timeExtent);
-            } else if (layerType === 'ogcWms') {
-                // the way it works with string (we can use wildcard like %)
-                // myLayer.esriLayer.setCustomParameters({}, {layerDefs: "{'0': \"CLAIM_STAT LIKE 'SUSPENDED'\"}"});
-                if (this._config.type === 'number') {
-                    myLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
-                        `{'${myLayer._viewerLayer._defaultFC}': '${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}'}` });
-                } else if (this._config.type === 'date') {
-                    const dates = this.getDate(range);
-                    myLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
-                        `{'${myLayer._viewerLayer._defaultFC}': \"${layer.field} >= DATE '${dates[0]}' AND ${layer.field} <= DATE '${dates[1]}'\"}` });
-                } else if (this._config.type === 'wmst') {
-                    const dates = this.getDate(range, 'wmst');
-                    const query = (this._rangeType === 'single') ? `${dates[0]}` : `${dates[0]}/${dates[1]}`;
-                    myLayer.esriLayer.setCustomParameters({}, { 'TIME':query });
+                    const timeExtent = new this._myBundle.timeExtent();
+                    timeExtent.startTime = new Date(dates[0]);
+                    timeExtent.endTime = new Date(dates[1]);
+                    this._mapApi.esriMap.setTimeExtent(timeExtent);
+                } else if (layerType === 'ogcWms') {
+                    // the way it works with string (we can use wildcard like %)
+                    // mapLayer.esriLayer.setCustomParameters({}, {layerDefs: "{'0': \"CLAIM_STAT LIKE 'SUSPENDED'\"}"});
+                    if (this._config.type === 'number') {
+                        mapLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
+                            `{'${mapLayer._viewerLayer._defaultFC}': '${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}'}` });
+                    } else if (this._config.type === 'date') {
+                        const dates = this.getDate(range);
+                        mapLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
+                            `{'${mapLayer._viewerLayer._defaultFC}': \"${layer.field} >= DATE '${dates[0]}' AND ${layer.field} <= DATE '${dates[1]}'\"}` });
+                    } else if (this._config.type === 'wmst') {
+                        const dates = this.getDate(range, 'wmst');
+                        const query = (this._rangeType === 'single') ? `${dates[0]}` : `${dates[0]}/${dates[1]}`;
+                        mapLayer.esriLayer.setCustomParameters({}, { 'TIME':query });
 
-                     // NOTE: WMS Time parameter seems to be related to how the service let the data be searched
-                     // https://www.mapserver.org/ogc/wms_time.html#supported-time-requests
-                     // https://geo.weather.gc.ca/geomet?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&LAYERS=RADAR_1KM_RSNO&WIDTH=2783&HEIGHT=690&CRS=EPSG:3978&BBOX=-10634186.928075515,-1179774.2916349573,11455919.752137847,4297111.6621369505&TIME=2020-09-17T16%3A50%3A00Z&_ts=1600371840628
-                     // Time part is TIME=2020-09-17T16%3A50%3A00Z - 2020-09-17 for date anfd T16:50:00z for hour.
-                     // Even if in the spec it is said we can query for the whole hour like T16, it didn't work with Geomet. Also, I can't ask for range, it needs to be a single value.
-                     // https://eccc-msc.github.io/open-data/usage/tutorial_web-maps_en/#animating-time-enabled-wms-layers-with-openlayers
-                     // To make some of the WMST works, we will need more parameters like the format for time parameter.
+                        // NOTE: WMS Time parameter seems to be related to how the service let the data be searched
+                        // https://www.mapserver.org/ogc/wms_time.html#supported-time-requests
+                        // https://geo.weather.gc.ca/geomet?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&LAYERS=RADAR_1KM_RSNO&WIDTH=2783&HEIGHT=690&CRS=EPSG:3978&BBOX=-10634186.928075515,-1179774.2916349573,11455919.752137847,4297111.6621369505&TIME=2020-09-17T16%3A50%3A00Z&_ts=1600371840628
+                        // Time part is TIME=2020-09-17T16%3A50%3A00Z - 2020-09-17 for date anfd T16:50:00z for hour.
+                        // Even if in the spec it is said we can query for the whole hour like T16, it didn't work with Geomet. Also, I can't ask for range, it needs to be a single value.
+                        // https://eccc-msc.github.io/open-data/usage/tutorial_web-maps_en/#animating-time-enabled-wms-layers-with-openlayers
+                        // To make some of the WMST works, we will need more parameters like the format for time parameter.
 
-                     // Millisend date converter: https://currentmillis.com/
+                        // Millisecond date converter: https://currentmillis.com/
+                    }
                 }
             }
         }
@@ -766,7 +785,7 @@ export class SliderBar {
      */
     getDate(range: Range, type: string = 'esri'): string[] {
         const min = new Date(range.min);
-        const max = new Date (range.max);
+        const max = new Date(range.max);
 
         let dateMin = '';
         let dateMax = '';
@@ -788,7 +807,7 @@ export class SliderBar {
      * @return {String}formated date
      */
     getEsriDate(date: Date): string {
-        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(date.getHours().toString() as any).padStart(2, '0')}:${(date.getMinutes().toString() as any).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(2, '0')}`;
+        return dayjs.utc(date).format('MM/DD/YYYY HH:mm:ss')
     }
 
     /**
@@ -798,6 +817,6 @@ export class SliderBar {
      * @return {String}formated date
      */
     getDateWMTS(date: Date): string {
-        return `${date.getFullYear()}-${((date.getMonth() + 1).toString() as any).padStart(2, '0')}-${(date.getDate().toString() as any).padStart(2, '0')}T${(date.getHours().toString() as any).padStart(2, '0')}:${(date.getMinutes().toString() as any).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(2, '0')}Z`;
+        return dayjs.utc(date).format();
     }
 }

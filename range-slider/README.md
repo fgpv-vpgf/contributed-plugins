@@ -23,54 +23,60 @@ Inside your configuration file you need
           "precision": 0,
           "limit": { "min": 1109108871000, "max": 1111505342000, staticItems: [] },
           "range": { "min": 1109108871000, "max": 1111505342000 },
+          "startRangeEnd": false,
           "type": "date",
           "units": "string",
           "description": "string"
         },
         "layers": [{
             "id": "GeoChron",
-            "field": "LAST_UPDATED"
+            "field": "LAST_UPDATED",
+            "isTimeAware": false
         }]
     }
 }
 ```
 
 Configuration parameters
-- open: boolean to set the controls panel (description and slider) open by default
-- maximize: boolean to specify if the slider is maximized by default,
-- maximizeDesc: boolean to specify if the description section is maximized by default,
-- autorun: boolean to start the animation automatically (if true, open should be true as well)
-- loop: boolean to restart automatically the animation when it reaches the end of the array
-- controls: string array who contains needed controls. Order inside the array has no effect.
-    - lock: lock or unlock left anchor when step or play
-    - loop: loop the animation
-    - reverse: toggle direction of animation (forward / backward)
-    - delay: add a dropdown menu to change the delay in play animation
-    - export: ability to export the animation to a GIF
-    - refresh: reset the slider with the default values
-- params: object to set default values for the slider
-    - delay: delay between animations in milliseconds
-    - rangeType: The type of range (single for one handle or dual for 2 handles (range))
-    - stepType: The type of step (dynamic for open values or static from a list of values)
-    - precision: The precision of numeric data or 'date' - 'hour' for date data
-    - range: object who contains the range values
-        - min: The minimal value for the range. If not set, minimum limit will be use. Must be set for WMS layers
-        - max: The maximum value for the range. If not set, maximum limit will be use. Must be set for WMS layers
-    - limit: object who contains the limit values (use when step type is dynamic)
-        - min: The minimal value for the limit. Must be set for WMS layers. If not set, layer min and max value will be use.
-        - max: The maximum value for the limit. Must be set for WMS layers. If not set, layer min and max value will be use.
-        - staticItems: Array of values to set the inner limits (use when step type is static)
+- open: boolean to set the controls panel (description and slider) open by default.
+- maximize: boolean to specify if the slider is maximized by default.
+- maximizeDesc: boolean to specify if the description section is maximized by default.
+- autorun: boolean to start the animation automatically (if true, open should be true as well).
+- loop: boolean to restart automatically the animation when it reaches the end of the array.
+- controls: string array who contains needed controls. Order inside the array has no effect:
+    - lock: lock or unlock left anchor when step or play.
+    - loop: loop the animation.
+    - reverse: toggle direction of animation (forward / backward).
+    - delay: add a dropdown menu to change the delay in play animation.
+    - export: ability to export the animation to a GIF.
+    - refresh: reset the slider with the default values.
+- params: object to set default values for the slider:
+    - delay: delay between animations in milliseconds.
+    - rangeType: The type of range (single for one handle or dual for 2 handles (range)).
+    - stepType: The type of step (dynamic for open values or static from a list of values).
+    - precision: The precision of numeric data or 'date' - 'hour' for date data.
+    - range: object who contains the range values:
+        - min: The minimal value for the range. If not set, minimum limit will be use.
+        - max: The maximum value for the range. If not set, maximum limit will be use.
+    - limit: object who contains the limit values (use when step type is dynamic):
+        - min: The minimal value for the limit. If not set, layer min and max value will be extracted from service.
+        - max: The maximum value for the limit. If not set, layer min and max value will be extracted from service.
+        - staticItems: Array of values to set the inner limits (use when step type is static).
+    - startRangeEnd: Specify if the range is at the end of the limit when range is calculated.
     - type: type of slider (date, wmst or number). If date or wmst is selected, range and limit must be in milliseconds. The wmst is the type date for wmst layer type. Because they are ogcWMS at first there is no way know if it is a wms or wmst.
     - units: units label to add add the right of the slider bar.
     - descriptions: description to add to the slider info section. By default, layer name and field will be there.
-- layers: array of layers to use inside the slider
-    - id: layer id as define in layer section
-    - field: field name of the field to use to filter with the range slider. It must be the field name, not the alias.
+- layers: array of layers to use inside the slider:
+    - id: layer id as define in layer section.
+    - field: field name of the field to use to filter with the range slider. It must be the field name, not the alias. Optional if it is a time aware layer.
+    - isTimeAware: true if the layer is ESRI time aware woth TimeInfo or WMS-T. If this is true, the layer will extract time information from the service.
 
 NOTE: You can't have a rangeType 'single' with a stepType 'dynamic.
 
 NOTE: To have the slider initialize the values from the layers, layer must be ESRI type with dual range type and dynamic limit. With the other type of range and limit, it is better to define the limit with a multiple that can
       be divided by the step (range max - range min).
+
+NOTE: Because you can use a layer with a date even if the layer is not time aware, we have the isTimeAware parameter to force the slider to use time info from ESRI or WMS-T layer.
 
 Milliseconds to date converter: https://currentmillis.com/
 

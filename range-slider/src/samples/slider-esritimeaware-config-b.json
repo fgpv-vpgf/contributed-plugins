@@ -105,58 +105,20 @@
           ]
         }
       },
-      "layers": [{
-          "id": "acqplan",
-          "name": "Acquisition Plan Collection - active",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Acquisition_Plan/EGS_AcquisitionPlan_Collection_Active_en/MapServer/",
-          "layerEntries": [{
-            "index": 1,
-            "name": "Today"
-          },
-          {
-            "index": 2,
-            "name": "Futur - 12 tp 72 hours"
-          },
-          {
-            "index": 3,
-            "name": "Past - 12 to 72 hours"
-          }]
-        },
+      "layers": [
         {
           "id": "0",
-          "name": "Active flood - EMPTY",
+          "name": "MSDI surface layer",
           "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Active_en/MapServer/",
+          "url": "https://gisp.dfo-mpo.gc.ca/arcgis/rest/services/FGP/MSDI_Dynamic_Current_Layer/MapServer/",
           "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
             "index": 1,
-            "name": "In Canada"
-          },
-          {
+            "nameField": "",
+            "name": "Coast"
+          }, {
             "index": 2,
-            "name": "Flooded Area in Canada"
-          }]
-        },
-        {
-          "id": "1",
-          "name": "Current flood",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/",
-          "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
-            "index": 1,
-            "name": "In Canada"
-          },
-          {
-            "index": 2,
-            "name": "Flooded Area in Canada"
+            "nameField": "",
+            "name": "Harbor"
           }]
         }
       ],
@@ -324,17 +286,15 @@
           "stepType": "dynamic",
           "precision": "date",
           "range": { "min": null, "max": null },
-          "limit": { "min": 1577854800000, "max": 1619841600000 },
+          "limit": { "min": null, "max": null },
           "limits": [],
           "units": "",
-          "description": "Let see current and active flood from January 2020 to May 2021."
+          "description": "This slider limit and range is set by the time info"
         },
         "layers": [{
           "id": "0",
-          "field": "date_utc"
-        }, {
-          "id": "1",
-          "field": "date_utc"
+          "field": "date_time",
+          "isTimeAware": true
         }]
       }
     }

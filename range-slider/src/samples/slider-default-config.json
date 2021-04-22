@@ -282,7 +282,6 @@
           "rangeType": "dual",
           "stepType": "dynamic",
           "precision": 2,
-          "interval": -1,
           "range": { "min": null, "max": null },
           "limit": { "min": null, "max": null },
           "limits": [],
@@ -291,6 +290,10 @@
         },
         "layers": [{
           "id": "0",
+          "field": "Total_MW"
+        },
+        {
+          "id": "1",
           "field": "Total_MW"
         }]
       }

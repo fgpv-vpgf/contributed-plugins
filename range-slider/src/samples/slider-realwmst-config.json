@@ -541,13 +541,14 @@
                 "rangeType": "dual",
                 "stepType": "dynamic",
                 "range": { "min": 1451192400000, "max": 1514350800000 },
-                "limit": { "min": 1167195600000, "max": 1514350800000 },
+                "limit": { "min": null, "max": null },
                 "units": "",
                 "description": ""
               },
               "layers": [{
                   "id": "wmst",
-                  "field": "TIME"
+                  "field": "TIME",
+                  "isTimeAware": true
               }]
         }
     }

@@ -275,8 +275,6 @@
           "type": "number",
           "rangeType": "single",
           "stepType": "static",
-          "interval": 50,
-          "intervalUnit": "",
           "range": { "min": 441, "max": null },
           "limit": { "min": 200, "max": 2095, "staticItems": [441, 610, 933, 1352, 1674, 1905, 1962] },
           "units": "",

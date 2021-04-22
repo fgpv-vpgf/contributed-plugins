@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "declaration": true,
-        "lib": ["dom", "scripthost", "es6", "es2016", "es2017.object"],
+        "lib": ["dom", "scripthost", "es6", "es2016", "es2017.object", "es2020"],
         "module": "commonjs",
         "moduleResolution": "node",
         "noImplicitAny": false,

@@ -49,38 +49,25 @@
     }
 }
 
-// overwrite nouislider class
-.noUi-marker-horizontal.noUi-marker-large {
-    height: 10px;;
-}
-
-.noUi-horizontal {
-    height: 10px;
-}
-
-.noUi-horizontal .noUi-handle {
-    height: 20px;
-    width: 26px;
-}
-
-.noUi-handle:before {
-    height: 10px;
-    top: 4px;
-    left: 10px;
-}
-
-.noUi-handle:after {
-    height: 10px;
-    top: 4px;
-    left: 12px;
-}
-
+// noUI CSS Override
 .noUi-handle {
     background-color: #c0c0c0;
     &:focus {
         .noUi-tooltip {
             display: block;
         }
+    }
+
+    &:before {
+        height: 10px;
+        top: 4px;
+        left: 10px;
+    }
+
+    &:after {
+        height: 10px;
+        top: 4px;
+        left: 12px;
     }
 }
 
@@ -89,9 +76,35 @@
     display: none;
 }
 
-.noUi-horizontal .noUi-tooltip {
-    top: 20px;
-    bottom: initial;
+.noUi-horizontal {
+    height: 10px;
+
+    .noUi-tooltip {
+        top: 20px;
+        bottom: initial;
+    }
+
+    .noUi-handle {
+        height: 20px;
+        width: 26px;
+    }
+}
+
+.noUi-pips-horizontal {
+    .noUi-value {
+        margin-top: 5px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .noUi-marker-overlap {
+        height: 15px;
+        background-color: #ccc;
+    }
+
+    .noUi-value-overlap {
+        display: none;
+    }
 }
 
 input:focus + .noUi-tooltip { display: block; }
@@ -116,6 +129,8 @@ input:focus + .noUi-tooltip { display: block; }
 
 #rangeSlider {
     opacity: 0.7;
+    height: 180px !important;
+    top: calc(100% - 240px) !important;
 
     .panel-body {
         height: auto;
@@ -124,6 +139,11 @@ input:focus + .noUi-tooltip { display: block; }
 
 #rangeSlider:hover, #rangeSlider:focus-within {
     opacity: 1;
+}
+
+#rangeSlider.collapsed {
+    height: 120px !important;
+    top: calc(100% - 180px) !important;
 }
 
 .rv-rangeslider {
@@ -218,6 +238,21 @@ input:focus + .noUi-tooltip { display: block; }
                 width: 93%;
             }
 
+            &.no-units {
+                .slider-widget {
+                    width: 100%;
+                }
+                .slider-units {
+                    width: 1px;
+                    visibility: hidden;
+                }
+            }
+
+            &.hours-labels {
+                padding-left: 70px;
+                padding-right: 70px;
+            }
+  
             .slider-units {
                 text-overflow: ellipsis;
                 white-space: nowrap;

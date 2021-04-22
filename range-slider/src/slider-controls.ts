@@ -6,6 +6,11 @@ import { SliderBar } from './slider-bar';
 
 const { detect } = require('detect-browser');
 
+export interface SliderControls {
+    mapApi: any;
+    descVisible: boolean;
+}
+
 export class SliderControls {
 
     /**
@@ -18,38 +23,52 @@ export class SliderControls {
      */
     constructor(mapApi: any, panel: any, templates: string[], slider: SliderBar) {
         this.mapApi = mapApi;
+        this.descVisible = false;
+        const that = this;
 
         mapApi.agControllerRegister('MinMaxSliderCtrl', function() {
-            const setHTML = () => {
+            const setHTML = (isMax: boolean) => {
+                // remove the collapse class when slider is minimized and put it back if need be
+                if (!isMax) {
+                    document.getElementById('rangeSlider').classList.remove('collapsed');
+                } else if (isMax && !that.descVisible) {
+                    document.getElementById('rangeSlider').classList.add('collapsed');
+                }
+
                 document.getElementById('rangeSlider').parentElement.classList.toggle('slider-min-ui');
                 document.getElementById('rangeSlider').getElementsByClassName('slider-minmax-control')[0].children[0].classList.toggle('slider-max-control-icon');
             };
 
             this.isMax = slider.maximize;
             setTimeout(() => {
-                if (!this.isMax) setHTML();
+                if (!this.isMax) setHTML(this.isMax);
             }, 0);
 
             this.show = () => {
                 slider.maximize = !slider.maximize;
                 this.isMax = slider.maximize;
-                setHTML();
+                setHTML(slider.maximize);
             };
         });
 
         mapApi.agControllerRegister('DescSliderCtrl', function() {
             const setHTML = () => {
-                const sliderElem = document.getElementById('rangeSlider');
-                sliderElem.style.height = (this.isShow) ? '185px' : '120px';
-                sliderElem.style.top = (this.isShow) ? 'calc(100% - 240px)' : 'calc(100% - 180px)';
+                const sliderCtrl = document.getElementById('rangeSlider');
+                if (this.isShow) {
+                    sliderCtrl.classList.remove('collapsed')
+                } else {
+                    sliderCtrl.classList.add('collapsed')
+                }
             };
 
             this.isShow = slider.maximizeDesc;
+            that.descVisible = slider.maximizeDesc;
             setHTML();
 
             this.show = () => {
                 slider.maximizeDesc = !slider.maximizeDesc;
-                this.isShow = slider.maximizeDesc;;
+                this.isShow = slider.maximizeDesc;
+                that.descVisible = slider.maximizeDesc;
 
                 setHTML();
             };
@@ -172,7 +191,4 @@ export class SliderControls {
         this.mapApi.$compile(temp);
         return temp;
     }
-}
-export interface SliderControls {
-    mapApi: any;
 }
