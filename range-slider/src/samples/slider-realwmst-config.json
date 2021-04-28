@@ -373,7 +373,7 @@
                 ],
                 "name": "WMS-T",
                 "id": "wmst",
-                "url": "http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r-t.cgi"
+                "url": "https://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r-t.cgi"
             }
         ],
         "legend": {

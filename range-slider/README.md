@@ -52,17 +52,18 @@ Configuration parameters
     - refresh: reset the slider with the default values.
 - params: object to set default values for the slider:
     - delay: delay between animations in milliseconds.
-    - rangeType: The type of range (single for one handle or dual for 2 handles (range)).
-    - stepType: The type of step (dynamic for open values or static from a list of values).
-    - precision: The precision of numeric data or 'date' - 'hour' for date data.
+    - rangeType: the type of range (single for one handle or dual for 2 handles (range)).
+    - stepType: the type of step (dynamic for open values or static from a list of values).
+    - precision: the precision of numeric data or 'date' - 'hour' for date data.
     - range: object who contains the range values:
-        - min: The minimal value for the range. If not set, minimum limit will be use.
-        - max: The maximum value for the range. If not set, maximum limit will be use.
+        - min: the minimal value for the range. If not set, minimum limit will be use.
+        - max: the maximum value for the range. If not set, maximum limit will be use.
     - limit: object who contains the limit values (use when step type is dynamic):
-        - min: The minimal value for the limit. If not set, layer min and max value will be extracted from service.
-        - max: The maximum value for the limit. If not set, layer min and max value will be extracted from service.
+        - min: the minimal value for the limit. If not set, layer min and max value will be extracted from service.
+        - max: the maximum value for the limit. If not set, layer min and max value will be extracted from service.
         - staticItems: Array of values to set the inner limits (use when step type is static).
-    - startRangeEnd: Specify if the range is at the end of the limit when range is calculated.
+    - startRangeEnd: specify if the range is at the end of the limit when range is calculated.
+    - rangeInterval: instead of defining the range object, you can specify the interval to set (will st it at the begining unless startRangeEnd = true)
     - type: type of slider (date, wmst or number). If date or wmst is selected, range and limit must be in milliseconds. The wmst is the type date for wmst layer type. Because they are ogcWMS at first there is no way know if it is a wms or wmst.
     - units: units label to add add the right of the slider bar.
     - descriptions: description to add to the slider info section. By default, layer name and field will be there.

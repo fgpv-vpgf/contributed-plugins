@@ -811,6 +811,7 @@
                 "delay": "3000",
                 "rangeType": "dual",
                 "stepType": "dynamic",
+                "precision": "date",
                 "description": ""
             },
             "layers": [

@@ -182,8 +182,14 @@ export class SliderManager {
                 this._config.limit.min = Math.min.apply(null, values.map(item => item.limits).flat());
                 this._config.limit.max = Math.max.apply(null, values.map(item => item.limits).flat());
 
-                // set ranges
-                const range = [Math.min.apply(null, values.map(item => item.range).flat()), Math.max.apply(null, values.map(item => item.range).flat())];
+                // set ranges from interval or from extracted values
+                let range = [];
+                if (this._config.rangeInterval !== -1) {
+                    range = [this._config.limit.min, this._config.limit.min + this._config.rangeInterval];
+                } else {    
+                    range = [Math.min.apply(null, values.map(item => item.range).flat()), Math.max.apply(null, values.map(item => item.range).flat())];
+                }
+
                 if (this._config.range.min === null && this._config.range.max === null && (!isNaN(range[0]) && !isNaN(range[1]))) {
                     if (!this._config.startRangeEnd) {
                         this._config.range.min = range[0];
@@ -217,10 +223,11 @@ export class SliderManager {
         // get statistic on the field to extrat min and max values for all layers (works for date and number)
         // set range as NaN because we can't set it from layer metadata
         return new Promise(resolve => {
-            const stat = `outStatistics=[{'statisticType':'min','onStatisticField':${item.layerInfo.field},'outStatisticFieldName':'rsMIN'},
-                                        {'statisticType':'max','onStatisticField':${item.layerInfo.field},'outStatisticFieldName':'rsMAX'}]`
+            const stat = `outStatistics=[{'statisticType':'min','onStatisticField':${item.layerInfo.field},'outStatisticFieldName':'rsMIN'},{'statisticType':'max','onStatisticField':${item.layerInfo.field},'outStatisticFieldName':'rsMAX'}]`;
+            const uri = (item.layer.type === 'esriFeature') ? `${item.layer.esriLayer.url}/query?${stat}&f=json`: `${item.layer.esriLayer.url}/${item.layer._layerIndex}/query?${stat}&f=json`;
+
             $.ajax({
-                url: (item.layer.type === 'esriFeature') ? `${item.layer.esriLayer.url}/query?${stat}&f=json`: `${item.layer.esriLayer.url}/${item.layer._layerIndex}/query?${stat}&f=json`,
+                url: encodeURI(uri),
                 cache: false,
                 dataType: 'jsonp',
                 success: data => resolve({
@@ -239,7 +246,8 @@ export class SliderManager {
      */
     setTimeESRILimits(item: Layer): Promise<Object> {
         return new Promise(resolve => {
-            fetch((item.layer.type === 'esriFeature') ? `${item.layer.esriLayer.url}?f=json`: `${item.layer.esriLayer.url}/${item.layer._layerIndex}?f=json`).then(response => {
+            const uri = (item.layer.type === 'esriFeature') ? `${item.layer.esriLayer.url}?f=json`: `${item.layer.esriLayer.url}/${item.layer._layerIndex}?f=json`;
+            fetch(encodeURI(uri)).then(response => {
                 response.text().then(text => {
                     // TODO: use more info like start and end field for time extent and information to setup static item from TimeInfo
                     // parse to JSON and get timeInfo
@@ -302,7 +310,8 @@ export class SliderManager {
         });
 
         return new Promise(resolve => {
-            fetch(`${item.layer.esriLayer.url}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0&layer=${subLayersIds.join(',')}`).then(response => response.text())
+            const uri = `${item.layer.esriLayer.url}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0&layer=${subLayersIds.join(',')}`;
+            fetch(encodeURI(uri)).then(response => response.text())
             .then(str => this._xmlParser.parseStringPromise(str))
             .then(parsed => {
                 // get time dimension
@@ -312,7 +321,7 @@ export class SliderManager {
 
                 // get limits, interval and static items
                 let limits = discoveredDimensions.map(d => d.extent.extent).flat();
-                let arrInterval = discoveredDimensions.map(d => d.extent.interval).flat();
+                let arrInterval = discoveredDimensions.map(d => d.extent.interval).flat().filter(Number);
                 let arrStatic = discoveredDimensions.map(d => d.extent.static).flat();
 
                 // apply range from limits
@@ -413,7 +422,31 @@ export class SliderManager {
             limits.extent = [new Date(dynamicExt[0]).getTime(), new Date(dynamicExt[1]).getTime()];
 
             // parse ISO string representation (ex. 'P1Y2M')
-            const isoInterval = dayjs.duration(dynamicExt[2]).$ms;
+            let isoInterval = dayjs.duration(dynamicExt[2]).$ms;
+
+            // no intervall, find one
+            if (typeof isoInterval === 'undefined') {
+                const intervals = {
+                    esriTimeUnitsHours: 3600000,
+                    esriTimeUnitsDays: 86400000,
+                    esriTimeUnitsWeeks: 604800000,
+                    esriTimeUnitsMonths: 2592000000,
+                    esriTimeUnitsYears: 31536000000
+                }
+
+                const rangeDays = (limits[1] - limits[0]) / (3600000 * 24);
+                if (rangeDays < 7) {
+                    isoInterval =  intervals.esriTimeUnitsHours;
+                } else if (rangeDays < 31) {
+                    isoInterval =  intervals.esriTimeUnitsDays;
+                } else if (rangeDays < 60) {
+                    isoInterval =  intervals.esriTimeUnitsWeeks;
+                } else if (rangeDays < 365) {
+                    isoInterval =  intervals.esriTimeUnitsMonths;
+                } else {
+                    isoInterval =  intervals.esriTimeUnitsYears;
+                }
+            }
 
             // TODO.... do we need
             // // Format duration to its components

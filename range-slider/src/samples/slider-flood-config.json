@@ -144,18 +144,19 @@
         {
           "id": "1",
           "name": "Current flood",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/",
+          "layerType": "ogcWms",
+          "suppressGetCapabilities": true,
+          "url": "https://maps-cartes.services.geo.ca/egs_sgu/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/WMSServer",
           "layerEntries": [{
-            "index": 0,
+            "id": "0",
             "name": "Product Footprints"
           },
           {
-            "index": 1,
+            "id": "1",
             "name": "In Canada"
           },
           {
-            "index": 2,
+            "id": "2",
             "name": "Flooded Area in Canada"
           }]
         }
@@ -319,22 +320,22 @@
         "controls": ["lock", "loop", "refresh", "reverse"],
         "params": {
           "delay": 3000,
-          "type": "date",
+          "type": "wmst",
           "rangeType": "dual",
           "stepType": "dynamic",
           "precision": "date",
+          "startRangeEnd": true,
+          "rangeInterval": 604800000,
           "range": { "min": null, "max": null },
           "limit": { "min": null, "max": null },
           "limits": [],
           "units": "",
-          "description": "Let see current and active flood from January 2020 to May 2021."
+          "description": "Let see current and active flood from January 2020 to May 2021. Interval set by week"
         },
         "layers": [{
-          "id": "0",
-          "field": "date_utc"
-        }, {
           "id": "1",
-          "field": "date_utc"
+          "field": "date_utc",
+          "isTimeAware": true
         }]
       }
     }

@@ -93,6 +93,7 @@ RangeSlider.prototype.layerOptions = {
     rangeType: 'dual',
     stepType: 'dynamic',
     startRangeEnd: false,
+    rangeInterval: -1,
     range: { min: null, max: null },
     limit: { min: null, max: null },
     limits: [],
