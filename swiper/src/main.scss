@@ -76,6 +76,61 @@ $accent-color: #fff;
         }
     }
 
+    .horizontal:before {
+        position: absolute;
+        top:50%;
+        content: "";
+	    height: 1px;
+	    width: 100%;
+        display: block;
+        position: absolute;
+        z-index: 30;
+    }
+    .horizontal {
+        position: absolute;
+        top:50%;
+        width: 100%;
+    	height: 11px;
+	    cursor: row-resize;
+        background-color: $primary-color;
+        z-index: 30;
+        -moz-box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        margin: 0;
+        padding: 0!important;
+
+        .handle:before {
+  	        height: 1200px;
+	        width: 100%
+       }
+         .handle:before, .handle:after {
+            content: "\268C";  
+            width: 24px;
+            height: 20px;
+            line-height: 1.66667;
+            display: block;
+            text-align: center;
+            background-color: $primary-color;
+            color: $accent-color;
+            z-index: 30;
+          }
+
+        .handle {
+            position: absolute;
+            width: 24px;
+            height: 50%;
+	        margin-top: -20px;
+	        margin-left: -12px;
+            left: 50%;
+            z-index: 30;
+            speak: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 12px;
+            top: 50%;
+        }
+    }   
+
     .vertical:hover {
         filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=75);
         opacity: 0.75;

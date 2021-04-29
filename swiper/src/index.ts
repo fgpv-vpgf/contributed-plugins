@@ -58,28 +58,43 @@ export default class Swiper {
             type: swiper.type,
             map: this.mapApi.esriMap,
             layers: layers,
+            top: document.body.scrollHeight/2,
             left: this.getWidth() / 2
         }, 'rv-swiper-div');
 
         let that = this;
         swipeWidget.on('load', function() {
-            const item = that.mapApi.mapDiv.find('#rv-swiper-div .vertical')[0];
+            const item = that.mapApi.mapDiv.find('#rv-swiper-div .'+swipeWidget.type)[0];
 
             // set tabindex and WCAG keyboard offset
             item.tabIndex = -3;
             item.addEventListener('keydown', that.closureFunc(function(swipeWidget, item, off, evt) {
-                let value = parseInt(item.style.left);
-                const width = parseInt(that.mapApi.mapDiv.find('#rv-swiper-div').width()) - 10;
-
-                if (evt.keyCode === 37 && value >= 0) {
+                 if (swiper.type === 'vertical') {
+                    let value = parseInt(item.style.left);
+                    const width = parseInt(that.mapApi.mapDiv.find('#rv-swiper-div').width()) - 10;    
+                    if (evt.keyCode === 37 && value >= 0) {
                     // left 37
-                    value = (value > off) ? value -= off : 0;
-                } else if (evt.keyCode === 39 && value <= width) {
+                        value = (value > off) ? value -= off : 0;
+                    } else if (evt.keyCode === 39 && value <= width) {
                     // right 39
-                    value = (value <= width - off) ? value += off : width;
+                        value = (value <= width - off) ? value += off : width;
+                    }
+                    item.style.left = String(value + 'px');
                 }
-                item.style.left = String(value + 'px');
+                else if (swiper.type === 'horizontal'){
+                    let value = parseInt(item.style.top);
+                    const heigth = parseInt(that.mapApi.mapDiv.find('#rv-swiper-div').width()) - 10;
+                    if (evt.keyCode === 38 && value >= 0) {
+                        // up 38
+                        value = (value > off) ? value -= off : 0;
+                    } else if (evt.keyCode === 40 && value <= heigth) {
+                        // down 40
+                        value = (value <= heigth- off) ? value += off : heigth;
+                    }
+                    item.style.top = String(value + 'px');
+                }
                 swipeWidget.swipe();
+                
             }, swipeWidget, item, swiper.keyboardOffset));
 
             // change text if french and add the layer names
