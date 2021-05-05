@@ -86,13 +86,17 @@ export class ChartBar {
         // axe ticks
         optsAxe.ticks = {
             autoSkip: true,
-            autoSkipPadding: 100
+            autoSkipPadding: 100,
+            fontSize: 14,
+            fontColor: '#676767'
         }
 
         // axe title
         optsAxe.scaleLabel = {
             display: true,
-            labelString: config.title
+            labelString: config.title,
+            fontSize: 14,
+            fontColor: '#676767'
         }
 
         return optsAxe;

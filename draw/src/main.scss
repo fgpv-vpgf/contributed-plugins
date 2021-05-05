@@ -1,24 +1,29 @@
+// esri tooltip
+.esriMapTooltip {
+  background-color: #fff;
+}
+
 .rv-control-active {
-    background-color: rgba(200, 200, 200, 0.5);
-    clip-path: circle(15px at center);
-  }
+  background-color: rgba(200, 200, 200, 0.5);
+  clip-path: circle(15px at center);
+}
   
-  .rv-mapnav-draw-content {
-    .rv-draw-button {
-      margin: 0px!important;
-    }
+.rv-mapnav-draw-content {
+  .rv-draw-button {
+    margin: 0px!important;
   }
+}
   
-  // overrides vanilla-picker
-  .popup.popup_left {
-    top:  -170px!important;
+// overrides vanilla-picker
+.popup.popup_left {
+  top:  -170px!important;
   
-    .picker_arrow {
-      top: 60%!important;
-    }
+  .picker_arrow {
+    top: 60%!important;
   }
+}
   
-  // hide measures
-  .rv-draw-text-hide {
-    visibility: hidden;
-  }
+// hide measures
+.rv-draw-text-hide {
+  visibility: hidden;
+}

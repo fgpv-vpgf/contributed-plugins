@@ -1,4 +1,3 @@
-  
 // panels templates: draw
 export const MAPNAV_DRAW_TOOLBAR_TEMPLATE = `
 <span class="rv-spacer"></span>

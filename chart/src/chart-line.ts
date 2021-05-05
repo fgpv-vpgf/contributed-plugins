@@ -164,7 +164,9 @@ export class ChartLine {
         // axe ticks
         optsAxe.ticks = {
             autoSkip: true,
-            autoSkipPadding: 100
+            autoSkipPadding: 100,
+            fontSize: 14,
+            fontColor: '#676767'
         }
 
         // axe gridlines display
@@ -180,7 +182,9 @@ export class ChartLine {
         // axe title
         optsAxe.scaleLabel = {
             display: true,
-            labelString: config.title
+            labelString: config.title,
+            fontSize: 14,
+            fontColor: '#676767'
         };
 
         return optsAxe;

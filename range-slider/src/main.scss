@@ -1,7 +1,7 @@
 @import '../node_modules/nouislider/distribute/nouislider.css';
 
 @mixin text-color {
-    color: #999;
+    color: #676767;
 }
 
 @mixin small-padding {
@@ -104,6 +104,19 @@
 
     .noUi-value-overlap {
         display: none;
+    }
+}
+
+// WCAG contrast for pips and label
+.noUi-pips {
+    @include text-color;
+
+    .noUi-marker-large {
+        background-color: #8d8d8d;
+    }
+
+    .noUi-marker-normal {
+        background-color: #AAA;
     }
 }
 

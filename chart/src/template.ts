@@ -31,7 +31,7 @@ export const CHART_SELECT_TEMPLATE = `
 export const CHART_TEMPLATE = `
 <div class="rv-chart-panel">
     ${NO_DATA_TEMPLATE}
-    <div class="rv-chart-hidedata-tooltip">Click on legend item to show/hide</div>
+    <div class="rv-chart-hidedata-tooltip">{{ 'plugins.chart.legendTooltip' | translate }}</div>
     <div class="rv-chart-sliderY">
         <div id="nouisliderY"></div>
     </div>

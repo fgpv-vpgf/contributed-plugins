@@ -16,18 +16,24 @@ export class PanelManager {
 
     private _controls: control[];
 
+    private _wcagAlert;
+
     /**
      * Panel constructor
      * @constructor
      * @param {Any} mapApi the viewer api
      * @param {Object} config the viewer configuration
+     * @param {String} wcagAlert the alert to show when keyboard use use edit tool
      */
-    constructor(mapApi: any, config: object) {
+    constructor(mapApi: any, config: object, wcagAlert: string) {
         this.mapApi = mapApi;
 
         // create ui then instanciate the ESRI toolbar
         this.drawToolbar = new DrawToolbar(mapApi, config);
         this.makeControls(config);
+
+        // set alert
+        this._wcagAlert = wcagAlert;
     }
 
     /**
@@ -264,18 +270,24 @@ export class PanelManager {
         // activate the keyboard event if an active tool is selected
         // if needed we can look for rv-keyboard on mapDiv to know if crosshair is enable
         if (enable && $('.rv-keyboard').length === 1) {
-            // set focus on the map and add the keydown event
-            (<any>document).getElementsByClassName('rv-esri-map')[0].rvFocus();
-            const jQwindow = $(window);
-            this.mapApi.mapDiv.on('keydown', '.rv-esri-map', { draw: this.drawToolbar, jQwindow: jQwindow, name: name }, this.keyDownHandler);
+            // edit is not avialble forkeyboard user, inform
+            if (name === 'edit') { 
+                alert(this._wcagAlert);
+                controls[name].active = false;
+            } else {
+                // set focus on the map and add the keydown event
+                (<any>document).getElementsByClassName('rv-esri-map')[0].rvFocus();
+                const jQwindow = $(window);
+                this.mapApi.mapDiv.on('keydown', '.rv-esri-map', { draw: this.drawToolbar, jQwindow: jQwindow, name: name }, this.keyDownHandler);
 
-            if (name === 'polyline') {
-                const that = this;
-                this._mousemoveHandler = this.mapApi.esriMap.on('mouse-move', Debounce(function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) }, 50));
-                this._mouseclickHandler = this.mapApi.esriMap.on('click', function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) });
+                if (name === 'polyline') {
+                    const that = this;
+                    this._mousemoveHandler = this.mapApi.esriMap.on('mouse-move', Debounce(function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) }, 50));
+                    this._mouseclickHandler = this.mapApi.esriMap.on('click', function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) });
+                }
+
+                this.drawToolbar.local = this.drawToolbar.localWCAG;
             }
-
-            this.drawToolbar.local = this.drawToolbar.localWCAG;
         } else {
             this.drawToolbar.local = this.drawToolbar.localMouse;
         }
@@ -302,7 +314,7 @@ export class PanelManager {
         y += -event.data.jQwindow.scrollTop() + targetElmHeight / 2;
 
         // position keyboard tooltip
-        $('.esriMapTooltip').css({ top: `${y}px`, left: `${x}px`, display: 'block' });
+        $('.esriMapTooltip').css({ top: `${y - 50}px`, left: `${x + 50}px`, display: 'block' });
 
         if (event.which === 13 && event.data.name === 'extent') { // enter extent starting point
             event.data.draw.setExtentPoints([x, y], false);

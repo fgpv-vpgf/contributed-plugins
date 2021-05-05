@@ -73,25 +73,25 @@ export class DrawToolbar {
                                 polyline: {
                                     'en-CA': {
                                         complete: 'Double-click to end line',
-                                        resume: 'Click to end line segment',
-                                        start: 'Click to start line segment'
+                                        resume: 'Click to end a line segment',
+                                        start: 'Click to start a line segment'
                                     },
                                     'fr-CA': {
                                         complete: 'Double-cliquez pour terminer la ligne',
-                                        resume: 'Cliquez pour terminer le segment de ligne',
-                                        start: 'Cliquez pour commencer le segment de ligne'
+                                        resume: 'Cliquez pour terminer un segment de ligne',
+                                        start: 'Cliquez pour commencer un segment de ligne'
                                     }
                                 },
                                 polygon: {
                                     'en-CA': {
                                         complete: 'Double-click to close polygon',
-                                        resume: 'Click to end polygon segment',
-                                        start: 'Click to start polygon segment'
+                                        resume: 'Click to end a polygon segment',
+                                        start: 'Click to start a polygon segment'
                                     },
                                     'fr-CA': {
                                         complete: 'Double-cliquez pour fermer le polygone',
-                                        resume: 'Cliquez pour terminer le segment de polygone',
-                                        start: 'Cliquez pour commencer le segment de polygone'
+                                        resume: 'Cliquez pour terminer un segment de polygone',
+                                        start: 'Cliquez pour commencer un segment de polygone'
                                     }
                                 },
                                 extent:{
@@ -105,42 +105,42 @@ export class DrawToolbar {
     };
     private _localWCAG: object = { point: {
                                     'en-CA': {
-                                        addPoint: 'Press Enter to add a point'
+                                        addPoint: 'Press Enter to add a point - Press Esc to close the tool'
                                     },
                                     'fr-CA': {
-                                        addPoint: 'Appuyez sur Entrer pour ajouter un point'
+                                        addPoint: 'Appuyez sur Entrer pour ajouter un point - Appuyer sur Esc pour fermer l\'outil'
                                     }
                                 },
                                 polyline: {
                                     'en-CA': {
-                                        complete: 'Press Space to end line',
-                                        resume: 'Press Enter to end line segment',
-                                        start: 'Press Enter to start line segment'
+                                        complete: 'Press Space to end line - Press Esc to close the tool',
+                                        resume: 'Press Enter to end a line segment',
+                                        start: 'Press Enter to start a line segment'
                                     },
                                     'fr-CA': {
-                                        complete: 'Appuyez sur Espace pour terminer la ligne',
-                                        resume: 'Appuyez sur Entrer pour terminer le segment de ligne',
-                                        start: 'Appuyez sur Entrer pour commencer le segment de ligne'
+                                        complete: 'Appuyez sur Espace pour terminer la ligne - Appuyer sur Esc pour fermer l\'outil',
+                                        resume: 'Appuyez sur Entrer pour terminer un segment de ligne',
+                                        start: 'Appuyez sur Entrer pour commencer un segment de ligne'
                                     }
                                 },
                                 polygon: {
                                     'en-CA': {
-                                        complete: 'Press Space to close polygon',
-                                        resume: 'Press Enter to end polygon segment',
-                                        start: 'Press Enter to start polygon segment'
+                                        complete: 'Press Space to close polygon - Press Esc to close the tool',
+                                        resume: 'Press Enter to end a polygon segment',
+                                        start: 'Press Enter to start a polygon segment'
                                     },
                                     'fr-CA': {
-                                        complete: 'Appuyez sur Espace pour fermer le polygone',
-                                        resume: 'Appuyez sur Entrer pour terminer le segment de polygone',
-                                        start: 'Appuyez sur Entrer pour commencer le segment de polygone'
+                                        complete: 'Appuyez sur Espace pour fermer le polygone  - Appuyer sur Esc pour fermer l\'outil',
+                                        resume: 'Appuyez sur Entrer pour terminer un segment de polygone',
+                                        start: 'Appuyez sur Entrer pour commencer un segment de polygone'
                                     }
                                 },
                                 extent:{
                                     'en-CA': {
-                                        freehand: 'Press enter to add the first corner then press Space to finish'
+                                        freehand: 'Press Enter to add the first corner then press Space to finish (add second corner)'
                                     },
                                     'fr-CA': {
-                                        freehand: 'Appuyez sur Entrer pour le premier coin et Appuyez sur Espace pour finir'
+                                        freehand: 'Appuyez sur Entrer pour le premier coin et appuyez sur Espace pour finir (le second coin)'
                                     }
                                 }
     };
@@ -479,7 +479,7 @@ export class DrawToolbar {
     simulateClick(pt: number[], mouse: string) {
         // convert screen click to map then emit the event (click or double click)
         const mapPoint = this._mapApi.esriMap.toMap(new this._bundle.ScreenPoint({ x: pt[0], y: pt[1] }));
-        this._mapApi.esriMap.emit(mouse, { mapPoint: new this._bundle.Point(mapPoint.x, mapPoint.y, this._mapApi.esriMap.spatialReference) }); 
+        this._mapApi.esriMap.emit(mouse, { mapPoint: new this._bundle.Point(mapPoint.x, mapPoint.y, this._mapApi.esriMap.spatialReference) });
     }
 
     /**
@@ -498,6 +498,7 @@ export class DrawToolbar {
                 ymax: pt.y
             }
 
+            console.log(geometry)
             this.deleteGraphics(geometry);
             this._extentPoints = [];
         } else {

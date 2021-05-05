@@ -51,15 +51,6 @@ module.exports = function(variable={}, argv) {
             ]
         },
 
-        optimization: {
-            minimize: true,
-            minimizer: [
-              new TerserPlugin({
-                extractComments: false
-              })
-            ]
-        },
-
         plugins: [
             new CleanWebpackPlugin(),
 

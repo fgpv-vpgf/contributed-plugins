@@ -15,7 +15,7 @@ export default class Draw {
         this.config.url = this._RV.getConfig('services').geometryUrl;
 
         // create mapnav panel
-        this.panelManager = new PanelManager(mapApi, this.config);
+        this.panelManager = new PanelManager(mapApi, this.config, Draw.prototype.translations[this._RV.getCurrentLang()].wcagEditAlert);
 
         // create side menu button to toggle toolbar
         this.button = this.mapApi.mapI.addPluginButton(
@@ -63,7 +63,8 @@ Draw.prototype.translations = {
         measure: 'Show/Hide distances',
         extent: 'Erase selected graphics',
         write: 'Save graphics file',
-        read: 'Upload graphics file'
+        read: 'Upload graphics file',
+        wcagEditAlert: 'Functionality not provided for keyboard user du to its complexity. To achieve the same goal, delete the geometry and recreate it.'
     },
     'fr-CA': {
         menu: 'Barre de dessin',
@@ -75,7 +76,8 @@ Draw.prototype.translations = {
         measure: 'Afficher/Cacher les distances',
         extent: 'Effacer les graphiques sélectionnés',
         write: 'Sauvegarder le fichier de graphiques',
-        read: 'Charger le fichier de graphiques'
+        read: 'Charger le fichier de graphiques',
+        wcagEditAlert: 'Fonctionnalité non fournie à l\'utilisateur du clavier en raison de sa complexité. Pour atteindre le même objectif, supprimez la géométrie et recréez-la.'
     }
 };
 

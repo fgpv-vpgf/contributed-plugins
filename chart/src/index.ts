@@ -42,6 +42,7 @@ export default class Chart {
         // create panel
         this._panel = this._mapApi.panels.create('chart');
         this._panel.element.css(this._panelOptions);
+        this._panel.element.attr('rv-trap-focus', '');
         this._panel.body = this.compileTemplate(CHART_TEMPLATE)[0];
         this._panel.header.closeButton;
         this._panel.header.title = this.config.title;
@@ -134,14 +135,16 @@ export default interface Chart {
 
 Chart.prototype.translations = {
     'en-CA': {
-        chartAria: 'Representation of the element\'s dataset using a graph.',
+        chartAria: 'Representation of the element\'s dataset using a graph. For screen reader, to access the dataset, use the table representation or the details panel information',
         noValidData: 'No valid data to create the graph!',
-        selectChart: 'Select Chart'
+        selectChart: 'Select Chart',
+        legendTooltip: 'Click on legend item to show/hide'
     },
     'fr-CA': {
-        chartAria: 'Représentation du jeu de données de l\'élément à l\'aide d\'un graphique.',
+        chartAria: 'Représentation du jeu de données de l\'élément à l\'aide d\'un graphique. Pour les lecteurs d\'écran, pour accéder à l\'ensemble des données, utilisez la représentation sous forme de tableau ou le panneau d\'information détaillé.',
         noValidData: 'Pas de données valides pour créer le graphique!',
-        selectChart: 'Choisir le graphique'
+        selectChart: 'Choisir le graphique',
+        legendTooltip: 'Cliquez sur les éléments de la légende pour les afficher/masquer'
     }
 };
 

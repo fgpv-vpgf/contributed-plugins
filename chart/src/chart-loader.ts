@@ -328,6 +328,10 @@ export class ChartLoader {
                 display: false
             },
             legend: {
+                labels: {
+                    fontColor: '#676767',
+                    fontSize: 14
+                },
                 onHover: () => { this._panel.body.find('.rv-chart-hidedata-tooltip').css('display', 'block'); },
                 onLeave: () => { this._panel.body.find('.rv-chart-hidedata-tooltip').css('display', 'none'); }
             },
@@ -351,6 +355,8 @@ export class ChartLoader {
                 axis: 'x' // this need to be set to select all values to a specified x
             },
             tooltips: {
+                titleFontSize: 14,
+                bodyFontSize: 14,
                 position: 'average',
                 caretPadding: 10,
                 intersect: true,

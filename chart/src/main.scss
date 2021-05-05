@@ -63,6 +63,7 @@
 }
 
 .noUi-handle {
+    background-color: #c0c0c0;
     &:focus {
         .noUi-tooltip {
             display: block;
@@ -73,6 +74,19 @@
 .noUi-tooltip {
     padding: 1px 4px;
     display: none;
+}
+
+// WCAG contrast for pips and label
+.noUi-pips {
+    color: #676767;
+
+    .noUi-marker-large {
+        background-color: #8d8d8d;
+    }
+
+    .noUi-marker-normal {
+        background-color: #AAA;
+    }
 }
 
 // chart panel
