@@ -4,6 +4,7 @@ export default class Swiper {
     * @function init
     * @param {Object} mapApi the viewer api
     */
+    private _button: any;
     private layerNb: number = 0; 
     private layerNames: string[] = [];
     init(mapApi: any) {
@@ -23,6 +24,12 @@ export default class Swiper {
             });
         });
 
+        // side menu button
+        this._button = this.mapApi.mapI.addPluginButton("Swiper", this.onMenuItemClick());
+        
+        // set toolbar state
+        this._button.isActive = this.config.open = true ;
+        
         // get ESRI LayerSwipe dependency
         let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/dijit/LayerSwipe', 'layerSwipe']]);
         myBundlePromise.then(myBundle => {
@@ -36,6 +43,38 @@ export default class Swiper {
         });
     }
 
+    /**
+    * Event to fire on side menu item click. Open/Close the swiper
+    * @function onMenuItemClick
+    * @return {function} the function to show or not the swiper
+    */
+    onMenuItemClick() {
+        return () => {
+            this._button.isActive = !this._button.isActive;   
+            let swiperDiv = this.mapApi.mapDiv.find('#rv-swiper-div ')[0];
+ 
+            if (this._button.isActive) {
+                swiperDiv.style.display = "block";
+                this.setButtonState(true);
+            } else {
+                swiperDiv.style.display = "none";
+                this.setButtonState(false);
+            }
+        };
+    }
+
+    /**
+    * Set button state for Swiper under plugins
+    * @function setButtonState
+    * @param {Boolean} state disable or enable the swiper button
+    */
+    setButtonState(state: boolean) {
+        const buttons = $('.main-appbar button');
+        buttons.each((index: number, button: any) => {
+            if (button.getAttribute('rv-help') === 'toc-button') { button.disabled = state; }
+        });
+    }
+     
     /**
     * Set the swiper
     * @function setSwiper
@@ -155,7 +194,12 @@ interface layer {
 export default interface Swiper {
     mapApi: any,
     _RV: any,
-    config: any
+ //   config: any, following added may 10 11.33
+ config: any,
+ translations: any,
+ panel: any,
+ panelOptions: any,
+ layerOptions: any
 }
 
 (<any>window).swiper = Swiper;
