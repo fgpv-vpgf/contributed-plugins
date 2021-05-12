@@ -27,7 +27,7 @@
         "deploy": "gh-pages -d ../dist"
     },
     "dependencies": {
-        "chart.js": "2.8.0",
+        "chart.js": "2.9.4",
         "chartjs-adapter-date-fns": "1.0.0",
         "date-fns": "2.16.1",
         "gh-pages": "2.2.0",
