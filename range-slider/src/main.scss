@@ -12,7 +12,7 @@
     #rangeSlider {
         margin-left: auto !important;
         margin-right: 60px !important;
-        width: fit-content !important;
+        width: max-content !important;
         top: calc(100% - 110px) !important;
         height: 40px !important;
         opacity: 1 !important;
@@ -156,14 +156,14 @@ input:focus + .noUi-tooltip { display: block; }
 }
 
 #rangeSlider.collapsed {
-    height: 120px !important;
-    top: calc(100% - 180px) !important;
+    height: 105px !important;
+    top: calc(100% - 165px) !important;
 }
 
 .rv-rangeslider {
     display: flex;
     flex-direction: row;
-    padding: 5px 10px;
+    padding: 5px 10px 0px;
 
     .slider-content {
         overflow: hidden;
@@ -171,9 +171,9 @@ input:focus + .noUi-tooltip { display: block; }
         flex-direction: row;
 
         .slider-minmax-control {
-            right: 0px;
+            right: 2px;
             position: absolute;
-            top: 0px;
+            top: 1px;
             transform: translate(11px, -5px) rotate(225deg);
 
             .slider-max-control-icon {
@@ -198,7 +198,7 @@ input:focus + .noUi-tooltip { display: block; }
             display: flex;
             flex-direction: column;
             width: 100%;
-            padding: 5px 40px;
+            padding: 5px 40px 0px;
 
             .slider-bar-noui {
                 width: 100%;
@@ -286,6 +286,7 @@ input:focus + .noUi-tooltip { display: block; }
     .slider-desc {
         @include text-color;
         overflow: auto;
+        margin-top: 10px;
         height: 60px;
 
         span {

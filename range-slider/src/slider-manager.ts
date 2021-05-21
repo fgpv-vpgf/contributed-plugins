@@ -534,7 +534,15 @@ export class SliderManager {
     onMenuItemClick(): any {
         return () => {
             this._button.isActive = !this._button.isActive;
-            this._button.isActive ? this._panel.open() : this._panel.close();
+            
+            // remove definition query when slider is close and re apply on open
+            if (this._button.isActive) {
+                this._slider.setDefinitionQuery(this._slider.activeRange);
+                this._panel.open();
+            } else {
+                this._slider.resetDefinitionQuery();
+                this._panel.close();
+            }
         };
     }
 

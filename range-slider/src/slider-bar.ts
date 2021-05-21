@@ -50,11 +50,19 @@ export class SliderBar {
         this._range = value;
     }
     /**
-     * Get slider range
+     * Get default slider range
      * @property range
      */
     get range(): Range {
         return this._range;
+    }
+
+    /**
+     * Get active slider range
+     * @property range
+     */
+     get activeRange(): Range {
+        return this._slider.range;
     }
 
     /**
@@ -774,6 +782,27 @@ export class SliderBar {
 
                         // Millisecond date converter: https://currentmillis.com/
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Reset the definition query when the slider is close
+     */
+    resetDefinitionQuery(): void {
+        for (let layer of this._config.layers) {
+            const mapLayers = this._mapApi.layers.getLayersById(layer.id);
+
+            for (let mapLayer of mapLayers) {
+                const layerType = mapLayer.type;
+                if (layerType === 'esriDynamic' || layerType === 'esriFeature') {
+                    const filterName = this._config.type === 'number' ? 'rangeSliderNumberFilter' : 'rangeSliderDateFilter';
+                    mapLayer.setFilterSql(filterName, ``);
+                } else if (layerType === 'esriImage') {
+                    this._mapApi.esriMap.setTimeExtent(null);
+                } else if (layerType === 'ogcWms') {
+                    mapLayer.esriLayer.setCustomParameters({}, { '':'' });
                 }
             }
         }

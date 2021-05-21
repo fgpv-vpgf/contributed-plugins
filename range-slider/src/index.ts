@@ -74,8 +74,6 @@ export interface Range {
 }
 
 RangeSlider.prototype.panelOptions = {
-    top: 'calc(100% - 245px)',
-    height: '185px',
     'margin-right': '60px',
     'margin-left': '420px'
 };
