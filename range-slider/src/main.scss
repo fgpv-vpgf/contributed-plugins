@@ -34,7 +34,7 @@
                         }
 
                         .slider-controls {
-                            .slider-export-control, .slider-refresh-control, .slider-lock-control, .slider-delay-control, .slider-desc-control {
+                            .slider-export-control, .slider-refresh-control, .slider-delay-control, .slider-desc-control {
                                 display: none !important;
                             }
                         }
@@ -125,10 +125,24 @@ input:focus + .noUi-tooltip { display: block; }
 
 // smaller then a laptop (Thresold is IPad Pro)
 @media screen and (max-width: 1024px) {
-    @include min-ui;
+    // @include min-ui;
 
-    .slider-minmax-control {
-        display: none !important;
+    .slider-units {
+        display: none;
+    }
+
+    .slider-widget {
+        width: 100% !important;
+    }
+
+    .slider-controls {
+        .slider-export-control, .slider-refresh-control, .slider-delay-control, .slider-lock-control, .slider-loop-control, .slider-reverse-control {
+            display: none !important;
+        }
+    }
+
+    #rangeSlider {
+        margin-left: 10px !important;
     }
 }
 
@@ -143,8 +157,8 @@ input:focus + .noUi-tooltip { display: block; }
 
 #rangeSlider {
     opacity: 0.7;
-    height: 180px !important;
-    top: calc(100% - 240px) !important;
+    height: 180px;
+    top: calc(100% - 240px);
 
     .panel-body {
         height: auto;
@@ -156,8 +170,8 @@ input:focus + .noUi-tooltip { display: block; }
 }
 
 #rangeSlider.collapsed {
-    height: 105px !important;
-    top: calc(100% - 165px) !important;
+    height: 105px;
+    top: calc(100% - 165px);
 }
 
 .rv-rangeslider {
