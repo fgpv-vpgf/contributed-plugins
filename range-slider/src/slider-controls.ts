@@ -78,6 +78,10 @@ export class SliderControls {
             this.isLocked = slider.lock;
             this.isDual = slider.dual;
 
+            SliderBar.getReverseState().subscribe(value => {
+                this.isReverse = value;
+            });
+
             // toggle lock setting to lock left anchor
             this.lock = () => {
                 slider.lock = !slider.lock;
@@ -107,6 +111,8 @@ export class SliderControls {
             this.reverse = () => {
                 slider.reverse = !slider.reverse;
                 this.isReverse = slider.reverse;
+
+                SliderBar.setReverseState(this.isReverse);
             };
 
         });

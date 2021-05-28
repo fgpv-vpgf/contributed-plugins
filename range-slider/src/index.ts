@@ -47,6 +47,8 @@ export default class RangeSlider {
             extendConfig.layers = config.layers;
             extendConfig.open = config.open;
             extendConfig.loop = config.loop;
+            extendConfig.lock = config.lock;
+            extendConfig.reverse = config.reverse;
             extendConfig.autorun = config.autorun;
             extendConfig.maximize = typeof config.maximize !== 'undefined' ? config.maximize : RangeSlider.prototype.layerOptions.maximize;
             extendConfig.maximizeDesc = typeof config.maximizeDesc !== 'undefined' ? config.maximizeDesc : RangeSlider.prototype.layerOptions.maximizeDesc;
@@ -88,6 +90,7 @@ RangeSlider.prototype.layerOptions = {
     delay: 3000,
     lock: false,
     export: false,
+    reverse: false,
     rangeType: 'dual',
     stepType: 'dynamic',
     startRangeEnd: false,
@@ -110,8 +113,10 @@ RangeSlider.prototype.translations = {
         bar: {
             show: 'Show slider information',
             hide: 'Hide slider information',
-            lock: 'Lock left anchor',
-            unlock: 'Unlock left anchor',
+            lockL: 'Lock left anchor',
+            unlockL: 'Unlock left anchor',
+            lockR: 'Lock right anchor',
+            unlockR: 'Unlock right anchor',
             loop: 'Animate in loop',
             unloop: 'Do not animate in loop',
             forward: 'Animate forward',
@@ -138,8 +143,10 @@ RangeSlider.prototype.translations = {
         bar: {
             show: 'Afficher l\'information du curseur de plage',
             hide: 'Cacher l\'information du curseur de plage',
-            lock: 'Verrouiller la molette gauche',
-            unlock: 'Déverrouiller la molette gauche',
+            lockL: 'Verrouiller la molette gauche',
+            unlockL: 'Déverrouiller la molette gauche',
+            lockR: 'Verrouiller la molette droite',
+            unlockR: 'Déverrouiller la molette droite',
             loop: 'Animer en boucle',
             unloop: 'Ne pas animer en boucle',
             forward: 'Animer normalement',

@@ -39,6 +39,15 @@ export class SliderBar {
         this._playState.next(newValue);
     }
 
+    // observable to detect reverse modification
+    static _reverseState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    static getReverseState(): Observable<boolean> {
+        return this._reverseState.asObservable();
+    }
+    static setReverseState(newValue: boolean): void {
+        this._reverseState.next(newValue);
+    }
+
     // array of images to export as Gif
     private _gifImages = []
 
@@ -112,7 +121,7 @@ export class SliderBar {
 
     /**
      * Get slider range type is dual
-     * @property lock
+     * @property dual
      */
     get dual(): boolean {
         return this._slider.dual;
@@ -230,8 +239,7 @@ export class SliderBar {
         this._slider.export = config.export;
         this._slider.maximize = config.maximize;
         this._slider.maximizeDesc = config.maximizeDesc;
-
-        this._slider.reverse = false;
+        this._slider.reverse = config.reverse;
 
         // controls
         this._sliderBarCtrl = document.getElementsByClassName('slider-bar')[0];
@@ -444,23 +452,32 @@ export class SliderBar {
      * @param {Number} limitmax the max limit
      */
     playInstant(limitmin: number, limitmax: number): void {
+        //! THIS FUNCTION NEED REFACTOR TO BE SIMPLIER
+        // TODO: refactor
+
         // take snapshop if need be
         this.setTakeSnapShot();
 
-        if (this._slider.reverse) {
+        if (this.reverse) {
 
             if (this._slider.range.min !== limitmin) {
                 this.step('down');
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
-                this._slider.range.max = this.limit.max;
+                this._slider.range.max = !this.lock ? this.limit.max : this._slider.range.max;
 
                 if (this._stepType === 'dynamic') {
                     this._slider.range.min = this._slider.range.max - this._step;
                 } else if (this._stepType === 'static') {
-                    const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
-                    const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                    this._slider.range.min = (index === -1 && this._rangeType !== 'dual') ? this.limit.max : this.limit.staticItems[(this.limit.staticItems.length - 1)];
+                    if (this.lock) {
+                        const index = this.limit.staticItems.findIndex((item) => { return item === this._slider.noUiSlider.get().map(Number)[1] });
+                        this._slider.range.min = index === -1 ? this.limit.staticItems[this.limit.staticItems.length - 1] : this.limit.staticItems[index - 1];
+                        this._slider.range.max = this._slider.noUiSlider.get().map(Number)[1];
+                    } else {
+                        const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[1] : +this._slider.noUiSlider.get();
+                        const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
+                        this._slider.range.min = (index === -1 && this._rangeType !== 'dual') ? this.limit.max : this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
+                    }
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
@@ -472,21 +489,25 @@ export class SliderBar {
                 this.step('up');
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
-                this._slider.range.min = this.limit.min;
+                this._slider.range.min = !this.lock ? this.limit.min : this._slider.range.min;
 
                 if (this._stepType === 'dynamic') {
                     this._slider.range.max = this._slider.range.min + this._step;
                 } else if (this._stepType === 'static') {
-                    const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
-                    const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                    this._slider.range.max = this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
+                    if (this.lock) {
+                        const index = this.limit.staticItems.findIndex((item) => { return item === this._slider.noUiSlider.get().map(Number)[0] });
+                        this._slider.range.min = this._slider.noUiSlider.get().map(Number)[0];
+                        this._slider.range.max = index === -1 ? this.limit.staticItems[0] : this.limit.staticItems[index + 1];
+                    } else {
+                        const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
+                        const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
+                        this._slider.range.max = this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
+                    }
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
             } else { this.pause(); }
-
         }
-
     }
 
     /**
@@ -615,6 +636,7 @@ export class SliderBar {
     step(direction: string): void {
         // get handles values and set step
         let range: Range;
+
         if (this._rangeType === 'dual') {
             const values: number[] = this._slider.noUiSlider.get().map(Number);
 
@@ -624,7 +646,10 @@ export class SliderBar {
                 const step = (direction === 'up') ? this._step : -this._step;
 
                 // calculate range values then apply to slider
-                range = { min: this.lock ? values[0] : this.setLeftAnchorDynamic(values, direction, step), max: this.setRightAnchorDynamic(values, direction, step) };
+                range = {
+                    min: this.lock && !this.reverse ? values[0] : this.setLeftAnchorDynamic(values, direction, step),
+                    max: this.lock && this.reverse ? values[values.length - 1] : this.setRightAnchorDynamic(values, direction, step)
+                };
             } else if (this._stepType === 'static' && this._rangeType == 'dual') {
                 // left handle = this._slider.noUiSlider.steps()[0] - [0] step down, [1] step up - limit min = -0
                 // right handle = this._slider.noUiSlider.steps()[1] - [0] step down, [1] step up - limit max = null
@@ -633,9 +658,21 @@ export class SliderBar {
 
                 // calculate range values then apply to slider
                 // check stepRight (null) when max limit is set and setLeft (-0) when min limit is set. This way we can keep the interval.
-                range = { min: this.lock ? this._slider.range.min :
-                            (stepRight !== null) ? this._slider.range.min + stepLeft: this._slider.range.min,
-                        max: (stepLeft !== -0) ? this._slider.range.max + stepRight : this._slider.range.max};
+                if (!this.reverse) {
+                    const min = this.lock ? this._slider.range.min : (stepRight !== null) ? this._slider.range.min + stepLeft: this._slider.range.min;
+                    const max = (stepLeft !== -0 && min !== this._slider.range.max + stepRight) ? this._slider.range.max + stepRight : this._slider.range.max;
+                    range = {
+                        min: min,
+                        max: max
+                    };
+                } else {
+                    const max = this.lock ? this._slider.range.max : (stepRight !== null) ? this._slider.range.max + stepRight: this._slider.range.max;
+                    const min = (stepLeft !== -0 && max !== this._slider.range.min + stepLeft) ? this._slider.range.min + stepLeft : this._slider.range.min;
+                    range = {
+                        min: min,
+                        max: max
+                    };
+                }
             }
 
             this._slider.noUiSlider.set([range.min, range.max]);

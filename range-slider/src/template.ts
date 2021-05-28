@@ -46,7 +46,7 @@ export const LOCK_BAR_TEMPLATE = `
         class="md-icon-button primary"
         ng-click="ctrl.lock()"
         ng-if="ctrl.isDual">
-        <md-tooltip>{{ !ctrl.isLocked ? 'plugins.rangeSlider.bar.lock' : 'plugins.rangeSlider.bar.unlock' | translate }}</md-tooltip>
+        <md-tooltip>{{ !ctrl.isLocked ? (!ctrl.isReverse ? 'plugins.rangeSlider.bar.lockL' : 'plugins.rangeSlider.bar.lockR') : (!ctrl.isReverse ? 'plugins.rangeSlider.bar.unlockL' : 'plugins.rangeSlider.bar.unlockR') | translate }}</md-tooltip>
         <md-icon ng-if="ctrl.isLocked">${createSVG('lock')}</md-icon>
         <md-icon ng-if="!ctrl.isLocked">${createSVG('lockOpen')}</md-icon>
     </md-button>

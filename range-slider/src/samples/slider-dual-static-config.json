@@ -268,10 +268,12 @@
       "rangeSlider": {
         "open": true,
         "autorun": false,
-        "loop": false,
+        "loop": true,
+        "lock": true,
+        "reverse": true,
         "controls": ["lock", "reverse", "refresh", "loop"],
         "params": {
-          "delay": 3000,
+          "delay": 1000,
           "type": "number",
           "rangeType": "dual",
           "stepType": "static",
