@@ -23,6 +23,7 @@ export class SliderBar {
     private _stepType: string;
     private _rangeType: string;
     private _interval: number;
+    public  _isPlaying: boolean;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -35,7 +36,7 @@ export class SliderBar {
     }
 
     // array of images to export as Gif
-    private _gifImages = []
+    private _gifImages = [];
 
     /**
      * Slider bar constructor
@@ -48,12 +49,12 @@ export class SliderBar {
         this._slider = document.getElementById('nouislider');
         this._config = config;
         this._myBundle = myBundle;
-        this._precision = (config.type === 'number') ? config.precision : (config.precision === 'date') ? -1 : -2;
+        this._precision = config.type === 'number' ? config.precision : config.precision === 'date' ? -1 : -2;
 
         // set dynamic values used in accessor
         this._slider.delay = config.delay;
         this._slider.lock = config.lock;
-        this._slider.dual = (config.rangeType === 'dual') ? true : false;
+        this._slider.dual = config.rangeType === 'dual' ? true : false;
         this._slider.loop = config.loop;
         this._slider.range = config.range;
         this._slider.export = config.export;
@@ -78,24 +79,25 @@ export class SliderBar {
     startSlider(type: string, language: string): void {
         // initialize the slider
         const mapWidth = this._mapApi.fgpMapObj.width;
-        nouislider.create(this._slider,
-            {
-                start: (this._rangeType === 'dual') ? [this.range.min, this.range.max] : [this.range.min],
-                connect: true,
-                behaviour: 'drag-tap',
-                tooltips: this.setTooltips(type, language),
-                range: this.setNoUiBarRanges(mapWidth, this.limit, this._rangeType, this._stepType, this._interval),
-                step: (this._limit.max - this.limit.min) / 100,
-                snap: (this._stepType === 'static') ? true : false,
-                pips: {
-                    mode: 'range',
-                    density: (this._stepType === 'static') ? 100 : (mapWidth > 800) ? 5 : 10,
-                    format: {
-                        to: (value: number) => { return this.formatPips(value, type, language); },
-                        from: Number
-                    }
-                }
-            });
+        nouislider.create(this._slider, {
+            start: this._rangeType === 'dual' ? [this.range.min, this.range.max] : [this.range.min],
+            connect: true,
+            behaviour: 'drag-tap',
+            tooltips: this.setTooltips(type, language),
+            range: this.setNoUiBarRanges(mapWidth, this.limit, this._rangeType, this._stepType, this._interval),
+            step: (this._limit.max - this.limit.min) / 100,
+            snap: this._stepType === 'static' ? true : false,
+            pips: {
+                mode: 'range',
+                density: this._stepType === 'static' ? 100 : mapWidth > 800 ? 5 : 10,
+                format: {
+                    to: (value: number) => {
+                        return this.formatPips(value, type, language);
+                    },
+                    from: Number,
+                },
+            },
+        });
 
         // remove overlapping pips. This can happen often with static limits and date
         const items = $('.noUi-value');
@@ -115,21 +117,26 @@ export class SliderBar {
                 testIndex++;
             } else {
                 // if there is no  collision and reset the curIndex to be the one before the testIndex
-                curIndex = (testIndex - curIndex !== 1) ? testIndex : curIndex + 1;
+                curIndex = testIndex - curIndex !== 1 ? testIndex : curIndex + 1;
                 testIndex++;
             }
         }
 
         // add handles to focus cycle
         document.getElementsByClassName('noUi-handle-lower')[0].setAttribute('tabindex', '-2');
-        if (this._rangeType === 'dual') { document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2'); }
+        if (this._rangeType === 'dual') {
+            document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2');
+        }
 
         // make sure range is set properly, there is a bug when slider is initialize without
         // configuration from a time aware layer
-        if (this._slider.range.min === null) { this._slider.range = this.range; }
+        if (this._slider.range.min === null) {
+            this._slider.range = this.range;
+        }
 
         // set the initial definition query
-        this._slider.range = (this._rangeType === 'dual') ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min }
+        this._slider.range =
+            this._rangeType === 'dual' ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min };
         this.setDefinitionQuery(this._slider.range);
 
         // trap the on change event when user use handles
@@ -137,11 +144,14 @@ export class SliderBar {
         this._slider.noUiSlider.on('set.one', function (values) {
             // set ranges from handles (dual) or from first handle (single)
             const ranges: number[] = values.map(Number);
-            that._slider.range = (that._rangeType === 'dual') ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] }
+            that._slider.range =
+                that._rangeType === 'dual' ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] };
             that.setDefinitionQuery(that._slider.range);
 
             // update step from new range values
-            if (!that._slider.lock) { that._step = that._slider.range.max - that._slider.range.min; }
+            if (!that._slider.lock) {
+                that._step = that._slider.range.max - that._slider.range.min;
+            }
         });
     }
 
@@ -156,7 +166,7 @@ export class SliderBar {
      * @return {Range} range the updated limits
      */
     setNoUiBarRanges(width: number, limit: Range, rangeType: string, stepType: string, step: number): Range {
-        let range: any = {}
+        let range: any = {};
 
         const delta = Math.abs(this.limit.max - this.limit.min);
         if (rangeType === 'dual' && stepType === 'dynamic') {
@@ -173,17 +183,17 @@ export class SliderBar {
             range.max = [limit.max, step];
 
             // to get rounded value to step
-            const mod50 = step - ((delta /2) % step);
-            range['50%'] = [limit.min + (delta / 2) + mod50, step];
+            const mod50 = step - ((delta / 2) % step);
+            range['50%'] = [limit.min + delta / 2 + mod50, step];
 
             if (width > 800) {
                 // to get rounded value to step
-                const mod25 = step - (limit.min + (delta /4)) % step;
-                const mod75 = step - (limit.min + (delta /4) * 3) % step;
-                range['25%'] = [limit.min + (delta / 4) + mod25, step];
-                range['75%'] = [limit.min + ((delta / 4) * 3) + mod75, step];
+                const mod25 = step - ((limit.min + delta / 4) % step);
+                const mod75 = step - ((limit.min + (delta / 4) * 3) % step);
+                range['25%'] = [limit.min + delta / 4 + mod25, step];
+                range['75%'] = [limit.min + (delta / 4) * 3 + mod75, step];
             }
-        }  else if (stepType === 'static') {
+        } else if (stepType === 'static') {
             range.min = limit.min;
             range.max = limit.max;
 
@@ -218,7 +228,9 @@ export class SliderBar {
 
             // if hours, add it to the label and change margin so label are inside
             if (this._precision === -2) {
-                value += ` - ${date.getHours()}:${((date.getMinutes() + 1).toString() as any).padStart(2, '0')}:${((date.getSeconds() + 1).toString() as any).padStart(2, '0')}`;
+                value += ` - ${date.getHours()}:${((date.getMinutes() + 1).toString() as any).padStart(2, '0')}:${(
+                    (date.getSeconds() + 1).toString() as any
+                ).padStart(2, '0')}`;
                 $('.slider-bar')[0].style.paddingLeft = '60px';
             }
         }
@@ -227,9 +239,9 @@ export class SliderBar {
     }
 
     setTooltips(type: string, language: string): object[] {
-        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }]
+        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }];
         if (this._rangeType === 'dual') {
-            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number })
+            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number });
         }
 
         return tooltips;
@@ -377,7 +389,9 @@ export class SliderBar {
             this._gifImages = [];
             this.setTakeSnapShot();
             this._playInterval = setInterval(() => this.playInstant(this.limit.min, this.limit.max), this.delay);
-        } else { this.pause(); }
+        } else {
+            this.pause();
+        }
     }
 
     /**
@@ -389,47 +403,62 @@ export class SliderBar {
     playInstant(limitmin: number, limitmax: number): void {
         // take snapshop if need be
         this.setTakeSnapShot();
+        this._isPlaying = false;
 
         if (this._slider.reverse) {
-
             if (this._slider.range.min !== limitmin) {
                 this.step('down');
+                this._isPlaying = true;
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
                 this._slider.range.max = this.limit.max;
-
+                this._isPlaying = true;
                 if (this._stepType === 'dynamic') {
                     this._slider.range.min = this._slider.range.max - this._step;
                 } else if (this._stepType === 'static') {
-                    const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
-                    const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                    this._slider.range.min = (index === -1 && this._rangeType !== 'dual') ? this.limit.max : this.limit.staticItems[(this.limit.staticItems.length - 1)];
+                    const leftHandle =
+                        this._rangeType === 'dual'
+                            ? this._slider.noUiSlider.get().map(Number)[0]
+                            : +this._slider.noUiSlider.get();
+                    const index = this.limit.staticItems.findIndex((item) => {
+                        return item === leftHandle;
+                    });
+                    this._slider.range.min =
+                        index === -1 && this._rangeType !== 'dual'
+                            ? this.limit.max
+                            : this.limit.staticItems[this.limit.staticItems.length - 1];
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
-            } else { this.pause(); }
-
+            } else {
+                this.pause();
+            }
         } else {
-
             if (this._slider.range.max !== limitmax) {
                 this.step('up');
+                this._isPlaying = true;
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
                 this._slider.range.min = this.limit.min;
-
+                this._isPlaying = true;
                 if (this._stepType === 'dynamic') {
                     this._slider.range.max = this._slider.range.min + this._step;
                 } else if (this._stepType === 'static') {
-                    const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
-                    const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                    this._slider.range.max = this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
+                    const leftHandle =
+                        this._rangeType === 'dual'
+                            ? this._slider.noUiSlider.get().map(Number)[0]
+                            : +this._slider.noUiSlider.get();
+                    const index = this.limit.staticItems.findIndex((item) => {
+                        return item === leftHandle;
+                    });
+                    this._slider.range.max = this.limit.staticItems[this.limit.staticItems.length - 1 - index];
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
-            } else { this.pause(); }
-
+            } else {
+                this.pause();
+            }
         }
-
     }
 
     /**
@@ -439,7 +468,10 @@ export class SliderBar {
     setTakeSnapShot() {
         // if export gif is selected, take a snapshot and use timeout to take it just before the next move
         // so definition query has finished
-        if (this.export) setTimeout(() => { this.takeSnapShot(false); }, this.delay - 100);
+        if (this.export)
+            setTimeout(() => {
+                this.takeSnapShot(false);
+            }, this.delay - 100);
     }
 
     /**
@@ -451,18 +483,21 @@ export class SliderBar {
         // get map node + width and height
         const node: any = document.getElementsByClassName('rv-esri-map')[0];
 
-        domtoimage.toSvg(node, { bgcolor: 'white', quality: 0.5 }).then(dataUrl => {
-            this._gifImages.push(dataUrl);
-        }).catch(error => {
-            console.error('Not able to save screen shot!', error);
-        });
+        domtoimage
+            .toSvg(node, { bgcolor: 'white', quality: 0.5 })
+            .then((dataUrl) => {
+                this._gifImages.push(dataUrl);
+            })
+            .catch((error) => {
+                console.error('Not able to save screen shot!', error);
+            });
     }
 
     exportToGIF() {
         // get map node + width and height set a maximum size to reduce file size... keep proportion
         const node: any = document.getElementsByClassName('rv-esri-map')[0];
         const proportion = node.offsetHeight / node.offsetWidth;
-        const width = (node.offsetWidth <= 1500) ? node.offsetWidth : 1500;
+        const width = node.offsetWidth <= 1500 ? node.offsetWidth : 1500;
         const height = width * proportion;
 
         try {
@@ -471,21 +506,24 @@ export class SliderBar {
             // sampleInterval will reduce the size a little bit but we loose color symbology
             // use timeout to let the ui refresh itself before creating the GIF
             setTimeout(() => {
-                gifshot.createGIF({
-                    'images': this._gifImages,
-                    'frameDuration': 10, // amount of time (10 = 1s) to stay on each frame
-                    'numFrames': 1,
-                    'gifWidth': width,
-                    'gifHeight': height
-                }, obj => {
-                    this._gifImages = [];
+                gifshot.createGIF(
+                    {
+                        images: this._gifImages,
+                        frameDuration: 10, // amount of time (10 = 1s) to stay on each frame
+                        numFrames: 1,
+                        gifWidth: width,
+                        gifHeight: height,
+                    },
+                    (obj) => {
+                        this._gifImages = [];
 
-                    if (!obj.error) {
-                        FileSaver.saveAs(this.dataURItoBlob(obj.image), 'fgpv-slider-export.gif' );
+                        if (!obj.error) {
+                            FileSaver.saveAs(this.dataURItoBlob(obj.image), 'fgpv-slider-export.gif');
+                        }
                     }
-                });
+                );
             }, 500);
-        } catch(error) {
+        } catch (error) {
             console.error('Not able to convert screen shot to GIF!', error);
         }
     }
@@ -503,7 +541,7 @@ export class SliderBar {
         const byteString = atob(dataURI.split(',')[1]);
 
         // separate out the mime component
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
         // write the bytes of the string to an ArrayBuffer
         const ab = new ArrayBuffer(byteString.length);
@@ -528,7 +566,9 @@ export class SliderBar {
      */
     pause(): void {
         // if export gif is selected, take a snapshot
-        if (this.export) { this.takeSnapShot(true); }
+        if (this.export) {
+            this.takeSnapShot(true);
+        }
 
         clearInterval(this._playInterval);
 
@@ -560,34 +600,52 @@ export class SliderBar {
             // if type of step is static, use slider step value to set the step
             // if dynamic, use predefine step value
             if (this._stepType === 'dynamic') {
-                const step = (direction === 'up') ? this._step : -this._step;
+                const step = direction === 'up' ? this._step : -this._step;
 
                 // calculate range values then apply to slider
-                range = { min: this.lock ? values[0] : this.setLeftAnchorDynamic(values, direction, step), max: this.setRightAnchorDynamic(values, direction, step) };
+                range = {
+                    min: this.lock ? values[0] : this.setLeftAnchorDynamic(values, direction, step),
+                    max: this.setRightAnchorDynamic(values, direction, step),
+                };
             } else if (this._stepType === 'static' && this._rangeType == 'dual') {
                 // left handle = this._slider.noUiSlider.steps()[0] - [0] step down, [1] step up - limit min = -0
                 // right handle = this._slider.noUiSlider.steps()[1] - [0] step down, [1] step up - limit max = null
-                const stepLeft = (direction === 'up') ? this._slider.noUiSlider.steps()[0][1] : -this._slider.noUiSlider.steps()[0][0];
-                const stepRight = (direction === 'up') ? this._slider.noUiSlider.steps()[1][1] : -this._slider.noUiSlider.steps()[1][0];
+                const stepLeft =
+                    direction === 'up' ? this._slider.noUiSlider.steps()[0][1] : -this._slider.noUiSlider.steps()[0][0];
+                const stepRight =
+                    direction === 'up' ? this._slider.noUiSlider.steps()[1][1] : -this._slider.noUiSlider.steps()[1][0];
 
                 // calculate range values then apply to slider
                 // check stepRight (null) when max limit is set and setLeft (-0) when min limit is set. This way we can keep the interval.
-                range = { min: this.lock ? this._slider.range.min :
-                            (stepRight !== null) ? this._slider.range.min + stepLeft: this._slider.range.min,
-                        max: (stepLeft !== -0) ? this._slider.range.max + stepRight : this._slider.range.max};
+                range = {
+                    min: this.lock
+                        ? this._slider.range.min
+                        : stepRight !== null
+                        ? this._slider.range.min + stepLeft
+                        : this._slider.range.min,
+                    max: stepLeft !== -0 ? this._slider.range.max + stepRight : this._slider.range.max,
+                };
             }
 
             this._slider.noUiSlider.set([range.min, range.max]);
         } else if (this._rangeType === 'single') {
             const value = +this._slider.noUiSlider.get();
-            const index = this.limit.staticItems.findIndex((item) => { return item === value; });
+            const index = this.limit.staticItems.findIndex((item) => {
+                return item === value;
+            });
 
             let updateValue: number;
-            if ((index === 0 || index === -1 && value === this.limit.min) && direction === 'down') { updateValue = this.limit.min; }
-            else if ((index === this.limit.staticItems.length - 1 || index === -1 && value === this.limit.max) && direction === 'up') { updateValue = this.limit.max; }
-            else if ((index === -1 && value === this.limit.max) && direction === 'down') { updateValue = this.limit.staticItems[this.limit.staticItems.length - 1]; }
-            else {
-                updateValue = (direction === 'up') ? this.limit.staticItems[index + 1] : this.limit.staticItems[index - 1];
+            if ((index === 0 || (index === -1 && value === this.limit.min)) && direction === 'down') {
+                updateValue = this.limit.min;
+            } else if (
+                (index === this.limit.staticItems.length - 1 || (index === -1 && value === this.limit.max)) &&
+                direction === 'up'
+            ) {
+                updateValue = this.limit.max;
+            } else if (index === -1 && value === this.limit.max && direction === 'down') {
+                updateValue = this.limit.staticItems[this.limit.staticItems.length - 1];
+            } else {
+                updateValue = direction === 'up' ? this.limit.staticItems[index + 1] : this.limit.staticItems[index - 1];
             }
             range = { min: updateValue, max: updateValue };
 
@@ -628,7 +686,7 @@ export class SliderBar {
         }
 
         // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
-        const precision = (this._precision < 0) ? 0 : this._precision;
+        const precision = this._precision < 0 ? 0 : this._precision;
         return parseFloat(value.toFixed(precision));
     }
 
@@ -661,7 +719,7 @@ export class SliderBar {
         }
 
         // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
-        const precision = (this._precision < 0) ? 0 : this._precision;
+        const precision = this._precision < 0 ? 0 : this._precision;
         return parseFloat(value.toFixed(precision));
     }
 
@@ -680,12 +738,16 @@ export class SliderBar {
 
             if (layerType === 'esriDynamic' || layerType === 'esriFeature') {
                 if (this._config.type === 'number') {
-                    myLayer.setFilterSql('rangeSliderNumberFilter',
-                        `${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}`);
+                    myLayer.setFilterSql(
+                        'rangeSliderNumberFilter',
+                        `${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}`
+                    );
                 } else if (this._config.type === 'date') {
                     const dates = this.getDate(range);
-                    myLayer.setFilterSql('rangeSliderDateFilter',
-                        `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`);
+                    myLayer.setFilterSql(
+                        'rangeSliderDateFilter',
+                        `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`
+                    );
                 }
             } else if (layerType === 'esriImage') {
                 // image server works differently. Instead of setting the query, we set the time extent for the map
@@ -699,26 +761,34 @@ export class SliderBar {
                 // the way it works with string (we can use wildcard like %)
                 // myLayer.esriLayer.setCustomParameters({}, {layerDefs: "{'0': \"CLAIM_STAT LIKE 'SUSPENDED'\"}"});
                 if (this._config.type === 'number') {
-                    myLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
-                        `{'${myLayer._viewerLayer._defaultFC}': '${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}'}` });
+                    myLayer.esriLayer.setCustomParameters(
+                        {},
+                        {
+                            layerDefs: `{'${myLayer._viewerLayer._defaultFC}': '${layer.field} >= ${range.min} AND ${layer.field} <= ${range.max}'}`,
+                        }
+                    );
                 } else if (this._config.type === 'date') {
                     const dates = this.getDate(range);
-                    myLayer.esriLayer.setCustomParameters({}, { 'layerDefs':
-                        `{'${myLayer._viewerLayer._defaultFC}': \"${layer.field} >= DATE '${dates[0]}' AND ${layer.field} <= DATE '${dates[1]}'\"}` });
+                    myLayer.esriLayer.setCustomParameters(
+                        {},
+                        {
+                            layerDefs: `{'${myLayer._viewerLayer._defaultFC}': \"${layer.field} >= DATE '${dates[0]}' AND ${layer.field} <= DATE '${dates[1]}'\"}`,
+                        }
+                    );
                 } else if (this._config.type === 'wmst') {
                     const dates = this.getDate(range, 'wmst');
-                    const query = (this._rangeType === 'single') ? `${dates[0]}` : `${dates[0]}/${dates[1]}`;
-                    myLayer.esriLayer.setCustomParameters({}, { 'TIME':query });
+                    const query = this._rangeType === 'single' ? `${dates[0]}` : `${dates[0]}/${dates[1]}`;
+                    myLayer.esriLayer.setCustomParameters({}, { TIME: query });
 
-                     // NOTE: WMS Time parameter seems to be related to how the service let the data be searched
-                     // https://www.mapserver.org/ogc/wms_time.html#supported-time-requests
-                     // https://geo.weather.gc.ca/geomet?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&LAYERS=RADAR_1KM_RSNO&WIDTH=2783&HEIGHT=690&CRS=EPSG:3978&BBOX=-10634186.928075515,-1179774.2916349573,11455919.752137847,4297111.6621369505&TIME=2020-09-17T16%3A50%3A00Z&_ts=1600371840628
-                     // Time part is TIME=2020-09-17T16%3A50%3A00Z - 2020-09-17 for date anfd T16:50:00z for hour.
-                     // Even if in the spec it is said we can query for the whole hour like T16, it didn't work with Geomet. Also, I can't ask for range, it needs to be a single value.
-                     // https://eccc-msc.github.io/open-data/usage/tutorial_web-maps_en/#animating-time-enabled-wms-layers-with-openlayers
-                     // To make some of the WMST works, we will need more parameters like the format for time parameter.
+                    // NOTE: WMS Time parameter seems to be related to how the service let the data be searched
+                    // https://www.mapserver.org/ogc/wms_time.html#supported-time-requests
+                    // https://geo.weather.gc.ca/geomet?SERVICE=WMS&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=&VERSION=1.3.0&LAYERS=RADAR_1KM_RSNO&WIDTH=2783&HEIGHT=690&CRS=EPSG:3978&BBOX=-10634186.928075515,-1179774.2916349573,11455919.752137847,4297111.6621369505&TIME=2020-09-17T16%3A50%3A00Z&_ts=1600371840628
+                    // Time part is TIME=2020-09-17T16%3A50%3A00Z - 2020-09-17 for date anfd T16:50:00z for hour.
+                    // Even if in the spec it is said we can query for the whole hour like T16, it didn't work with Geomet. Also, I can't ask for range, it needs to be a single value.
+                    // https://eccc-msc.github.io/open-data/usage/tutorial_web-maps_en/#animating-time-enabled-wms-layers-with-openlayers
+                    // To make some of the WMST works, we will need more parameters like the format for time parameter.
 
-                     // Millisend date converter: https://currentmillis.com/
+                    // Millisend date converter: https://currentmillis.com/
                 }
             }
         }
@@ -733,7 +803,7 @@ export class SliderBar {
      */
     getDate(range: Range, type: string = 'esri'): string[] {
         const min = new Date(range.min);
-        const max = new Date (range.max);
+        const max = new Date(range.max);
 
         let dateMin = '';
         let dateMax = '';
@@ -755,7 +825,13 @@ export class SliderBar {
      * @return {String}formated date
      */
     getEsriDate(date: Date): string {
-        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(date.getUTCHours().toString() as any).padStart(2, '0')}:${(date.getUTCMinutes().toString() as any).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(2, '0')}`;
+        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(date.getUTCHours().toString() as any).padStart(
+            2,
+            '0'
+        )}:${(date.getUTCMinutes().toString() as any).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(
+            2,
+            '0'
+        )}`;
     }
 
     /**
@@ -765,6 +841,10 @@ export class SliderBar {
      * @return {String}formated date
      */
     getDateWMTS(date: Date): string {
-        return `${date.getFullYear()}-${((date.getMonth() + 1).toString() as any).padStart(2, '0')}-${(date.getDate().toString() as any).padStart(2, '0')}T${(date.getHours().toString() as any).padStart(2, '0')}:${(date.getMinutes().toString() as any).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(2, '0')}Z`;
+        return `${date.getFullYear()}-${((date.getMonth() + 1).toString() as any).padStart(2, '0')}-${(
+            date.getDate().toString() as any
+        ).padStart(2, '0')}T${(date.getHours().toString() as any).padStart(2, '0')}:${(
+            date.getMinutes().toString() as any
+        ).padStart(2, '0')}:${(date.getSeconds().toString() as any).padStart(2, '0')}Z`;
     }
 }

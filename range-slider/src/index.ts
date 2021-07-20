@@ -1,15 +1,19 @@
 import { SLIDER_TEMPLATE } from './template';
 import { SliderManager } from './slider-manager';
 
+//import { SliderBar } from './slider-manager';
 export default class RangeSlider {
     private _button: any;
 
+    private activeSlider = require('./slider-manager').SliderManager;
 
+    private _activePlayState = require('./slider-bar').SliderBar;
+    private _presentPlayStateStopped: Boolean;
     /**
-    * Plugin init
-    * @function init
-    * @param {Any} mapApi the viewer api
-    */
+     * Plugin init
+     * @function init
+     * @param {Any} mapApi the viewer api
+     */
     init(mapApi: any) {
         this.mapApi = mapApi;
 
@@ -21,7 +25,7 @@ export default class RangeSlider {
         // get slider configuration then add/merge needed configuration
         const config = this._RV.getConfig('plugins').rangeSlider;
 
-        let extendConfig: any = {}
+        let extendConfig: any = {};
         if (typeof config !== 'undefined') {
             extendConfig = { ...RangeSlider.prototype.layerOptions, ...config.params };
             extendConfig.controls = config.controls;
@@ -37,26 +41,41 @@ export default class RangeSlider {
 
         // side menu button
         this._button = this.mapApi.mapI.addPluginButton(
-            RangeSlider.prototype.translations[this._RV.getCurrentLang()].title, this.onMenuItemClick()
+            RangeSlider.prototype.translations[this._RV.getCurrentLang()].title,
+            this.onMenuItemClick()
         );
-        if (extendConfig.open) { this._button.isActive = true; }
+        if (extendConfig.open) {
+            this._button.isActive = true;
+        }
 
         // get ESRI TimeExtent dependency (for image server) and start slider creation
         let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
-        myBundlePromise.then(myBundle => {
+        myBundlePromise.then((myBundle) => {
             new SliderManager(mapApi, this.panel, extendConfig, myBundle);
         });
     }
 
     /**
-    * Event to fire on side menu item click. Open/Close the panel
-    * @function onMenuItemClick
-    * @return {function} the function to run
-    */
-   onMenuItemClick() {
+     * Event to fire on side menu item click. Open/Close the panel
+     * @function onMenuItemClick
+     * @return {function} the function to run
+     */
+    onMenuItemClick() {
         return () => {
             this._button.isActive = !this._button.isActive;
-            this._button.isActive ? this.panel.open() : this.panel.close();
+            if (this._presentPlayStateStopped) {
+                //               this.activeSlider.panel.play(true);
+                this._activePlayState.slider.play(true);
+            }
+            //           this._button.isActive ? this.panel.open() : this.panel.close();
+            if (this._button.isActive) {
+                this.panel.open();
+            } else {
+                this._presentPlayStateStopped = this.panel._isPlaying;
+                this._activePlayState.slider.play(false);
+                SliderManager.SliderBar.play(false);
+                this.panel.close();
+            }
         };
     }
 }

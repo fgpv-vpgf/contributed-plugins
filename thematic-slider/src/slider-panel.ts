@@ -19,6 +19,7 @@ export class SliderPanel {
     private _loop: boolean = false;
     private _stack: boolean = false;
     private _legendStack: boolean = false;
+    public _isPlaying: boolean;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -49,7 +50,7 @@ export class SliderPanel {
     }
 
     // observable to detect first or last step
-    static _end: BehaviorSubject<string> = new BehaviorSubject<string>('down');;
+    static _end: BehaviorSubject<string> = new BehaviorSubject<string>('down');
     static getLastStep(): Observable<string> {
         return this._end.asObservable();
     }
@@ -72,7 +73,7 @@ export class SliderPanel {
      */
     constructor(mapApi: any, config: any, altText: string) {
         this._mapApi = mapApi;
-        this._altText = altText
+        this._altText = altText;
 
         // create panel
         this._panelSlider = this._mapApi.panels.create('thematicSlider');
@@ -85,7 +86,11 @@ export class SliderPanel {
         // check if all layers are loaded before starting the animation
         this._mapApi.layersObj.layerAdded.subscribe((addedLayer: any) => {
             // check if loaded layer is inside the config
-            this._layers.find((layer: any) => { if (layer.id === addedLayer.id) { this._layerNb++; }});
+            this._layers.find((layer: any) => {
+                if (layer.id === addedLayer.id) {
+                    this._layerNb++;
+                }
+            });
 
             // if all layers are loaded
             if (this._layerNb === this._layers.length) {
@@ -100,8 +105,12 @@ export class SliderPanel {
                     this.setPanelLegend();
 
                     // check if the panel should be open and if the slider is in autorun
-                    if (config.open) { this.open(); }
-                    if (config.autorun) { this.play(true); }
+                    if (config.open) {
+                        this.open();
+                    }
+                    if (config.autorun) {
+                        this.play(true);
+                    }
                 }, 1000);
 
                 // set layer visibility
@@ -113,7 +122,7 @@ export class SliderPanel {
                 this._legendStack = config.legendStack;
 
                 // check what controls we need (description or both)
-                const initControls: string = (config.slider) ? 'both' : 'desc';
+                const initControls: string = config.slider ? 'both' : 'desc';
                 this.addControls(initControls);
             }
         });
@@ -125,13 +134,17 @@ export class SliderPanel {
      * Open the panel
      * @function open
      */
-    open() { this._panelSlider.open(); }
+    open() {
+        this._panelSlider.open();
+    }
 
     /**
      * Close the panel
      * @function close
      */
-    close() { this._panelSlider.close(); }
+    close() {
+        this._panelSlider.close();
+    }
 
     /**
      * Add controls (slider bar and description)
@@ -206,9 +219,11 @@ export class SliderPanel {
             }
 
             stack += `<div class="rv-thslider-symbol" style="min-height:${image.height}px">
-                        <img style="padding-right:10px;width:${image.width}px;height:${image.height}px" src="${image.url}" alt="${this._altText}" title="${(entry as any).label}">
+                        <img style="padding-right:10px;width:${image.width}px;height:${image.height}px" src="${image.url}" alt="${
+                this._altText
+            }" title="${(entry as any).label}">
                         <span>${(entry as any).label}</span>
-                    </div>`
+                    </div>`;
         }
 
         return stack;
@@ -247,19 +262,30 @@ export class SliderPanel {
      * @param {Object} stack symbology stack from legend entry block
      * @return {String} the html to add to legend section
      */
-    private getSymbology(stack: any): string  {
+    private getSymbology(stack: any): string {
         let legend = '';
 
         const parser = new DOMParser();
         for (let svg of stack) {
             // get view box so we can modify image size
             const doc = parser.parseFromString(svg.svgcode, 'text/html');
-            const size = doc.querySelector('svg').getAttribute('viewBox').split(' ').slice(2).map((x) => { return parseInt(x, 10); })
+            const size = doc
+                .querySelector('svg')
+                .getAttribute('viewBox')
+                .split(' ')
+                .slice(2)
+                .map((x) => {
+                    return parseInt(x, 10);
+                });
 
             legend += `<div class="rv-thslider-symbol" style="min-height:${size[1]}px">
-                            ${[svg.svgcode.slice(0, 5), `style="min-width:${size[0]}px;min-height:${size[1]}px"`, svg.svgcode.slice(4)].join('')}
+                            ${[
+                                svg.svgcode.slice(0, 5),
+                                `style="min-width:${size[0]}px;min-height:${size[1]}px"`,
+                                svg.svgcode.slice(4),
+                            ].join('')}
                             <span>${svg.name}</span>
-                        </div>`
+                        </div>`;
         }
 
         return legend;
@@ -290,7 +316,7 @@ export class SliderPanel {
         this.setLayerVisibility();
 
         // check if you need to enable/disable step buttons and push the info to the observable
-        const enableButtons = (this._index > 0 && this._index < this._layers.length - 1) ? '' : (this._index === 0) ? 'down' : 'up';
+        const enableButtons = this._index > 0 && this._index < this._layers.length - 1 ? '' : this._index === 0 ? 'down' : 'up';
         SliderPanel.setLastStep(enableButtons);
 
         return lastStep;
@@ -303,16 +329,16 @@ export class SliderPanel {
     private setLayerVisibility() {
         // loop trought layers to set all of them off
         for (let layer of this._layers) {
-            this._mapApi.layersObj.getLayersById(layer.id).forEach(layer => layer.visibility = false);
+            this._mapApi.layersObj.getLayersById(layer.id).forEach((layer) => (layer.visibility = false));
         }
 
         // if not stack, use only the active layer
         // if stack, set visible all layers from 0 to the active one
         if (!this._stack) {
-            this._mapApi.layersObj.getLayersById(this.active.id).forEach(layer => layer.visibility = true);
+            this._mapApi.layersObj.getLayersById(this.active.id).forEach((layer) => (layer.visibility = true));
         } else {
             for (let layer of this._layers.slice(0, this._index + 1)) {
-                this._mapApi.layersObj.getLayersById(layer.id).forEach(layer => layer.visibility = true);
+                this._mapApi.layersObj.getLayersById(layer.id).forEach((layer) => (layer.visibility = true));
             }
         }
     }
@@ -324,17 +350,19 @@ export class SliderPanel {
      */
     play(isPlaying: boolean) {
         SliderPanel.setPlayState(isPlaying);
+        this._isPlaying = isPlaying;
 
         if (isPlaying) {
             // if index = last, re init the slider.
             // otherwise, continue where it is
-            this._index =  (this._index === this._layers.length - 1) ? 0 : this._index;
+            this._index = this._index === this._layers.length - 1 ? 0 : this._index;
             this.setPanelInfo();
 
             // timeout function to play the slider with the duration provided within configuration
             setTimeout(this.setPlayInterval, this.active.duration, this);
-
-        } else { clearInterval(this._playTimeout); }
+        } else {
+            clearInterval(this._playTimeout);
+        }
     }
 
     /**
@@ -347,10 +375,12 @@ export class SliderPanel {
         const last = that.step();
         clearInterval(that._playTimeout);
 
-        // if not the last, call this function again in ... seconds from configuration 
+        // if not the last, call this function again in ... seconds from configuration
         if (!last) {
             that._playTimeout = setInterval(that.setPlayInterval, (<any>that).active.duration, that);
-        } else { that.play(false); }
+        } else {
+            that.play(false);
+        }
     }
 }
 
