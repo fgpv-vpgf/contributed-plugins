@@ -4,6 +4,7 @@ export default class ThematicSlider {
     private _button: any;
     private _panel: SliderPanel;
     private _panelDetails: any;
+    private _presentPlayStateStopped: Boolean;
 
     /**
     * Plugin init
@@ -51,9 +52,14 @@ export default class ThematicSlider {
             if (this._button.isActive) {
                 this._panel.open();
                 this.setButtonState(true);
+                 if (this._presentPlayStateStopped) {
+                     this._panel.play(true);
+                 }
             } else {
                 this._panel.close();
                 this.setButtonState(false);
+                this._presentPlayStateStopped = this._panel._isPlaying;
+                this._panel.play(false);
             }
         };
     }

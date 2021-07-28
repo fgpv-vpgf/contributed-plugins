@@ -19,6 +19,7 @@ export class SliderPanel {
     private _loop: boolean = false;
     private _stack: boolean = false;
     private _legendStack: boolean = false;
+    public _isPlaying: boolean;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -324,6 +325,7 @@ export class SliderPanel {
      */
     play(isPlaying: boolean) {
         SliderPanel.setPlayState(isPlaying);
+        this._isPlaying = isPlaying;
 
         if (isPlaying) {
             // if index = last, re init the slider.
