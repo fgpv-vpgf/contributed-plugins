@@ -1,12 +1,17 @@
 import { SLIDER_TEMPLATE } from './template';
 import { SliderManager } from './slider-manager';
+import { SliderBar } from './slider-bar';
 
 export default class RangeSlider {
+    private _button: any;
+    private _presentPlayStateStopped: Boolean;
+    private myrangeSlider: any;
+
     /**
-    * Plugin init
-    * @function init
-    * @param {Any} mapApi the viewer api
-    */
+     * Plugin init
+     * @function init
+     * @param {Any} mapApi the viewer api
+     */
     init(mapApi: any) {
         this.mapApi = mapApi;
 
@@ -60,6 +65,48 @@ export default class RangeSlider {
         }
 
         return extendConfig;
+        // side menu button
+        this._button = this.mapApi.mapI.addPluginButton(
+            RangeSlider.prototype.translations[this._RV.getCurrentLang()].title,
+            this.onMenuItemClick()
+        );
+        if (extendConfig.open) {
+            this._button.isActive = true;
+        }
+
+        // get ESRI TimeExtent dependency (for image server) and start slider creation
+        let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
+        myBundlePromise.then((myBundle) => {
+            this.myrangeSlider = new SliderManager(mapApi, this.panel, extendConfig, myBundle);
+        });
+    }
+
+    /**
+     * Event to fire on side menu item click. Open/Close the panel
+     * @function onMenuItemClick
+     * @return {function} the function to run
+     */
+    onMenuItemClick() {
+        return () => {
+            this._button.isActive = !this._button.isActive;
+            
+            if (this._button.isActive) {
+                if (this._presentPlayStateStopped) {
+                        this.myrangeSlider._slider.play(true);
+                        this._presentPlayStateStopped = false;
+                    }
+                this.panel.open();
+            } else {
+                if (this.myrangeSlider._slider._isPlaying) {
+                    this._presentPlayStateStopped = true;
+                    this.myrangeSlider._slider.pause();
+                }
+                else {
+                    this._presentPlayStateStopped = false;
+                }
+                this.panel.close();
+            }
+        }
     }
 }
 

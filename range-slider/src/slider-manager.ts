@@ -93,7 +93,7 @@ export class SliderManager {
                 if (nbLayers === this._config.layers.length) {
                     this.setupConfiguredLayer(layers);
                 }
-            } else if (ids.length === 0) {
+            } else if (ids.length === 0 && typeof layer.type !== "undefined") {
                 // if there is no configured layer, check if the new added layer is time aware
                 // initialize the layer name so we set index and timer only once
                 if (layerId === '') {

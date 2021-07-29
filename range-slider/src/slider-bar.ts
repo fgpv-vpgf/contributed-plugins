@@ -28,6 +28,8 @@ export class SliderBar {
     private _rangeType: string;
 
     private _sliderBarCtrl: any;
+    private _interval: number;
+    public _isPlaying: boolean;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -442,7 +444,9 @@ export class SliderBar {
             this._gifImages = [];
             this.setTakeSnapShot();
             this._playInterval = setInterval(() => this.playInstant(this.limit.min, this.limit.max), this.delay);
-        } else { this.pause(); }
+        } else {
+            this.pause();
+            this._isPlaying = false;}
     }
 
     /**
@@ -457,15 +461,19 @@ export class SliderBar {
 
         // take snapshop if need be
         this.setTakeSnapShot();
+        this._isPlaying = false;
 
         if (this.reverse) {
 
             if (this._slider.range.min !== limitmin) {
+                this._isPlaying = true;
                 this.step('down');
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
                 this._slider.range.max = !this.lock ? this.limit.max : this._slider.range.max;
 
+                this._slider.range.max = this.limit.max;
+                this._isPlaying = true;
                 if (this._stepType === 'dynamic') {
                     this._slider.range.min = this._slider.range.max - this._step;
                 } else if (this._stepType === 'static') {
@@ -487,10 +495,13 @@ export class SliderBar {
 
             if (this._slider.range.max !== limitmax) {
                 this.step('up');
+                this._isPlaying = true;
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
                 this._slider.range.min = !this.lock ? this.limit.min : this._slider.range.min;
 
+                this._slider.range.min = this.limit.min;
+                this._isPlaying = true;
                 if (this._stepType === 'dynamic') {
                     this._slider.range.max = this._slider.range.min + this._step;
                 } else if (this._stepType === 'static') {
