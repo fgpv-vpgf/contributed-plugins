@@ -28,6 +28,8 @@ export class SliderBar {
     private _rangeType: string;
 
     private _sliderBarCtrl: any;
+    private _interval: number;
+    public _isPlaying: boolean;
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -49,7 +51,7 @@ export class SliderBar {
     }
 
     // array of images to export as Gif
-    private _gifImages = []
+    private _gifImages = [];
 
     /**
      * Set slider range
@@ -228,12 +230,12 @@ export class SliderBar {
         this._slider = document.getElementById('nouislider');
         this._config = config;
         this._myBundle = myBundle;
-        this._precision = (config.type === 'number') ? config.precision : (config.precision === 'date') ? -1 : -2;
+        this._precision = config.type === 'number' ? config.precision : config.precision === 'date' ? -1 : -2;
 
         // set dynamic values used in accessor
         this._slider.delay = config.delay;
         this._slider.lock = config.lock;
-        this._slider.dual = (config.rangeType === 'dual') ? true : false;
+        this._slider.dual = config.rangeType === 'dual' ? true : false;
         this._slider.loop = config.loop;
         this._slider.range = config.range;
         this._slider.export = config.export;
@@ -287,17 +289,64 @@ export class SliderBar {
 
         // remove overlapping pips. This can happen often with static limits and date
         this.removePipsOverlaps();
+        nouislider.create(this._slider, {
+            start: this._rangeType === 'dual' ? [this.range.min, this.range.max] : [this.range.min],
+            connect: true,
+            behaviour: 'drag-tap',
+            tooltips: this.setTooltips(type, language),
+            range: this.setNoUiBarRanges(mapWidth, this.limit, this._rangeType, this._stepType, this._interval),
+            step: (this._limit.max - this.limit.min) / 100,
+            snap: this._stepType === 'static' ? true : false,
+            pips: {
+                mode: 'range',
+                density: this._stepType === 'static' ? 100 : mapWidth > 800 ? 5 : 10,
+                format: {
+                    to: (value: number) => {
+                        return this.formatPips(value, type, language);
+                    },
+                    from: Number,
+                },
+            },
+        });
+
+        // remove overlapping pips. This can happen often with static limits and date
+        const items = $('.noUi-value');
+        let curIndex = 0;
+        let testIndex = 1;
+        // loop until are pips are not tested
+        while (testIndex !== items.length) {
+            // get div rectangle and check for collision
+            let d1 = (items[curIndex] as any).getBoundingClientRect();
+            let d2 = (items[testIndex] as any).getBoundingClientRect();
+            let ox = Math.abs(d1.x - d2.x) < (d1.x < d2.x ? d2.width : d1.width);
+            let oy = Math.abs(d1.y - d2.y) < (d1.y < d2.y ? d2.height : d1.height);
+
+            // if there is a collision, set display none and test with the next pips
+            if (ox && oy) {
+                items[testIndex].style.display = 'none';
+                testIndex++;
+            } else {
+                // if there is no  collision and reset the curIndex to be the one before the testIndex
+                curIndex = testIndex - curIndex !== 1 ? testIndex : curIndex + 1;
+                testIndex++;
+            }
+        }
 
         // add handles to focus cycle
         document.getElementsByClassName('noUi-handle-lower')[0].setAttribute('tabindex', '-2');
-        if (this._rangeType === 'dual') { document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2'); }
+        if (this._rangeType === 'dual') {
+            document.getElementsByClassName('noUi-handle-upper')[0].setAttribute('tabindex', '-2');
+        }
 
         // make sure range is set properly, there is a bug when slider is initialize without
         // configuration from a time aware layer
-        if (this._slider.range.min === null) { this._slider.range = this.range; }
+        if (this._slider.range.min === null) {
+            this._slider.range = this.range;
+        }
 
         // set the initial definition query
-        this._slider.range = (this._rangeType === 'dual') ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min }
+        this._slider.range =
+            this._rangeType === 'dual' ? this._slider.range : { min: this._slider.range.min, max: this._slider.range.min };
         this.setDefinitionQuery(this._slider.range);
 
         // set step
@@ -308,11 +357,14 @@ export class SliderBar {
         this._slider.noUiSlider.on('set.one', function (values) {
             // set ranges from handles (dual) or from first handle (single)
             const ranges: number[] = values.map(Number);
-            that._slider.range = (that._rangeType === 'dual') ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] }
+            that._slider.range =
+                that._rangeType === 'dual' ? { min: ranges[0], max: ranges[1] } : { min: ranges[0], max: ranges[0] };
             that.setDefinitionQuery(that._slider.range);
 
             // update step from new range values
-            if (!that._slider.lock) { that._step = that._slider.range.max - that._slider.range.min; }
+            if (!that._slider.lock) {
+                that._step = that._slider.range.max - that._slider.range.min;
+            }
         });
     }
 
@@ -361,7 +413,6 @@ export class SliderBar {
         const delta = Math.abs(this.limit.max - this.limit.min);
         if (stepType === 'dynamic') {
             range.min = limit.min;
-            range.max = limit.max;
             range['50%'] = limit.min + delta / 2;
 
             if (width > 800) {
@@ -369,6 +420,21 @@ export class SliderBar {
                 range['75%'] = limit.min + (delta / 4) * 3;
             }
         }  else if (stepType === 'static') {
+        } else if (rangeType === 'single' && stepType === 'dynamic') {
+            range.min = [limit.min, step];
+
+            // to get rounded value to step
+            const mod50 = step - ((delta / 2) % step);
+            range['50%'] = [limit.min + delta / 2 + mod50, step];
+
+            if (width > 800) {
+                // to get rounded value to step
+                const mod25 = step - ((limit.min + delta / 4) % step);
+                const mod75 = step - ((limit.min + (delta / 4) * 3) % step);
+                range['25%'] = [limit.min + delta / 4 + mod25, step];
+                range['75%'] = [limit.min + (delta / 4) * 3 + mod75, step];
+            }
+        } else if (stepType === 'static') {
             range.min = limit.min;
             range.max = limit.max;
 
@@ -406,6 +472,10 @@ export class SliderBar {
                 this._sliderBarCtrl.classList.add('hours-labels');
             } else {
                 value = value.split(' ')[0];
+                value += ` - ${date.getHours()}:${((date.getMinutes() + 1).toString() as any).padStart(2, '0')}:${(
+                    (date.getSeconds() + 1).toString() as any
+                ).padStart(2, '0')}`;
+                $('.slider-bar')[0].style.paddingLeft = '60px';
             }
         }
 
@@ -420,9 +490,9 @@ export class SliderBar {
      * @returns the tooltips
      */
     setTooltips(type: string, language: string): object[] {
-        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }]
+        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language), from: Number }];
         if (this._rangeType === 'dual') {
-            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number })
+            tooltips.push({ to: (value: number) => this.formatPips(value, type, language), from: Number });
         }
 
         return tooltips;
@@ -437,12 +507,16 @@ export class SliderBar {
         if (play) {
             // set play state to observable to change the icon
             SliderBar.setPlayState(play);
+            
 
             // start play (it will wait the delay before doing is first step) and take snapshop if need be
             this._gifImages = [];
             this.setTakeSnapShot();
             this._playInterval = setInterval(() => this.playInstant(this.limit.min, this.limit.max), this.delay);
-        } else { this.pause(); }
+        } else {
+            this.pause();
+            this._isPlaying = false;
+        }
     }
 
     /**
@@ -457,56 +531,63 @@ export class SliderBar {
 
         // take snapshop if need be
         this.setTakeSnapShot();
+        this._isPlaying = false;
 
-        if (this.reverse) {
-
+        if (this._slider.reverse) {
             if (this._slider.range.min !== limitmin) {
                 this.step('down');
+                this._isPlaying = true;
             } else if (this._slider.loop) {
                 // slider is in loop mode, reset ranges and continue playing
-                this._slider.range.max = !this.lock ? this.limit.max : this._slider.range.max;
+                this._slider.range.max = this.limit.max;
+                this._isPlaying = true;
 
                 if (this._stepType === 'dynamic') {
                     this._slider.range.min = this._slider.range.max - this._step;
                 } else if (this._stepType === 'static') {
-                    if (this.lock) {
-                        const index = this.limit.staticItems.findIndex((item) => { return item === this._slider.noUiSlider.get().map(Number)[1] });
-                        this._slider.range.min = index === -1 ? this.limit.staticItems[this.limit.staticItems.length - 1] : this.limit.staticItems[index - 1];
-                        this._slider.range.max = this._slider.noUiSlider.get().map(Number)[1];
-                    } else {
-                        const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[1] : +this._slider.noUiSlider.get();
-                        const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                        this._slider.range.min = (index === -1 && this._rangeType !== 'dual') ? this.limit.max : this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
-                    }
+                    const leftHandle =
+                        this._rangeType === 'dual'
+                            ? this._slider.noUiSlider.get().map(Number)[0]
+                            : +this._slider.noUiSlider.get();
+                    const index = this.limit.staticItems.findIndex((item) => {
+                        return item === leftHandle;
+                    });
+                    this._slider.range.min =
+                        index === -1 && this._rangeType !== 'dual'
+                            ? this.limit.max
+                            : this.limit.staticItems[this.limit.staticItems.length - 1];
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
-            } else { this.pause(); }
-
+            } else {
+                this.pause();
+            }
         } else {
-
             if (this._slider.range.max !== limitmax) {
                 this.step('up');
+                this._isPlaying = true;
             } else if (this._slider.loop) {
+                this._isPlaying = true;
                 // slider is in loop mode, reset ranges and continue playing
                 this._slider.range.min = !this.lock ? this.limit.min : this._slider.range.min;
 
                 if (this._stepType === 'dynamic') {
                     this._slider.range.max = this._slider.range.min + this._step;
                 } else if (this._stepType === 'static') {
-                    if (this.lock) {
-                        const index = this.limit.staticItems.findIndex((item) => { return item === this._slider.noUiSlider.get().map(Number)[0] });
-                        this._slider.range.min = this._slider.noUiSlider.get().map(Number)[0];
-                        this._slider.range.max = index === -1 ? this.limit.staticItems[0] : this.limit.staticItems[index + 1];
-                    } else {
-                        const leftHandle = (this._rangeType === 'dual') ? this._slider.noUiSlider.get().map(Number)[0] : +this._slider.noUiSlider.get();
-                        const index = this.limit.staticItems.findIndex((item) => { return item === leftHandle; });
-                        this._slider.range.max = this.limit.staticItems[(this.limit.staticItems.length - 1) - index];
-                    }
+                    const leftHandle =
+                        this._rangeType === 'dual'
+                            ? this._slider.noUiSlider.get().map(Number)[0]
+                            : +this._slider.noUiSlider.get();
+                    const index = this.limit.staticItems.findIndex((item) => {
+                        return item === leftHandle;
+                    });
+                    this._slider.range.max = this.limit.staticItems[this.limit.staticItems.length - 1 - index];
                 }
 
                 this._slider.noUiSlider.set([this._slider.range.min, this._slider.range.max]);
-            } else { this.pause(); }
+            } else {
+                this.pause();
+            }
         }
     }
 
@@ -517,7 +598,10 @@ export class SliderBar {
     setTakeSnapShot() {
         // if export gif is selected, take a snapshot and use timeout to take it just before the next move
         // so definition query has finished
-        if (this.export) setTimeout(() => { this.takeSnapShot(false); }, this.delay - 100);
+        if (this.export)
+            setTimeout(() => {
+                this.takeSnapShot(false);
+            }, this.delay - 100);
     }
 
     /**
@@ -529,11 +613,14 @@ export class SliderBar {
         // get map node + width and height
         const node: any = document.getElementsByClassName('rv-esri-map')[0];
 
-        domtoimage.toSvg(node, { bgcolor: 'white', quality: 0.5 }).then(dataUrl => {
-            this._gifImages.push(dataUrl);
-        }).catch(error => {
-            console.error('Not able to save screen shot!', error);
-        });
+        domtoimage
+            .toSvg(node, { bgcolor: 'white', quality: 0.5 })
+            .then((dataUrl) => {
+                this._gifImages.push(dataUrl);
+            })
+            .catch((error) => {
+                console.error('Not able to save screen shot!', error);
+            });
     }
 
     /**
@@ -544,7 +631,7 @@ export class SliderBar {
         // get map node + width and height set a maximum size to reduce file size... keep proportion
         const node: any = document.getElementsByClassName('rv-esri-map')[0];
         const proportion = node.offsetHeight / node.offsetWidth;
-        const width = (node.offsetWidth <= 1500) ? node.offsetWidth : 1500;
+        const width = node.offsetWidth <= 1500 ? node.offsetWidth : 1500;
         const height = width * proportion;
 
         try {
@@ -553,21 +640,24 @@ export class SliderBar {
             // sampleInterval will reduce the size a little bit but we loose color symbology
             // use timeout to let the ui refresh itself before creating the GIF
             setTimeout(() => {
-                gifshot.createGIF({
-                    'images': this._gifImages,
-                    'frameDuration': 10, // amount of time (10 = 1s) to stay on each frame
-                    'numFrames': 1,
-                    'gifWidth': width,
-                    'gifHeight': height
-                }, obj => {
-                    this._gifImages = [];
+                gifshot.createGIF(
+                    {
+                        images: this._gifImages,
+                        frameDuration: 10, // amount of time (10 = 1s) to stay on each frame
+                        numFrames: 1,
+                        gifWidth: width,
+                        gifHeight: height,
+                    },
+                    (obj) => {
+                        this._gifImages = [];
 
-                    if (!obj.error) {
-                        FileSaver.saveAs(this.dataURItoBlob(obj.image), 'fgpv-slider-export.gif' );
+                        if (!obj.error) {
+                            FileSaver.saveAs(this.dataURItoBlob(obj.image), 'fgpv-slider-export.gif');
+                        }
                     }
-                });
+                );
             }, 500);
-        } catch(error) {
+        } catch (error) {
             console.error('Not able to convert screen shot to GIF!', error);
         }
     }
@@ -585,7 +675,7 @@ export class SliderBar {
         const byteString = atob(dataURI.split(',')[1]);
 
         // separate out the mime component
-        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
         // write the bytes of the string to an ArrayBuffer
         const ab = new ArrayBuffer(byteString.length);
@@ -610,7 +700,9 @@ export class SliderBar {
      */
     pause(): void {
         // if export gif is selected, take a snapshot
-        if (this.export) { this.takeSnapShot(true); }
+        if (this.export) {
+            this.takeSnapShot(true);
+        }
 
         clearInterval(this._playInterval);
 
@@ -643,7 +735,7 @@ export class SliderBar {
             // if type of step is static, use slider step value to set the step
             // if dynamic, use predefine step value
             if (this._stepType === 'dynamic') {
-                const step = (direction === 'up') ? this._step : -this._step;
+                const step = direction === 'up' ? this._step : -this._step;
 
                 // calculate range values then apply to slider
                 range = {
@@ -653,8 +745,10 @@ export class SliderBar {
             } else if (this._stepType === 'static' && this._rangeType == 'dual') {
                 // left handle = this._slider.noUiSlider.steps()[0] - [0] step down, [1] step up - limit min = -0
                 // right handle = this._slider.noUiSlider.steps()[1] - [0] step down, [1] step up - limit max = null
-                const stepLeft = (direction === 'up') ? this._slider.noUiSlider.steps()[0][1] : -this._slider.noUiSlider.steps()[0][0];
-                const stepRight = (direction === 'up') ? this._slider.noUiSlider.steps()[1][1] : -this._slider.noUiSlider.steps()[1][0];
+                const stepLeft =
+                    direction === 'up' ? this._slider.noUiSlider.steps()[0][1] : -this._slider.noUiSlider.steps()[0][0];
+                const stepRight =
+                    direction === 'up' ? this._slider.noUiSlider.steps()[1][1] : -this._slider.noUiSlider.steps()[1][0];
 
                 // calculate range values then apply to slider
                 // check stepRight (null) when max limit is set and setLeft (-0) when min limit is set. This way we can keep the interval.
@@ -672,14 +766,22 @@ export class SliderBar {
             this._slider.noUiSlider.set([range.min, range.max]);
         } else if (this._rangeType === 'single') {
             const value = +this._slider.noUiSlider.get();
-            const index = this.limit.staticItems.findIndex((item) => { return item === value; });
+            const index = this.limit.staticItems.findIndex((item) => {
+                return item === value;
+            });
 
             let updateValue: number;
-            if ((index === 0 || index === -1 && value === this.limit.min) && direction === 'down') { updateValue = this.limit.min; }
-            else if ((index === this.limit.staticItems.length - 1 || index === -1 && value === this.limit.max) && direction === 'up') { updateValue = this.limit.max; }
-            else if ((index === -1 && value === this.limit.max) && direction === 'down') { updateValue = this.limit.staticItems[this.limit.staticItems.length - 1]; }
-            else {
-                updateValue = (direction === 'up') ? this.limit.staticItems[index + 1] : this.limit.staticItems[index - 1];
+            if ((index === 0 || (index === -1 && value === this.limit.min)) && direction === 'down') {
+                updateValue = this.limit.min;
+            } else if (
+                (index === this.limit.staticItems.length - 1 || (index === -1 && value === this.limit.max)) &&
+                direction === 'up'
+            ) {
+                updateValue = this.limit.max;
+            } else if (index === -1 && value === this.limit.max && direction === 'down') {
+                updateValue = this.limit.staticItems[this.limit.staticItems.length - 1];
+            } else {
+                updateValue = direction === 'up' ? this.limit.staticItems[index + 1] : this.limit.staticItems[index - 1];
             }
             range = { min: updateValue, max: updateValue };
 
@@ -720,7 +822,7 @@ export class SliderBar {
         }
 
         // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
-        const precision = (this._precision < 0) ? 0 : this._precision;
+        const precision = this._precision < 0 ? 0 : this._precision;
         return parseFloat(value.toFixed(precision));
     }
 
@@ -753,7 +855,7 @@ export class SliderBar {
         }
 
         // precision needs to be an interger between 0 and 100, if it is a date it will -1 or -2, cahnge value
-        const precision = (this._precision < 0) ? 0 : this._precision;
+        const precision = this._precision < 0 ? 0 : this._precision;
         return parseFloat(value.toFixed(precision));
     }
 
