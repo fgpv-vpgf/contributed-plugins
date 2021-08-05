@@ -27,7 +27,6 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/swiper.css" />
 <script src="/swiper.js"></script>
 ```
-<<<<<<< HEAD
 In the body section, you need to have a map div. You need to replace the id with the unique id for the map and rv-config with the configuration file to use.
 ```
 <div
@@ -38,24 +37,7 @@ In the body section, you need to have a map div. You need to replace the id with
     rv-langs='["en-CA", "fr-CA"]'
     rv-plugins="swiper"
 >
-```
 
-=======
-In body section, the first div is your map div. You need to replace
-id, unique id for the map to link to trought the api
-rv-config, the configuration file to use
-rv-plugins, the plugin name from the class name inside your index.ts (use camel case)
-```
-<div
-    class="myMap"
-    id="Swiper"
-    is="rv-map"
-    rv-config="Swiper-config.json"
-    rv-langs='["en-CA", "fr-CA"]'
-    rv-plugins="Swiper"
->
-```
->>>>>>> de34ddf (fix(269) add plugin name to map div in Readme for swiper)
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.
 - http://localhost:6001/samples/swiper-index.html

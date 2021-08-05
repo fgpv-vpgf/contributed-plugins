@@ -46,6 +46,7 @@ export class SliderManager {
     private _button: any;
 
     private _xmlParser: any;
+    private _presentPlayStateStopped: Boolean;
 
      /**
      * Slider manager constructor
@@ -604,10 +605,18 @@ export class SliderManager {
 
             // remove definition query when slider is close and re apply on open
             if (this._button.isActive) {
+                if (this._presentPlayStateStopped) {
+                    this._slider.play(true);
+                    this._presentPlayStateStopped = false;
+                }
                 this._slider.setDefinitionQuery(this._slider.activeRange);
                 this._panel.open();
             } else {
                 this._slider.resetDefinitionQuery();
+                if (this._slider._isPlaying) {
+                    this._presentPlayStateStopped = true;
+                    this._slider.pause();
+                }
                 this._panel.close();
             }
         };
