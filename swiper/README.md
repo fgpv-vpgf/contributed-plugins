@@ -27,6 +27,21 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/swiper.css" />
 <script src="/swiper.js"></script>
 ```
+In the body section, the first div is your map div. You need to replace the
+id with the unique id for the map to link throught the api,
+replace rv-config with the configuration file to use,
+replace rv-plugins with the plugin name from the class name inside your index.ts (use camel case)
+```
+<div
+    class="myMap"
+    id="mapSwiper"
+    is="rv-map"
+    rv-config="swiper.json"
+    rv-langs='["en-CA", "fr-CA"]'
+    rv-plugins="swiper" 
+>
+```
+Modification to the code is applied automatically and webpack-dev-server will reload the page with your modification.
 
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.
