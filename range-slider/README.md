@@ -90,6 +90,18 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/range-slider.css" />
 <script src="/range-slider.js"></script>
 ```
+In the body section, the first div is your map div. You need to replace the id with the unique id for the map to link throught the api, replace rv-config with the configuration file to use, replace rv-plugins with the plugin name from the class name inside your index.ts (use camel case)
+```
+<div
+    class="myMap"
+    id="mapRangeSlider"
+    is="rv-map"
+    rv-config="rangeSlider-config.json"
+    rv-langs='["en-CA", "fr-CA"]'
+    rv-plugins="rangeSlider"
+>
+```
+Modifications to the code are applied automatically and webpack-dev-server will reload the page with your modifications.
 
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.
