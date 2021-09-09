@@ -90,6 +90,17 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/range-slider.css" />
 <script src="/range-slider.js"></script>
 ```
+In the body section, you need to have a map div. You need to replace the id with the unique id for the map and rv-config with the configuration file to use. 
+```
+<div
+    class="myMap"
+    id="mapRangeSlider"
+    is="rv-map"
+    rv-config="rangeSlider-config.json"
+    rv-langs='["en-CA", "fr-CA"]'
+    rv-plugins="rangeSlider"
+>
+```
 
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.
