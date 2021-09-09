@@ -119,6 +119,17 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/chart.css" />
 <script src="/chart.js"></script>
 ```
+In the body section, you need to have a map div. You need to replace the id with the unique id for the map and rv-config with the configuration file to use.
+```
+<div
+    class="myMap"
+    id="mapChart"
+    is="rv-map"
+    rv-config="chart.json"
+    rv-langs='["en-CA", "fr-CA"]'
+    rv-plugins="chart"
+>
+```
 
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.

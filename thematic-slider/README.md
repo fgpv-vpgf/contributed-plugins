@@ -101,6 +101,17 @@ Inside your html, add this to your head section then replace href and src with y
 <link rel="stylesheet" href="/thematic-slider.css" />
 <script src="/thematic-slider.js"></script>
 ```
+In the body section, you need to have a map div. You need to replace the id with the unique id for the map and rv-config with the configuration file to use.
+```
+<div
+    class="myMap"
+    id="mapThematicSlider"
+    is="rv-map"
+    rv-config="thematicSlider-config.json"
+    rv-langs='["en-CA", "fr-CA"]'
+    rv-plugins="thematicSlider"
+>
+```
 
 ## Test page
 To play with the code, from the plugin folder, do npm install, run build then npm run serve.
