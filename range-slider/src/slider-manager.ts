@@ -176,24 +176,6 @@ export class SliderManager {
         this._panel.element.css(this._panelOptions);
         this._panel.body = SLIDER_TEMPLATE;
 
-        // add info for units, layers and field use
-        const units = this._config.units !== '' ? ` - ${this._config.translations.bar.unit}: ${this._config.units}` : '';
-        const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` });
-        
-        // remove duplicate (introduced by layer entries of dynamic or WMS)
-        const layersInfoNo = layersInfo.filter(function(value, index, self) { 
-            return self.indexOf(value) === index;
-        }).join(', ');
-        document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layersInfoNo} ${units}`;
-        
-        // add the description from config file and check if it is a esri image layer and add the note
-        const imageIndex = layers.findIndex(item => { return item.layer._layerType === 'esriImage'; });
-        const sliderImage: string[] = [];
-        if (imageIndex >= 0) { sliderImage.push(this._config.translations.bar.esriImageNote)}
-        if (this._config.description !== '') { sliderImage.unshift(this._config.description); }
-
-        document.getElementsByClassName('slider-desc-info')[0].textContent =  `${sliderImage.join(', ')}`;
-
         // setup limits
         this.setupLimits(layers);
     }
@@ -252,6 +234,7 @@ export class SliderManager {
                     const staticItems = [...new Set(values.map(item => item.staticItems).flat())];
                     this._config.limit.staticItems = typeof staticItems === 'undefined' ? [] : staticItems.sort((a, b) => { return a - b });
 
+                    this.setDescription(layers);
                     this.initializeSlider();
                 }
             });
@@ -270,8 +253,34 @@ export class SliderManager {
                this._config.range = this._config.limit;
             }
 
+            this.setDescription(layers);
             this.initializeSlider();
         }
+    }
+
+    /**
+     * Set the description section with the field use to parse the extent value
+     * @function setDescription
+     * @param {Layer[]} layers Array of layers to setup 
+     */
+    setDescription(layers: Layer[]) {
+        // add info for units, layers and field use
+        const units = this._config.units !== '' ? ` - ${this._config.translations.bar.unit}: ${this._config.units}` : '';
+        const layersInfo = layers.map((item) => { return `${item.layer.name} (${item.layerInfo.field})` });
+        
+        // remove duplicate (introduced by layer entries of dynamic or WMS)
+        const layersInfoNo = layersInfo.filter(function(value, index, self) { 
+            return self.indexOf(value) === index;
+        }).join(', ');
+        document.getElementsByClassName('slider-desc-layers')[0].textContent = `${layersInfoNo} ${units}`;
+        
+        // add the description from config file and check if it is a esri image layer and add the note
+        const imageIndex = layers.findIndex(item => { return item.layer._layerType === 'esriImage'; });
+        const sliderImage: string[] = [];
+        if (imageIndex >= 0) { sliderImage.push(this._config.translations.bar.esriImageNote)}
+        if (this._config.description !== '') { sliderImage.unshift(this._config.description); }
+
+        document.getElementsByClassName('slider-desc-info')[0].textContent =  `${sliderImage.join(', ')}`;
     }
 
     /**
@@ -379,6 +388,9 @@ export class SliderManager {
             fetch(encodeURI(uri)).then(response => response.text())
             .then(str => this._xmlParser.parseStringPromise(str))
             .then(parsed => {
+                // if time field not set, do it
+                if (item.layerInfo.field === '') item.layerInfo.field = 'DATE';
+
                 // get time dimension
                 // TODO: support more dimension like elevation
                 const dimensions = this.getDimensionsWMS(subLayersIds, parsed.wms_capabilities.capability[0].layer[0], [])
