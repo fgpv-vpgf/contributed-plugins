@@ -478,31 +478,9 @@ export class DrawToolbar {
      */
     simulateClick(pt: number[], mouse: string) {
         // convert screen click to map then emit the event (click or double click)
+        // add a preventDefault function.... if not the mouse-drag event will fails
         const mapPoint = this._mapApi.esriMap.toMap(new this._bundle.ScreenPoint({ x: pt[0], y: pt[1] }));
-        this._mapApi.esriMap.emit(mouse, { mapPoint: new this._bundle.Point(mapPoint.x, mapPoint.y, this._mapApi.esriMap.spatialReference) });
-    }
-
-    /**
-     * Set extent point
-     * @function setExtentPoints
-     * @param {Number[]} value array of lat/long
-     * @param {Boolean} final true if last point, false otherwise
-     */
-    setExtentPoints(value: number[], final: boolean) {
-        if (final && this._extentPoints.length === 1) {
-            const pt = this._mapApi.esriMap.toMap(new this._bundle.ScreenPoint({ x: value[0], y: value[1] }));
-            const geometry = {
-                xmin: (<any>this)._extentPoints[0].x,
-                ymin: (<any>this)._extentPoints[0].y,
-                xmax: pt.x,
-                ymax: pt.y
-            }
-
-            this.deleteGraphics(geometry);
-            this._extentPoints = [];
-        } else {
-            this._extentPoints[0] = this._mapApi.esriMap.toMap(new this._bundle.ScreenPoint({ x: value[0], y: value[1] }));
-        }
+        this._mapApi.esriMap.emit(mouse, { mapPoint: new this._bundle.Point(mapPoint.x, mapPoint.y, this._mapApi.esriMap.spatialReference), preventDefault: () => console.log('prevented') });
     }
 
     /**

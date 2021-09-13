@@ -280,15 +280,16 @@ export class PanelManager {
                 const jQwindow = $(window);
                 this.mapApi.mapDiv.on('keydown', '.rv-esri-map', { draw: this.drawToolbar, jQwindow: jQwindow, name: name }, this.keyDownHandler);
 
-                if (name === 'polyline') {
-                    const that = this;
-                    this._mousemoveHandler = this.mapApi.esriMap.on('mouse-move', Debounce(function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) }, 50));
-                    this._mouseclickHandler = this.mapApi.esriMap.on('click', function(event) { (<any>that).mouseHandler(event, (<any>that).drawToolbar) });
-                }
-
                 this.drawToolbar.local = this.drawToolbar.localWCAG;
             }
         } else {
+            // calculate distance on the fly for polylines
+            if (name === 'polyline') {
+                const that = this;
+                this._mousemoveHandler = this.mapApi.esriMap.on('mouse-move', Debounce(function(event) { (<any>that).mouseHandler('mousemove', event, (<any>that).drawToolbar) }, 50));
+                this._mouseclickHandler = this.mapApi.esriMap.on('click', function(event) { (<any>that).mouseHandler('click', event, (<any>that).drawToolbar) });
+            }
+
             this.drawToolbar.local = this.drawToolbar.localMouse;
         }
 
@@ -316,11 +317,14 @@ export class PanelManager {
         // position keyboard tooltip
         $('.esriMapTooltip').css({ top: `${y - 50}px`, left: `${x + 50}px`, display: 'block' });
 
-        if (event.which === 13 && event.data.name === 'extent') { // enter extent starting point
-            event.data.draw.setExtentPoints([x, y], false);
+        if (event.which === 13 && event.data.name === 'extent' && event.data.draw.geometryLength === 0) { // enter extent starting point
             event.data.draw.geometryLength = event.data.draw.geometryLength + 1;
+            event.data.draw.simulateClick([x, y], 'mouse-drag-start');
+        } else if  (event.which >= 37 && event.which <= 40 && event.data.name === 'extent' && event.data.draw.geometryLength > 0) {
+                event.data.draw.simulateClick([x, y], 'mouse-drag');
         } else if (event.which === 32 && event.data.name === 'extent' && event.data.draw.geometryLength > 0) { // enter extent stopping point
-            event.data.draw.setExtentPoints([x, y], true);
+            event.data.draw.geometryLength = 0;
+            event.data.draw.simulateClick([x, y], 'mouse-drag-end');
         } else if (event.which === 13 ||
             (event.which === 32 && event.data.name === 'polyline' && event.data.draw.geometryLength > 1) ||
             (event.which === 32 && event.data.name === 'polygon' && event.data.draw.geometryLength > 2)) { // handle add geometry
@@ -329,19 +333,22 @@ export class PanelManager {
 
             // keep track of number of point inside the geometry
             event.data.draw.geometryLength = (mouse === 'click') ? event.data.draw.geometryLength + 1 : 0;
+        } else if  (event.which >= 37 && event.which <= 40 && event.data.name !== 'extent') {
+            event.data.draw.simulateClick([x, y], 'mouse-move');
         }
     }
 
     /**
      * Manage mouse mouve event add measure on move and add point on click
      * @function mouseHandler
+     * @param {String} type the type of handler
      * @param {Any} event jQuery event on mouse move
      * @param {DrawToolbar} drawToolbar esri draw toolbar
      */
-    mouseHandler(event: any, drawToolbar: DrawToolbar) {
-        if (event.type === 'mousemove' && typeof drawToolbar.mapPoints[0] !== 'undefined') {
+    mouseHandler(type: string, event: any, drawToolbar: DrawToolbar) {
+        if (type === 'mousemove' && typeof drawToolbar.mapPoints[0] !== 'undefined') {
             drawToolbar.mapPoints = [drawToolbar.mapPoints[0], event.mapPoint];
-        } else if (event.type === 'click') {
+        } else if (type === 'click') {
             drawToolbar.mapPoints = [event.mapPoint];
         }
     }
