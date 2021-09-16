@@ -381,10 +381,24 @@ export class SliderBar {
             range.min = limit.min;
             range.max = limit.max;
 
-            const nbItems = limit.staticItems.length + 2;
             for (let [i, item] of limit.staticItems.entries()) {
                 range[`${((item - range.min) / delta) * 100}%`] = item;
             }
+        } else if (stepType === 'staticInterval') {
+            // use when we have a min / max values and the interval between static item si the same
+            // it willl force to slider to snap to specific value
+            // good for WMS like geomet when we have an interval like PT20M
+            const interval = limit.staticItems[1] - limit.staticItems[0];
+            const nbInterval = limit.staticItems.length - 1; //Math.round((limit.max - limit.min) / interval);
+            range.min = [limit.min, interval];
+            range.max = limit.max;
+
+            // add pips
+            range['20%'] = limit.staticItems[Math.ceil(nbInterval * .2) - 1];
+            range['40%'] = limit.staticItems[Math.ceil(nbInterval * .4) - 1];
+            range['60%'] = limit.staticItems[Math.ceil(nbInterval * .6) - 1];
+            range['80%'] = limit.staticItems[Math.ceil(nbInterval * .8) - 1];
+            range['100%'] = range.max;
         }
 
         return range;
