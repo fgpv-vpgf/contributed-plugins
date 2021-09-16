@@ -145,10 +145,12 @@ export class SliderManager {
             // if array is empty or it was a time aware added layer destroy
             if (ids.length === 0 || ids[0] === 'done') {
                 // reset the definition query and destroy the plugin
-                this._slider.resetDefinitionQuery();
-                this._slider.destroy();
+                if (typeof this._slider !== 'undefined') {
+                    this._slider.resetDefinitionQuery();
+                    this._slider.destroy();
+                    document.querySelector(`[aria-label="${this._button.label}"]`).remove();
+                }
                 this._panel.destroy();
-                document.querySelector(`[aria-label="${this._button.label}"]`).remove();
 
                 // reset the config object and parameters
                 this._config.type = 'date';
@@ -339,7 +341,7 @@ export class SliderManager {
                             esriTimeUnitsDays: 86400000,
                             esriTimeUnitsWeeks: 604800000,
                             esriTimeUnitsMonths: 2592000000,
-                            esriTimeUnitsYears: 31536000000
+                            esriTimeUnitsYears: 31561920000 // 31536000000 = year ... need to add .25 plus handle 1 day every 4 years
                         }
 
                         // if type of interval is not define check limits and set a default
@@ -384,17 +386,22 @@ export class SliderManager {
         });
 
         return new Promise(resolve => {
+            // get proxy value and split the url.
+            // ! there is a bug with : https://geo.weather.gc.ca/geomet-climate?lang=en&service=WMS&version=1.3.0&request=GetCapabilities&Layer=CMIP5.SFCWIND.RCP26.ENS.ABS_PCTL5
+            // ! the value is not split at ?
             const proxy = typeof this._config.proxyUrl !== 'undefined' ? `${this._config.proxyUrl}?` : '';
-            const uri = `${proxy}${item.layer.esriLayer.url}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0&layer=${subLayersIds.join(',')}`;
+            const uri = `${proxy}${item.layer.esriLayer.url.split('?')[0]}?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0&layer=${subLayersIds.join(',')}`;
             fetch(encodeURI(uri)).then(response => response.text())
             .then(str => this._xmlParser.parseStringPromise(str))
             .then(parsed => {
                 // if time field not set, do it
                 if (item.layerInfo.field === '') item.layerInfo.field = 'DATE';
 
-                // get time dimension
+                // make sure parsed value is valid and get time dimension
                 // TODO: support more dimension like elevation
-                const dimensions = this.getDimensionsWMS(subLayersIds, parsed.wms_capabilities.capability[0].layer[0], [])
+                const dimensions = (typeof parsed.wms_capabilities !== 'undefined') ?
+                    this.getDimensionsWMS(subLayersIds, parsed.wms_capabilities.capability[0].layer[0], []) : [];
+
                 if (dimensions.length !== 0) {
                     let discoveredDimensions = [].concat(...dimensions);
 
@@ -482,6 +489,7 @@ export class SliderManager {
                 let content = l['_'];
 
                 this._config.precision = (content.split('T').length === 1) ? 'date' : 'hour';
+                this._config.rangeType = (typeof properties.default === 'undefined' || properties.default.split('/').length !== 1) ? 'dual' : 'single';
 
                 return {
                     id: layer.name[0],
@@ -501,6 +509,8 @@ export class SliderManager {
      * @returns the setup extent limits object
      */
     processWMSExtent(extent: any): object {
+        // * Information on how to handle time for Geomet service: https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/#handling-time
+
         const limits = { extent: [], static: [], interval: null };
 
         // check if it is and extent (start/end) or multiples values
@@ -522,16 +532,21 @@ export class SliderManager {
                 }
             }
             // parse ISO string representation (ex. 'P1Y2M')
+            // https://en.wikipedia.org/wiki/ISO_8601
             let isoInterval = dayjs.duration(dynamicExt[2]).$ms;
 
-            // no intervall, find one
+            // if ISO interval is a year, make it 365.25 + 1 day every 4 years
+            if (typeof isoInterval !== 'undefined' && isoInterval === 31536000000) isoInterval = isoInterval + (0.30 * dayjs.duration('P1D').$ms);
+
+            // no interval, find one
+            // if interval, generate static value from it
             if (typeof isoInterval === 'undefined') {
                 const intervals = {
                     esriTimeUnitsHours: 3600000,
                     esriTimeUnitsDays: 86400000,
                     esriTimeUnitsWeeks: 604800000,
                     esriTimeUnitsMonths: 2592000000,
-                    esriTimeUnitsYears: 31536000000
+                    esriTimeUnitsYears: 31561920000 // 31536000000 = year ... need to add .25 plus handle 1 day every 4 years
                 }
 
                 const rangeDays = (limits[1] - limits[0]) / (3600000 * 24);
@@ -546,6 +561,23 @@ export class SliderManager {
                 } else {
                     isoInterval =  intervals.esriTimeUnitsYears;
                 }
+            } else {
+                // because the interval is define, create static elements and set step to staticInterval
+                const start = limits.extent[0];
+                const end = limits.extent[1];
+                let value = -1;
+                let i = 0;
+
+                while (value < end) {
+                    i++;
+                    value = start + (i * isoInterval);
+                    limits.static.push(value);
+                }
+
+                // this is a new type and it is use to generate a step from a static interval
+                // in this case, the static item array is only use to detmine the static interval step
+                // TODO: add this to authoring tool for configure item
+                this._config.stepType = 'staticInterval';
             }
 
             // TODO.... do we need
