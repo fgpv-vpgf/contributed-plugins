@@ -21,6 +21,20 @@ export class SliderPanel {
     private _legendStack: boolean = false;
     public _isPlaying: boolean;
 
+    private _extent: object =
+    {
+        'xmin':  -2681470,
+        "xmax":  3549492,
+        "ymax": 3482193,
+        "ymin":  -883440,
+        spatialReference: {
+            "wkid": 3978,
+            "latestWkid": 3978,
+            "wkt": ''
+            },
+        getCenter: Function
+    };
+
     // *** Static observable for the class ***
     // observable to detect play/pause modification
     static _playState: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -313,10 +327,20 @@ export class SliderPanel {
         // if stack, set visible all layers from 0 to the active one
         if (!this._stack) {
             this._mapApi.layersObj.getLayersById(this.active.id).forEach(layer => layer.visibility = true);
+
+            for (let layer of this._layers) {
+                if (this.active.id === layer.id) {
+                    const zoomExtent = (typeof layer.area === 'undefined') ? this._extent : layer.area;
+                    this._mapApi.setExtent(zoomExtent);
+               }
+            }
         } else {
             for (let layer of this._layers.slice(0, this._index + 1)) {
                 this._mapApi.layersObj.getLayersById(layer.id).forEach(layer => layer.visibility = true);
-            }
+                const zoomExtent = (typeof layer.area === 'undefined') ? this._extent : layer.area;
+                this._mapApi.setExtent(zoomExtent);
+               }
+            
         }
     }
 
@@ -368,6 +392,7 @@ interface Layers {
     title: string;
     legend: object[];
     description: string;
+    area: object;
 }
 
 export interface SliderDescription {
