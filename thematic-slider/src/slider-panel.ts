@@ -2,6 +2,7 @@ import { SLIDER_TEMPLATE } from './template';
 import { SliderControls } from './slider-controls';
 
 import { Observable, BehaviorSubject } from 'rxjs';
+import * as geo from './geometry';
 
 export class SliderPanel {
     private _mapApi: any;
@@ -20,6 +21,20 @@ export class SliderPanel {
     private _stack: boolean = false;
     private _legendStack: boolean = false;
     public _isPlaying: boolean;
+
+    private _extent: geo.Extent =
+    {
+        'xmin':  -2681470, 
+        "xmax":  3549492,
+        "ymax": 3482193,
+        "ymin":  -883440,
+        spatialReference: {
+            "wkid": 3978,
+            "latestWkid": 3978,
+            "wkt": ''
+            },
+        getCenter: Function     
+  };
 
     // *** Static observable for the class ***
     // observable to detect play/pause modification
@@ -313,9 +328,26 @@ export class SliderPanel {
         // if stack, set visible all layers from 0 to the active one
         if (!this._stack) {
             this._mapApi.layersObj.getLayersById(this.active.id).forEach(layer => layer.visibility = true);
+   
+            for (let layer of this._layers) {
+                if (this.active.id == layer.id) {
+                   if (typeof layer.area === 'undefined') {
+                       this._mapApi.setExtent(this._extent);
+                   }
+                   else {
+                       this._mapApi.setExtent(layer.area);
+                     }
+               }
+            }
         } else {
             for (let layer of this._layers.slice(0, this._index + 1)) {
                 this._mapApi.layersObj.getLayersById(layer.id).forEach(layer => layer.visibility = true);
+           
+                if (typeof layer.area === 'undefined') {
+                    this._mapApi.setExtent(this._extent);
+               }
+                else
+                    this._mapApi.setExtent(layer.area);
             }
         }
     }
@@ -368,6 +400,7 @@ interface Layers {
     title: string;
     legend: object[];
     description: string;
+    area: object;  
 }
 
 export interface SliderDescription {
