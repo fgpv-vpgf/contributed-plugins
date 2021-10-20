@@ -30,7 +30,12 @@
     right: 10px;
 }
 
-
 .rv-thslider-desc {
-   white-space: pre
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    white-space: pre-wrap !important;
+   img {
+        width:200px;
+        height:200px;
+   }
 }
