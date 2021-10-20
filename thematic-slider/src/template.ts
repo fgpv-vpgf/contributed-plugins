@@ -18,7 +18,7 @@ export const DESCRIPTION_TEMPLATE = `
         <div class="rv-thslider-legend"></div>
         <md-divider></md-divider>
     </div>
-    <div class="rv-thslider-desc" markdown="1" style="display:block" ng-bind-html=ctrl.description></div>
+    <div class="rv-thslider-desc" ng-bind-html=ctrl.description></div>
     <span class="rv-thslider-index">{{ ctrl.index }}</span>
 </div>`;
 

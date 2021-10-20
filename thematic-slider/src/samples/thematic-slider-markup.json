@@ -268,7 +268,7 @@
     },
     "plugins": {
       "thematicSlider": {
-        "open": false,
+        "open": true,
         "autorun": false,
         "loop": false,
         "slider": true,
@@ -279,8 +279,8 @@
             "duration": 3000,
             "title": "Hydro Electric",
             "legend": [],
-            "description": "Lorem,\n\r  ipsum dolor sit amet **bold text**,consectetur adipiscing elit. Fusce et pulvinar odio, id tincidunt mi. Phasellus dictum nulla tortor, vitae facilisis arcu blandit eget. Duis eget aliquet quam. Mauris maximus malesuada tortor, vitae sollicitudin orci. Maecenas eu tellus molestie, ornare lorem eget, semper lectus. Phasellus vitae elementum nisi. Nunc vulputate, lectus et accumsan tincidunt, nibh quam vehicula eros, at tempus neque libero sed orci. In nunc arcu, tincidunt in condimentum sed, congue a dolor. Morbi vulputate magna et ante fermentum auctor. Nunc suscipit ultrices lorem ac finibus. Vivamus convallis nisi lorem, quis tempor urna tincidunt nec. Donec quis urna eget nunc elementum tincidunt. Etiam iaculis ornare sapien, sed blandit sapien dictum quis. Praesent cursus nec eros eu volutpat."
-          }, {
+            "description": "Lo <br> [Markdown Guide](https://www.markdownguide.org)32\n em,\n <b> \n blockquote  \n </b> \n ipsum \n  <div> <a href=\"www.google.ca\" target=\"_blank\" >Google</a> </div> c \n \n ![fox](https://images.unsplash.com/photo-1634925436290-84ddb3ff12d9?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=70&q=80) \n \n h \n  \n sit amet **bold text**,consectetur   [FGP Plugins](https://github.com/fgpv-vpgf/contributed-plugins) \n Fusce et pulvinar odio, id tincidunt mi. Phasellus dictum nulla \n tortor,  vitae facilisis arcu blandit eget. Duis eget aliquet quam. Mauris maximus malesuada tortor, vitae sollicitudin orci. Maecenas eu tellus molestie, ornare lorem eget, semper lectus. Phasellus vitae elementum nisi. Nunc vulputate, lectus et accumsan tincidunt, nibh quam vehicula eros, at tempus neque libero sed orci. In nunc arcu, tincidunt in condimentum sed, congue a dolor. Morbi vulputate magna et ante fermentum auctor. Nunc suscipit ultrices lorem ac finibus. Vivamus convallis nisi lorem, quis tempor urna tincidunt nec. Donec quis urna eget nunc elementum tincidunt. Etiam iaculis ornare sapien, sed blandit sapien dictum quis. Praesent cursus nec eros eu volutpat."
+          }, {  
             "id": "1",
             "duration": 3000,
             "title": "Petroleum",

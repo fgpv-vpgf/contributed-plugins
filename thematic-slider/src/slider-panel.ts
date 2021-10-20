@@ -2,7 +2,8 @@ import { SLIDER_TEMPLATE } from './template';
 import { SliderControls } from './slider-controls';
 
 import { Observable, BehaviorSubject } from 'rxjs';
-const markdown  = require('markdown').markdown;
+
+const markdownit  = require('markdown-it');
 
 export class SliderPanel {
     private _mapApi: any;
@@ -167,13 +168,17 @@ export class SliderPanel {
      * @function setPanelInfo
      */
     private setPanelInfo() {
+
+        let md = new markdownit({
+                html:  true,
+                linkify: true,
+                typographer: true
+        });
         // set title
         this._panelSlider.header.title = this.active.title;
 
-        // set panel content, it will create the legend section
-       SliderPanel.setDescription({ desc: markdown.toHTML(this.active.description), index: `${this._index + 1}/${this._layers.length}` });
-   
-     //   SliderPanel.setDescription({ desc: this.active.description, index: `${this._index + 1}/${this._layers.length}` });
+        SliderPanel.setDescription({ desc: md.render(this.active.description), index: `${this._index + 1}/${this._layers.length}` });
+
     }
 
     /**
