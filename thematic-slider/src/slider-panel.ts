@@ -99,6 +99,10 @@ export class SliderPanel {
         // set layers from config
         this._layers = config.layers;
 
+        // permits display of thematic panel over layers panel
+        let closeBtn = this._panelSlider.header.closeButton;
+        closeBtn = this._panelSlider.header.closeButton.css('visibility','hidden');
+
         // check if all layers are loaded before starting the animation
         this._mapApi.layersObj.layerAdded.subscribe((addedLayer: any) => {
             // check if loaded layer is inside the config
