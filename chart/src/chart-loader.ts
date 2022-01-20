@@ -30,8 +30,8 @@ export class ChartLoader {
     static defaultColors: string[] = [
         '#e6194b',
         '#3cb44b',
-        '#ffe119',
         '#4363d8',
+        '#ffe119',
         '#f58231',
         '#911eb4',
         '#46f0f0',
@@ -439,54 +439,94 @@ export class ChartLoader {
 
             return new Date(`${dateString.trim()}T00:00:00`);
         }
+        // A new attribute "datatype" is introduced to differentiate single or multifield data. 
+        // By default it will be treated as singlefield  
+        if (typeof config.datatype === 'undefined' || config.datatype === 'singlefield') {
+            // loop trough datasets to add from config
+            for (let data of config.data) {
+                const fieldData = data.measure;
+                const prefix = data.prefix;
+                const suffix = data.suffix;
+                const values = attrs.data.find(i => i.field === fieldData).value;
 
-        // loop trough datasets to add from config
-        for (let data of config.data) {
-            const fieldData = data.measure;
-            const prefix = data.prefix;
-            const suffix = data.suffix;
-            const values = attrs.data.find(i => i.field === fieldData).value;
+                // if regex is provided, it is because there is multiple datasets in the value field
+                // only do this for single type where we can have more then 1 dataset by field
+                // for combine, there is 2 values by field (x and y). We do not support more then 1 dataset
+                let parseValues = (data.regex !== '' && data.type === 'single') ?
+                    values.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean) : [values];
 
-            // if regex is provided, it is because there is multiple datasets in the value field
-            // only do this for single type where we can have more then 1 dataset by field
-            // for combine, there is 2 values by field (x and y). We do not support more then 1 dataset
-            let parseValues = (data.regex !== '' && data.type === 'single') ?
-                values.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean) : [values];
+                // loop trough array of data inside a field values, first check if there is data to parse
+                if (parseValues[0] !== null) {
+                    for (let [i, parse] of parseValues.entries()) {
+                        // add values and colors
+                        const item: any = {
+                            data: [],
+                            label: data.label.values !== '' ? this.getLabels(data.label, attrs, i)[i] : '',
+                            backgroundColor: colors,
+                            suffix: suffix,
+                            prefix: prefix
+                        };
 
-            // loop trough array of data inside a field values, first check if there is data to parse
-            if (parseValues[0] !== null) {
-                for (let [i, parse] of parseValues.entries()) {
-                    // add values and colors
+                        // loop trough values
+                        if (data.type === 'single') {
+                            parse = parse.toString().split(data.split);
+                            for (let value of parse) {
+                                item.data.push(value);
+                            }
+                        } else if (data.type === 'combine') {
+                            let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
+                            for (let val of parseCombValues) {
+                                let splitVal = val.split(data.split);
+
+                                // force time to get the right day or use number
+                                let valueParsed = (xType === 'linear') ? splitVal[0] : parseDate(splitVal[0]);
+                                item.data.push({ x: valueParsed, y: splitVal[1] });
+                            }
+                        }
+
+                        parsed.datasets.push(item);
+                    }
+                }
+            }
+        }
+        else {
+            let splitChar;
+            let prefix;
+            let suffix;
+            console.log('')
+            // data is being filtered based on the config attributes.
+            const chartData = attrs.data.filter(i =>
+                config.data.some(function (j) {
+                    splitChar = j.split;
+                    prefix = j.prefix; 
+                    suffix = j.suffix;
+                    return j.measure === i.field;
+                })
+            ).map(obj => ({ ...obj, splitcount: typeof obj.value !== 'undefined' ? obj.value.split(splitChar).length : 0 }));
+
+            if (chartData.length > 0) {
+                const cloneChartData = JSON.parse(JSON.stringify(chartData));
+                let len = cloneChartData.sort(function (x, y) {
+                    return y.splitcount - x.splitcount;
+                })[0].splitcount;
+
+                for (let i = 0; i < len; i++) {
                     const item: any = {
                         data: [],
-                        label: data.label.values !== '' ? this.getLabels(data.label, attrs, i)[i] : '',
+                        label: '',
                         backgroundColor: colors,
                         suffix: suffix,
-                        prefix: prefix
+                        prefix: prefix,
+                        isMultiField: true
                     };
-
-                    // loop trough values
-                    if (data.type === 'single') {
-                        parse = parse.toString().split(data.split);
-                        for (let value of parse) {
-                            item.data.push(value);
-                        }
-                    } else if (data.type === 'combine') {
-                        let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
-                        for (let val of parseCombValues) {
-                            let splitVal = val.split(data.split);
-
-                            // force time to get the right day or use number
-                            let valueParsed = (xType === 'linear') ? splitVal[0] : parseDate(splitVal[0]);
-                            item.data.push({ x: valueParsed, y: splitVal[1] });
-                        }
+                    for (let j = 0, len = chartData.length; j < len; j++) {
+                        if (typeof chartData[j].value !== 'undefined')
+                                item.data.push(chartData[j].value.split(splitChar)[i]);
                     }
-
                     parsed.datasets.push(item);
                 }
             }
         }
-
         return parsed;
     }
 
@@ -498,14 +538,22 @@ export class ChartLoader {
      * @param {Number} index the index to start initialize to 0 if not provided
      * @return {String[]} the array of labels
      */
-    static getLabels(config: any, attrs: any, index = 0): string[] {
+    static getLabels(config: any, attrs: any, index = 0, layersData: any = null): string[] {
         let labels = config.split !== '' ? config.values.split(config.split) : config.values;
         if (config.type === 'field') {
             const field = (labels instanceof Array) ? labels[0] : labels;
             const temp = attrs.data.find((i: any) => i.field === field).value;
             labels = config.split !== '' ? temp.split(config.split) : temp;
         }
+        else if (config.type === 'multifield') {
 
+            if (!(labels instanceof Array)) {
+                labels = [];
+                for (let j = 0, len = layersData.length; j < len; j++) {
+                    labels.push(layersData[j].measure);
+                }
+            }
+        }
         // labels needs to be an array, if not create an array of values
         // this mean we need to create an array of index length to make sure
         // to retreive the right value
