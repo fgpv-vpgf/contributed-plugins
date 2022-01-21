@@ -812,13 +812,8 @@ export class SliderBar {
                             `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`);
                     }
                 } else if (layerType === 'esriImage') {
-                    // image server works differently. Instead of setting the query, we set the time extent for the map
-                    // because image server will work with single range type, we add 1 day to end date to create an array
                     const dates = this.getDate(range);
-                    const timeExtent = new this._myBundle.timeExtent();
-                    timeExtent.startTime = new Date(dates[0]);
-                    timeExtent.endTime = new Date(dates[1]);
-                    this._mapApi.esriMap.setTimeExtent(timeExtent);
+                    mapLayer.esriLayer.setDefinitionExpression(`${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`, false);
                 } else if (layerType === 'ogcWms') {
                     // the way it works with string (we can use wildcard like %)
                     // mapLayer.esriLayer.setCustomParameters({}, {layerDefs: "{'0': \"CLAIM_STAT LIKE 'SUSPENDED'\"}"});
@@ -866,7 +861,7 @@ export class SliderBar {
                     const filterName = this._config.type === 'number' ? 'rangeSliderNumberFilter' : 'rangeSliderDateFilter';
                     mapLayer.setFilterSql(filterName, ``);
                 } else if (layerType === 'esriImage') {
-                    this._mapApi.esriMap.setTimeExtent(null);
+                    mapLayer.esriLayer.setDefinitionExpression(null, false);
                 } else if (layerType === 'ogcWms') {
                     mapLayer.esriLayer.setCustomParameters({}, { '':'' });
                 }

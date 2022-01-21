@@ -1,5 +1,7 @@
 import { SliderManager } from './slider-manager';
 
+let sliderObj: SliderManager;
+
 export default class RangeSlider {
     /**
     * Plugin init
@@ -26,7 +28,7 @@ export default class RangeSlider {
         // get ESRI TimeExtent dependency (for image server and ESRI time aware layer - TimeInfo) and start slider creation
         let myBundlePromise = (<any>window).RAMP.GAPI.esriLoadApiClasses([['esri/TimeExtent', 'timeExtent']]);
         myBundlePromise.then(myBundle => {
-            new SliderManager(mapApi, this.panel, extendConfig, myBundle, RangeSlider.prototype.panelOptions);
+            sliderObj = new SliderManager(mapApi, this.panel, extendConfig, myBundle, RangeSlider.prototype.panelOptions);
         });
     }
 
@@ -39,19 +41,14 @@ export default class RangeSlider {
         let extendConfig: any = {}
 
         if (typeof config !== 'undefined') {
-            extendConfig = { ...RangeSlider.prototype.layerOptions, ...config.params };
-            extendConfig.controls = config.controls;
-            extendConfig.layers = config.layers;
-            extendConfig.open = config.open;
-            extendConfig.loop = config.loop;
-            extendConfig.lock = config.lock;
-            extendConfig.reverse = config.reverse;
-            extendConfig.autorun = config.autorun;
-            extendConfig.maximize = typeof config.maximize !== 'undefined' ? config.maximize : RangeSlider.prototype.layerOptions.maximize;
-            extendConfig.maximizeDesc = typeof config.maximizeDesc !== 'undefined' ? config.maximizeDesc : RangeSlider.prototype.layerOptions.maximizeDesc;
+            extendConfig = { ...RangeSlider.prototype.layerOptions, ...config };
+            extendConfig.params = { ...RangeSlider.prototype.layerOptions.params, ...config.params };
         } else {
             extendConfig = RangeSlider.prototype.layerOptions;
         }
+
+        // put params to top level
+        extendConfig = Object.assign(Object.assign(extendConfig, extendConfig.params), extendConfig.params)
 
         return extendConfig;
     }
@@ -63,13 +60,18 @@ export default interface RangeSlider {
     translations: any,
     panel: any,
     panelOptions: any,
-    layerOptions: any
+    layerOptions: any,
+    getSlider: any,
 }
 
 export interface Range {
     min: number,
     max: number,
     staticItems?: number[]
+}
+
+RangeSlider.prototype.getSlider = () => { 
+    return sliderObj;
 }
 
 RangeSlider.prototype.panelOptions = {
@@ -81,25 +83,28 @@ RangeSlider.prototype.layerOptions = {
     open: true,
     maximize: true,
     maximizeDesc: true,
-    autorun: false,
-    loop: false,
-    precision: '0',
-    delay: 3000,
+    autoinit: true,
     lock: false,
     export: false,
     reverse: false,
-    rangeType: 'dual',
-    stepType: 'dynamic',
-    startRangeEnd: false,
-    rangeInterval: -1,
-    range: { min: null, max: null },
-    limit: { min: null, max: null },
-    limits: [],
-    type: 'date',
-    layers: [],
+    autorun: false,
+    loop: false,
     controls: ['lock', 'loop', 'delay', 'refresh'],
-    units: '',
-    description: ''
+    params: {
+        delay: 3000,
+        type: 'date',
+        stepType: 'dynamic',
+        rangeType: 'dual',
+        startRangeEnd: false,
+        rangeInterval: -1,
+        precision: '0',
+        range: { min: null, max: null },
+        limit: { min: null, max: null },
+        limits: [],
+        units: '',
+        description: ''
+      },
+    layers: []
 };
 
 RangeSlider.prototype.translations = {
