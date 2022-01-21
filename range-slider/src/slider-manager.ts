@@ -42,6 +42,10 @@ export class SliderManager {
     private _myBundle: any;
     private _panelOptions: any;
     private _slider: SliderBar;
+    private _ids: string[];
+
+    destroy: any;
+    private _layers: Layer[] = [];
 
     private _button: any;
 
@@ -64,6 +68,8 @@ export class SliderManager {
         this._myBundle = myBundle;
         this._panelOptions = panelOptions;
 
+        this.destroy = this.destroyPluginSliderAll;
+
         // setup the xml to json parser use to read WMS getCap
         this._xmlParser = new Parser({
             normalizeTags: true,
@@ -71,8 +77,8 @@ export class SliderManager {
         });
 
         // get array of id(s) and set layer(s)
-        let ids: string[] = this._config.layers.map(layer => layer.id);
-        const layers: Layer[] = [];
+        this._ids = this._config.layers.map(layer => layer.id);
+        this._layers = [];
         let nbLayers: number = 0;
 
         // variable to check if a layer is in process of loading (no config)
@@ -83,19 +89,21 @@ export class SliderManager {
         // when a layer is added, check if it is a needed one
         this._mapApi.layersObj.layerAdded.subscribe((layer: any) => {
             // if it is the right layer, add it to the array of layers
-            if (ids.indexOf(layer.id) !== -1) {
+            if (this._config.layers.length > 0 && this._ids.indexOf(layer.id) !== -1) {
                 nbLayers += 1;
 
                 // find layer info, then add it and the layer to the array of layers
                 const layerInfo = this._config.layers.find(i => i.id === layer.id);
-                layers.push({ layer, layerInfo });
+                this._layers.push({ layer, layerInfo });
 
                 // if all layers are loaded, setup the configuration
                 // ! if layer not loaded and config start, it will fail because definition query can't be set!
                 if (nbLayers === this._config.layers.length) {
-                    this.setupConfiguredLayer(layers);
+                    this.setupConfiguredLayer(this._layers);
                 }
-            } else if (ids.length === 0 && typeof layer.type !== 'undefined') {
+            } else if ((this._config.layers.length === 0 || !this._config.autoinit) && typeof layer.type !== 'undefined') {
+                if (this._config.autoinit) this._layers.length = 0;
+
                 // if there is no configured layer, check if the new added layer is time aware
                 // initialize the layer name so we set index and timer only once
                 if (layerId === '') {
@@ -110,28 +118,46 @@ export class SliderManager {
                 // create layer info
                 // ! we assume it is time aware, we will query metadata to know if it is the case
                 const layerInfo = { id: layer.id, field: '', isTimeAware: true }
-                layers.push({ layer, layerInfo });
-                this._config.layers.push(layerInfo);
+                this._layers.push({ layer, layerInfo });
+
+                if (this._config.autoinit) this._config.layers.push(layerInfo);
 
                 // create a timer to start init if the number of layers selected is less then the number of layer in the service
                 if (typeof timerId === 'undefined') {
-                        timerId = setTimeout(() => this.setupConfiguredLayer(layers), 3000);
+                    if (this._config.autoinit) timerId = setTimeout(() => this.setupConfiguredLayer(this._layers), 3000);
                 }
 
                 // if all layers from the service are loaded, clear the timeout then init
                 index--;
                 if (index < 0) {
                     clearTimeout(timerId);
-                    this.setupConfiguredLayer(layers);
+                    if (this._config.autoinit) this.setupConfiguredLayer(this._layers);
                 }
 
-                // add one item to ids so a new layer will not initialize a new slider
-                ids = ['done'];
+                // add one item to this._ids so a new layer will not initialize a new slider
+                this._ids = ['done'];
             }
         });
 
         // when we remove a layer check if we need to remove the slider
         this._mapApi.layersObj.layerRemoved.subscribe((layer: any) => {
+            this.destroyPluginSlider(layer, this._layers, this._ids, nbLayers);
+        });
+
+        return this._button;
+    }
+
+
+    /**
+     * Destroy the slider for selected layer layers
+     * @function destroyPluginSlider
+     * @param {Layer} layer Layer to remove
+     * @param {Layer[]} layers Array of layers on the map
+     * @param {Number[]} ids Array of layers id
+     * @param {Number} nbLayers Number of layers
+     */
+    destroyPluginSlider(layer, layers, ids, nbLayers) {
+        try {
             // case for configure layer.... remove from array
             if (ids[0].length > 0) {
                 const index = ids.indexOf(layer.id);
@@ -142,30 +168,65 @@ export class SliderManager {
                 }
             }
 
+            // reset the config object and parameters
+            this._config.type = 'date';
+            this._config.range = { min: null, max: null };
+            this._config.limit = { min: null, max: null };
+            this._config.limits = [];
+            this._config.units = '';
+            this._config.description = '';
+            this._config.layers = [];
+
+            // empty ids and layers so the plugins will reset themself from a time aware layer
+            ids = [];
+            layers.splice(0, 1);
+
             // if array is empty or it was a time aware added layer destroy
             if (ids.length === 0 || ids[0] === 'done') {
                 // reset the definition query and destroy the plugin
                 if (typeof this._slider !== 'undefined') {
                     this._slider.resetDefinitionQuery();
-                    this._slider.destroy();
+                    this._panel.destroy();
                     document.querySelector(`[aria-label="${this._button.label}"]`).remove();
+                    this._slider.destroy();
                 }
-                this._panel.destroy();
-
-                // reset the config object and parameters
-                this._config.type = 'date';
-                this._config.range = { min: null, max: null };
-                this._config.limit = { min: null, max: null };
-                this._config.limits = [];
-                this._config.units = '';
-                this._config.description = '';
-                this._config.layers = [];
-
-                // empty ids and layers so the plugins will reset themself from a time aware layer
-                ids = [];
-                layers.splice(0, 1);
             }
-        });
+        } catch (error) {}
+    }
+
+     /**
+     * Destroy the slider for all layers
+     * @function destroyPluginSliderAll
+     */
+    destroyPluginSliderAll() {
+        try {
+            this._slider.resetDefinitionQuery();
+
+            // reset the config object and parameters
+            this._config.type = 'date';
+            this._config.type = 'date';
+            this._config.stepType = 'dynamic';
+            this._config.rangeType = 'dual';
+            this._config.startRangeEnd = false;
+            this._config.rangeInterval = -1;
+            this._config.precision = '0';
+
+            this._config.range = { min: null, max: null };
+            this._config.limit = { min: null, max: null };
+            this._config.limits = [];
+            this._config.units = '';
+            this._config.description = '';
+            this._config.layers = [];
+
+            this._ids = [];
+
+            if (typeof this._slider !== 'undefined') {
+                this._panel.destroy();
+                document.querySelector(`[aria-label="${this._button.label}"]`).remove();
+                if (typeof document.getElementsByClassName('slider-desc-layers')[0] !== 'undefined') document.getElementsByClassName('slider-desc-layers')[0].textContent = '';
+                this._slider.destroy();
+            }
+        } catch (error) {}
     }
 
     /**
@@ -174,6 +235,12 @@ export class SliderManager {
      * @param {Layer[]} layers Array of layers to setup
      */
     setupConfiguredLayer(layers: Layer[]): void {
+        if (!this._config.autoinit) {
+            this.destroyPluginSliderAll();
+            this._config.layers.push(layers[0].layerInfo);
+            this._config.type = (layers[0].layer.type === 'ogcWms') ? 'wmst' : 'date';
+        }
+
         // create panel
         this._panel = this._mapApi.panels.create('rangeSlider');
         this._panel.element.css(this._panelOptions);
@@ -237,8 +304,16 @@ export class SliderManager {
                     const staticItems = [...new Set(values.map(item => item.staticItems).flat())];
                     this._config.limit.staticItems = typeof staticItems === 'undefined' ? [] : staticItems.sort((a, b) => { return a - b });
 
-                    this.setDescription(layers);
-                    this.initializeSlider();
+                    // filter only added layers
+                    const arrIds = this._config.layers.map((item) => { return item.id });
+                    const arrLayers = layers.filter(item => arrIds.includes(item.layer.id));
+
+                    try {
+                        this.setDescription(arrLayers);
+                        this.initializeSlider();
+                    } catch (error) {
+                        this.destroyPluginSliderAll();
+                    }
                 }
             });
 
@@ -256,8 +331,12 @@ export class SliderManager {
                this._config.range = this._config.limit;
             }
 
-            this.setDescription(layers);
-            this.initializeSlider();
+            try {
+                this.setDescription(layers);
+                this.initializeSlider();
+            } catch (error) {
+                this.destroyPluginSliderAll();
+            }
         }
     }
 
@@ -645,23 +724,25 @@ export class SliderManager {
      */
     onMenuItemClick(): any {
         return () => {
-            this._button.isActive = !this._button.isActive;
+            if (typeof this._mapApi.panels.getById('rangeSlider') !== 'undefined') {
+                this._button.isActive = !this._button.isActive;
 
-            // remove definition query when slider is close and re apply on open
-            if (this._button.isActive) {
-                if (this._presentPlayStateStopped) {
-                    this._slider.play(true);
-                    this._presentPlayStateStopped = false;
+                // remove definition query when slider is close and re apply on open
+                if (this._button.isActive) {
+                    if (this._presentPlayStateStopped) {
+                        this._slider.play(true);
+                        this._presentPlayStateStopped = false;
+                    }
+                    this._slider.setDefinitionQuery(this._slider.activeRange);
+                    this._panel.open();
+                } else {
+                    this._slider.resetDefinitionQuery();
+                    if (this._slider._isPlaying) {
+                        this._presentPlayStateStopped = true;
+                        this._slider.pause();
+                    }
+                    this._panel.close();
                 }
-                this._slider.setDefinitionQuery(this._slider.activeRange);
-                this._panel.open();
-            } else {
-                this._slider.resetDefinitionQuery();
-                if (this._slider._isPlaying) {
-                    this._presentPlayStateStopped = true;
-                    this._slider.pause();
-                }
-                this._panel.close();
             }
         };
     }

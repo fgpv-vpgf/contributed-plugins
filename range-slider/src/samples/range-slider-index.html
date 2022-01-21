@@ -48,9 +48,32 @@
                     <option value="slider-esritimeaware-config-c.json">21. ESRI Time Aware Layer (image server)</option>
                     <option value="slider-wmsttimeaware-config.json">22. WMS Time Aware Layer (single range, static limit from extent)</option>
                     <option value="slider-wmsttimeaware-config-b.json">23. WMS Time Aware Layer (single range, static limit from discrete values)</option>
+                    <option value="slider-expose-access-config.json">24. Expose access to slider functions</option>
                 </select>
             </div>
-         </section>
+        </section>
+        <div id="sliderAccess">
+            <button id="btnView" style="width: 100px" name="button" onClick="showHide()">Show/Hide Slider</button>
+            <button id="btnDestroy" style="width: 100px" name="button" onClick="destroy()">Destroy Slider</button>
+
+            <input id="addLayer" type="text" list="layerslist" onfocus="this.value=''"></input>
+            <datalist id="layerslist">
+                <option value="ESRI time aware feature">
+                <option value="ESRI time aware dynamic"></option>
+                <option value="ESRI image">
+                <option value="WMS-T">
+            </datalist>
+            <button id="btnAddLayer" style="width: 100px" type="button" onclick="addLayer(document.getElementById('addLayer').value)">Add Layer</button>
+
+            <input id="setupLayer" type="text" list="layerssetup" onfocus="this.value=''"></input>
+            <datalist id="layerssetup">
+                <option value="ESRI time aware feature">
+                <option value="ESRI time aware dynamic"></option>
+                <option value="ESRI image">
+                <option value="WMS-T">
+            </datalist>
+            <button id="btnSetup" style="width: 100px" type="button" onclick="setupLayer(document.getElementById('setupLayer').value)">Setup Layer</button>
+        </div>
         <div
             class="myMap"
             id="mapSlider"
@@ -122,5 +145,86 @@
         </script>
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Object.entries,Object.values,Array.prototype.find,Array.prototype.findIndex,Array.prototype.values,Array.prototype.includes,HTMLCanvasElement.prototype.toBlob,String.prototype.repeat,String.prototype.codePointAt,String.fromCodePoint,NodeList.prototype.@@iterator,Promise,Promise.prototype.finally"></script>
         <script src="../../fgpv/rv-main.js"></script>
+
+        <script>
+            var params = new URLSearchParams(currentUrl.search);
+            var sampleIndex =  params.get(SAMPLE_KEY) - 1;
+            document.getElementById('sliderAccess').hidden = sampleIndex === 23 ? false : true;
+
+            function showHide() {
+                window.rangeSlider.prototype.getSlider().onMenuItemClick().call();
+            }
+
+            function destroy() {
+                window.rangeSlider.prototype.getSlider().destroyPluginSliderAll();
+            }
+
+            function setupLayer(layerName) {
+                let id = 'null';
+                if (layerName === 'ESRI time aware feature') {
+                    id = 'esriFeature';
+                } else if (layerName === 'ESRI time aware dynamic') {
+                    id = 'esriDynamic';
+                } else if (layerName === 'ESRI image') {
+                    id = 'esriImage';
+                } else if (layerName === 'WMS-T') {
+                    id = 'wmst';
+                }
+
+                const slider = window.rangeSlider.prototype.getSlider();
+                const layers = slider._layers.filter(item => item.layer._id.indexOf(id) !== -1);
+                if (layers.length > 0) {
+                    slider.setupConfiguredLayer(layers);
+                }
+            }
+
+            function addLayer(layerName) {
+                // If you want to add a layer by configuration you can use this
+                let layerJSON;
+                if (layerName === 'ESRI time aware feature') {
+                    layerJSON = {
+                        "id": "esriFeature" + Date.now(),
+                        "name": "DFO feature layer",
+                        "layerType": "esriFeature",
+                        "url": "https://gisp.dfo-mpo.gc.ca/arcgis/rest/services/FGP/Argo_Locations/MapServer/0"
+                    };
+                } else if (layerName === 'ESRI time aware dynamic') {
+                    layerJSON = {
+                        "id": "esriDynamic" + Date.now(),
+                        "name": "DFO dynamic layer",
+                        "layerType": "esriDynamic",
+                        "url": "https://gisp.dfo-mpo.gc.ca/arcgis/rest/services/FGP/Argo_Locations/MapServer/",
+                        "layerEntries": [{
+                            "index": 0,
+                            "nameField": ""
+                        }]
+                    }
+                } else if (layerName === 'ESRI image') {
+                    layerJSON = {
+                        "id": "esriImage" + Date.now(),
+                        "layerType": "esriImage",
+                        "name": "ESRI Image",
+                        "url": "https://www5.agr.gc.ca/atlas/rest/services/app_agclimate_agclimat/agclimate_tx/ImageServer"
+                    }
+                } else if (layerName === 'WMS-T') {
+                    layerJSON = {
+                        "id": "wmst" + Date.now(),
+                        "name": "Geomet",
+                        "layerType": "ogcWms",
+                        "url": "https://geo.weather.gc.ca/geomet?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0&layer=RADAR_1KM_RSNO",
+                        "layerEntries": [{
+                            "id": "RADAR_1KM_RSNO",
+                            "name": "RADAR_1KM_RSNO"
+                        }],
+                        "suppressGetCapabilities": true
+                    }
+                }
+
+                if (typeof layerJSON !== 'undefined') {
+                    // We can use this or below... const myConfigLayer = myMap.layers.addLayer(layerJSON);
+                    window.RAMP.mapInstances[0].fgpMapObj.addConfigLayer(layerJSON);
+                }
+            }
+        </script>
     </body>
 </html>
