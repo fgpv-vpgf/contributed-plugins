@@ -197,4 +197,20 @@ export class ChartParser {
         ChartParser._nbFeats++;
         ChartParser.setCharts(tempObj);
     }
+
+    /**
+     * Populate the label selector control, the control will launch the chart creation
+     * @function populateSelectLabel
+     * @param {String} selectedChart selected chart from combo.
+     * @param {Any} self current object.
+     */    
+    static populateLabelSelect(selectedChart: string, self: any): void {
+        const item = ChartParser._chartAttrs.find((val: any) => val.index === selectedChart);
+        if (item.chartType === "line") {
+            item.config.layers[0].data = item.config.layers[0].data.map((obj, i) => ({ ...obj, key: i }));
+            let labelData = JSON.parse(JSON.stringify(item.config.layers[0].data));
+            labelData.push({ "measure": "ALL", "key": -1 });
+            self.labels = labelData.sort((a, b) => (a.key < b.key) ? 1 : -1)
+        }
+    }
 }

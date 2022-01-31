@@ -14,18 +14,33 @@ export const NO_DATA_TEMPLATE = `
 <div class="rv-chart-nodata">{{ 'plugins.chart.noValidData' | translate }}</div>`;
 
 export const CHART_SELECT_TEMPLATE = `
-<div ng-controller="ChartSelectCtrl as ctrl" class="rv-chart-select">
-    <md-input-container class="md-block" md-no-float flex>
-        <label>{{ 'plugins.chart.selectChart' | translate }}</label>
-        <md-select
-            aria-label="{{ 'plugins.chart.selectChart' | translate }}"
-            ng-model="ctrl.selectedChart"
-            ng-change="ctrl.selectChart()">
-            <md-option ng-repeat="(key, value) in ctrl.charts" ng-value="key">
-                {{ value }}
-            </md-option>
-        </md-select>
-    </md-input-container>
+<div ng-controller="ChartSelectCtrl as ctrl">
+    <div class="rv-chart-select" style="float:left">
+        <md-input-container class="md-block" md-no-float flex>
+            <label>{{ 'plugins.chart.selectChart' | translate }}</label>
+            <md-select
+                aria-label="{{ 'plugins.chart.selectChart' | translate }}"
+                ng-model="ctrl.selectedChart"
+                ng-change="ctrl.selectChart()">
+                <md-option ng-repeat="(key, value) in ctrl.charts" ng-value="key">
+                    {{ value }}
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </div>
+    <div class="rv-chart-select rv-chart-label-select"  style="float:left; display: none;" >
+        <md-input-container class="md-block" md-no-float flex>
+            <label>{{ 'plugins.chart.selectLabel' | translate }}</label>
+            <md-select
+                aria-label="{{ 'plugins.chart.selectLabel' | translate }}"
+                ng-model="ctrl.selectedLabel"
+                ng-change="ctrl.LabelChange()">
+                <md-option ng-repeat="label in ctrl.labels" ng-value="{{label.key}}">
+                    {{ label.measure }}
+                </md-option>
+            </md-select>
+        </md-input-container>
+    </div>
 </div>`;
 
 export const CHART_TEMPLATE = `

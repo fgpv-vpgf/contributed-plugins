@@ -40,6 +40,10 @@ export class ChartControls {
             this.selectedChart = '';
             this.charts = {};
 
+            // set label and label array.
+            this.selectedLabel = -1;
+            this.labels = {};
+
             // get charts to populate the select option
             ChartParser.getCharts().subscribe(value => {
                 if (_.isEmpty(value)) {
@@ -48,6 +52,7 @@ export class ChartControls {
                     if (_.isEmpty(this.charts)) {
                         this.selectedChart = "0";
                         (<any>that).createChart(this.selectedChart);
+                        ChartParser.populateLabelSelect(this.selectedChart, this);
 
                         // remove loading splash
                         panel.body.find('.rv-chart-loading').css('display', 'none');
@@ -56,8 +61,16 @@ export class ChartControls {
                 }
             });
 
+            // This actually populate the chart and labels combo in panel.
             this.selectChart = () => {
                 (<any>that).createChart(this.selectedChart);
+                ChartParser.populateLabelSelect(this.selectedChart, this);
+                this.selectedLabel = -1;
+            }
+
+            // This actually populate the label in panel.
+            this.LabelChange = () => {
+                (<any>that).createChart(this.selectedChart, this.selectedLabel != -1 ? this.selectedLabel : null);
             }
         });
 
@@ -69,16 +82,21 @@ export class ChartControls {
      * Create the chart
      * @function createChart
      * @param {String} selectedChart selected chart
+     * @param {Number} selectedLabel selected label
      */
-    private createChart(selectedChart: string): void {
-        const item = ChartParser._chartAttrs.find((val: any) => val.index === selectedChart);
-
+    private createChart(selectedChart: string, selectedLabel: number = null): void {
+        const item = JSON.parse(JSON.stringify(ChartParser._chartAttrs.find((val: any) => val.index === selectedChart)));
+        if (selectedLabel !== null) {
+            item.config.layers[0].data = item.config.layers[0].data.filter(e => e.key === selectedLabel);
+        }
         // create the chart from chart type
         if (item.chartType === 'pie') {
             this.loader.createPieChart(item.feature, item.config);
         } else if (item.chartType === 'bar') {
             this.loader.createBarChart(item.feature, item.config);
         } else if (item.chartType === 'line') {
+            // Display Label combo.
+            $('.rv-chart-label-select').css('display', 'block');
             this.loader.createLineChart(item.feature, item.config);
         }
 

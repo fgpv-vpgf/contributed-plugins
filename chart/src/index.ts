@@ -138,12 +138,14 @@ Chart.prototype.translations = {
         chartAria: 'Representation of the element\'s dataset using a graph. For screen reader, to access the dataset, use the table representation or the details panel information',
         noValidData: 'No valid data to create the graph!',
         selectChart: 'Select Chart',
+        selectLabel: 'Select Label',
         legendTooltip: 'Click on legend item to show/hide'
     },
     'fr-CA': {
         chartAria: 'Représentation du jeu de données de l\'élément à l\'aide d\'un graphique. Pour les lecteurs d\'écran, pour accéder à l\'ensemble des données, utilisez la représentation sous forme de tableau ou le panneau d\'information détaillé.',
         noValidData: 'Pas de donnée valide pour créer le graphique!',
         selectChart: 'Choisir le graphique',
+        selectLabel: "Choisir l'étiquette",
         legendTooltip: 'Cliquez sur les éléments de la légende pour les afficher/masquer'
     }
 };
