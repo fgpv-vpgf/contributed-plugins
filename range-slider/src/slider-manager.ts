@@ -197,12 +197,12 @@ export class SliderManager {
 
                 // will be use if the user doesn't specified if layer as time aware. If time aware, information will be extracted from time dimension
                 if (item.layerInfo.isTimeAware) {
-                    if (layerType === 'esriDynamic' || layerType === 'esriFeature' || layerType === 'esriImage') {
+                    if (layerType === 'esriDynamic' || layerType === 'esriFeature' || layerType === 'esriImage' || layerType === 'esriTile') {
                         promises.push(this.setTimeESRILimits(item));
                     } else if (layerType === 'ogcWms') {
                         promises.push(this.setTimeWMSLimits(item));
                     }
-                } else if (layerType === 'esriDynamic' || layerType === 'esriFeature' || layerType === 'esriImage') {
+                } else if (layerType === 'esriDynamic' || layerType === 'esriFeature' || layerType === 'esriImage' || layerType === 'esriTile') {
                     promises.push(this.settNotTimeAwareLimits(item));
                 }
             }
