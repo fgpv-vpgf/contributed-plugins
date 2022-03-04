@@ -1,4 +1,4 @@
-export default class Constants {
+export default class Common {
     public static _panelOptionsShrink: object = {
         'margin-top': '60px',
         'margin-bottom': '60px',
@@ -12,4 +12,12 @@ export default class Constants {
         'margin-right': '0',
         'margin-left': '0'
     };
+
+    public static _controlIdsOrClass = {
+        btnExpendChartPaneID : '[id^=btnExpendChartPane]'
+    }
+
+    public static constants = {
+        rotateCssClass: "rotate"
+    }
 }
