@@ -4,7 +4,7 @@ import {
 
 import { ChartLoader } from './chart-loader';
 import { ChartParser } from './chart-parser';
-import constants from './common';
+import Common from './common';
 
 const _ = require('lodash');
 
@@ -75,18 +75,16 @@ export class ChartControls {
             }
 
             this.MaximizeChart = () => {
-                const rotateCssClass = "rotate"
-                const tooltipAttr = "aria-label";
-                const element = document.querySelector('[id^=btnExpendChartPane]');
-                if (!element.classList.contains(rotateCssClass)) {
-                    const panelOptions = constants._panelOptionsExpand;
+                const tooltipAttr = 'aria-label';
+                const element = document.querySelector(Common._controlIdsOrClass.btnExpendChartPaneID);
+                if (!element.classList.contains(Common.constants.rotateCssClass)) {
+                    const panelOptions = Common._panelOptionsExpand;
                     panel.element.css(panelOptions);
-                    element.classList.add(rotateCssClass);
-                }
-                else{
-                    const panelOptions = constants._panelOptionsShrink;
+                    element.classList.add(Common.constants.rotateCssClass);
+                }else{
+                    const panelOptions = Common._panelOptionsShrink;
                     panel.element.css(panelOptions);
-                    element.classList.remove(rotateCssClass);
+                    element.classList.remove(Common.constants.rotateCssClass);
                 }
             }
         });

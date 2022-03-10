@@ -6,7 +6,7 @@ import { ChartLoader } from './chart-loader';
 import { DetailsManager } from './details-manager';
 import { ChartControls } from './chart-controls';
 import { ChartParser } from './chart-parser';
-import constants from './common';
+import Common from './common';
 
 const _ = require('lodash');
 
@@ -18,7 +18,7 @@ export default class Chart {
     private _panel: any;
     private _panelDetails: DetailsManager;
     private _loader: ChartLoader;
-    public _panelOptions: object = constants._panelOptionsShrink;
+    public _panelOptions: object = Common._panelOptionsShrink;
 
     /**
     * Plugin init
@@ -52,6 +52,10 @@ export default class Chart {
         // subscribe to panel closing to destroy existing graph and slider
         this._panel.closing.subscribe(() => {
             this._loader.destroy();
+            const element = document.querySelector(Common._controlIdsOrClass.btnExpendChartPaneID);
+            const panelOptions = Common._panelOptionsShrink;
+            this._panel.element.css(panelOptions);
+            element.classList.remove(Common.constants.rotateCssClass);
         });
 
         // close the panel on esc
