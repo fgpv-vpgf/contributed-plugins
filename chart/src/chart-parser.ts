@@ -105,9 +105,9 @@ export class ChartParser {
                 'values': value,
                 'date': layerConfig.data[0].date,
                 'label': {
-                  'type': 'config',
-                  'values': value,
-                  'split': ''
+                    'type': 'config',
+                    'values': value,
+                    'split': ''
                 },
                 'regex': '\\(|\\),\\(|\\)',
                 'split': ',',
@@ -143,7 +143,7 @@ export class ChartParser {
 
         data.features.forEach((feat: any) => {
             if (typeof attrValue === 'undefined' || attrValue === feat.attributes[layerConfig.data[index].values]) {
-                values.push(`(${new Date(feat.attributes[layerConfig.data[index].date]).toJSON().slice(0,10)},${feat.attributes[layerConfig.data[index].measure]})`);
+                values.push(`(${new Date(feat.attributes[layerConfig.data[index].date]).toJSON()},${feat.attributes[layerConfig.data[index].measure]})`);
             }
         });
 
@@ -204,7 +204,7 @@ export class ChartParser {
      * @param {String} selectedChart selected chart from combo.
      * @param {Any} self current object.
      */
-     static populateLabelSelect(selectedChart: string, self: any): void {
+    static populateLabelSelect(selectedChart: string, self: any): void {
         const item = this.getItem(selectedChart);
         if (item.chartType === 'line') {
             const labelArrayLength = self.selectedLabel.length;

@@ -84,6 +84,9 @@ export class ChartControls {
                 } else {
                     const panelOptions = Common._panelOptionsShrink;
                     panel.element.css(panelOptions);
+                    const canvasElement = document.querySelector(Common._controlIdsOrClass.canvasRvChart);
+                    canvasElement.style.height = Common._canvasOptionShrink.height;
+                    canvasElement.style.width = Common._canvasOptionShrink.width;
                     element.classList.remove(Common.constants.rotateCssClass);
                 }
             }

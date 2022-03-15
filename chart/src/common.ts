@@ -13,8 +13,14 @@ export default class Common {
         'margin-left': '0'
     };
 
+    public static _canvasOptionShrink: any = {
+        'width': '758px',
+        'height': '350px'
+    }
+
     public static _controlIdsOrClass: any = {
-        btnExpendChartPaneID : '[id^=btnExpendChartPane]'
+        btnExpendChartPaneID: '[id^=btnExpendChartPane]',
+        canvasRvChart: '[id^=rvChart]'
     }
 
     public static constants: any = {

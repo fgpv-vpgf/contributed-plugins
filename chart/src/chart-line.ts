@@ -70,7 +70,7 @@ export class ChartLine {
             return obj.color
         });
         const layerData = config.layers.find(i => i.id === (<any>attrs).layerId);
-        this.setData(layerData, attrs, colors, config.axis.xAxis.type);
+        this.isDateTimeObjForXAxis = this.setData(layerData, attrs, colors, config.axis.xAxis.type);
 
         // set labels options
         this.options.scales.xAxes.push(this.setAxis('xAxes', config.axis.xAxis, attrs));
@@ -85,7 +85,7 @@ export class ChartLine {
      * @param {String[]} colors the array of colors to use
      * @param {String} xType the x axis type, date or linear
      */
-    setData(layerData: object, attrs: object, colors: string[], xType: string) {
+    setData(layerData: object, attrs: object, colors: string[], xType: string): { isDateTimeObjForXAxis: boolean } {
         // get data for the graph and keep a copy for line chart with time
         // we have a slider to refine the graph by years
         this.data = ChartLoader.parse(layerData, attrs, colors, xType);
@@ -109,6 +109,7 @@ export class ChartLine {
             this.setRanges(dataset, 'x');
             this.setRanges(dataset, 'y');
         }
+        return this.data.isDateTimeObjForXAxis;
     }
 
     /**
@@ -201,4 +202,5 @@ export interface ChartLine {
     title: string;
     language: string;
     ranges: any;
+    isDateTimeObjForXAxis: any;
 }
