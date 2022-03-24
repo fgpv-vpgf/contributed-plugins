@@ -98,7 +98,7 @@ export class ChartLoader {
                         values: [0, 25, 50, 75, 100],
                         density: 3,
                         format: {
-                            to: (value: number) => { return this.formatPips(value, type, language, length, isDateTimeObjForXAxis); },
+                            to: (value: number) => { return this.formatPips(value, type, language, length, isDateTimeObjForXAxis, false); },
                             from: Number
                         }
                     }
@@ -145,13 +145,14 @@ export class ChartLoader {
      * @param {Number} length the length of linear pips
      * @return {any} value the formated value
      */
-    formatPips(value: any, type: string, lang: string, length: number, isDateTimeObjForXAxis: boolean = false): any {
+    formatPips(value: any, type: string, lang: string, length: number, isDateTimeObjForXAxis: boolean = false, isCallForTooltip: boolean): any {
+
         if (type === 'linear') {
             value = value.toFixed(length);
         } else if (type === 'date') {
             let date = new Date(value);
 
-            if (!isDateTimeObjForXAxis) {
+            if (!isDateTimeObjForXAxis || !isCallForTooltip) {
                 value = `${date.getFullYear()}-${this.prependZero(date.getMonth() + 1)}-${this.prependZero(date.getDate())}`;
             }
             else {
@@ -175,8 +176,9 @@ export class ChartLoader {
      * @return {Object[]} tooltips as an array of tooltip object
      */
     setTooltips(type: string, language: string, length: number, isDateTimeObjForXAxis: boolean = false): object[] {
-        const tooltips = [{ to: (value: number) => this.formatPips(value, type, language, length, isDateTimeObjForXAxis), from: Number }]
-        tooltips.push({ to: (value: number) => this.formatPips(value, type, language, length, isDateTimeObjForXAxis), from: Number })
+    const tooltips = [{ to: (value: number) => this.formatPips(value, type, language, length, isDateTimeObjForXAxis, true), from: Number }]
+    tooltips.push({ to: (value: number) => this.formatPips(value, type, language, length, isDateTimeObjForXAxis, true), from: Number })
+
         return tooltips;
     }
 
