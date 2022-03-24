@@ -811,7 +811,7 @@ export class SliderBar {
                         mapLayer.setFilterSql('rangeSliderDateFilter',
                             `${layer.field} >= DATE \'${dates[0]}\' AND ${layer.field} <= DATE \'${dates[1]}\'`);
                     }
-                } else if (layerType === 'esriImage') {
+                } else if (layerType === 'esriImage'|| layerType === 'esriTile') {
                     // image server works differently. Instead of setting the query, we set the time extent for the map
                     // because image server will work with single range type, we add 1 day to end date to create an array
                     const dates = this.getDate(range);
@@ -862,10 +862,10 @@ export class SliderBar {
 
             for (let mapLayer of mapLayers) {
                 const layerType = mapLayer.type;
-                if (layerType === 'esriDynamic' || layerType === 'esriFeature') {
+                if (layerType === 'esriDynamic' || layerType === 'esriFeature' ) {
                     const filterName = this._config.type === 'number' ? 'rangeSliderNumberFilter' : 'rangeSliderDateFilter';
                     mapLayer.setFilterSql(filterName, ``);
-                } else if (layerType === 'esriImage') {
+                } else if (layerType === 'esriImage '|| layerType === 'esriTile') {
                     this._mapApi.esriMap.setTimeExtent(null);
                 } else if (layerType === 'ogcWms') {
                     mapLayer.esriLayer.setCustomParameters({}, { '':'' });
