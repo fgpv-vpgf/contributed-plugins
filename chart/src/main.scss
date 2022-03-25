@@ -131,6 +131,7 @@
         display: flex;
         height: 80%;
         padding-right: 70px;
+
         & #nouisliderY {
             height: inherit;
             align-self: center;
@@ -145,10 +146,10 @@
     }
 
     & .rv-chart-sliderX {
-        justify-content: left;
+        justify-content: end;
         display: flex;
         height: 60px;
-        margin-left: 40px;
+        padding-right: 4%;
 
         & #nouisliderX {
             width: 94.5%;

@@ -58,10 +58,7 @@ export const CHART_TEMPLATE = `
 <div class="rv-chart-panel">
     ${NO_DATA_TEMPLATE}
     <div class="rv-chart-hidedata-tooltip">{{ 'plugins.chart.legendTooltip' | translate }}</div>
-    <div class="rv-chart-sliderY">
-        <div id="nouisliderY"></div>
-    </div>
-    <div style="width:100%; display: flex; flex-direction: column;">
+    <div style="width: 90%; display: flex; flex-direction: column;">
         <div class="rv-chart-canvas">
             ${CANVAS_TEMPLATE}
         </div>
@@ -71,6 +68,9 @@ export const CHART_TEMPLATE = `
         <div class="rv-chart-sliderX">
             <div id="nouisliderX"></div>
         </div>
+    </div>
+    <div class="rv-chart-sliderY">
+        <div id="nouisliderY"></div>
     </div>
 </div>`;
 

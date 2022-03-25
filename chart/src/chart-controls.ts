@@ -20,17 +20,19 @@ export class ChartControls {
      * @param {Any} mapApi the viewer api
      * @param {Any} panel the panel
      * @param {ChartLoader} loader the chart loader class
+     * @param {String} language the viewer language
      */
-    constructor(mapApi: any, panel: any, loader: ChartLoader, panelOptions: any) {
+    constructor(mapApi: any, panel: any, loader: ChartLoader, panelOptions: any, language: string) {
         this.mapApi = mapApi;
         this.loader = loader;
+        this.language = language;
 
         this.initControl(panel, panelOptions);
     }
 
     /**
      * Init the selector control
-     * @param {Any} panel the chart panel to add the control to 
+     * @param {Any} panel the chart panel to add the control to
      */
     private initControl(panel: any, panelOptions: any): void {
         // ! DO NOT USE $scope because it makes the build version fails.
@@ -110,8 +112,14 @@ export class ChartControls {
         item.config.layers[0].data = item.config.layers[0].data.map((obj, i) => {
             return ({ ...obj, color: colors[i] });
         });
+
+        // add language
+        item.config.language = this.language;
+
+        // if line filter label
         if (item.chartType === 'line')
             item.config.layers[0].data = item.config.layers[0].data.filter(i => selectedLabel.some(j => i.key === j));
+
         // create the chart from chart type
         if (item.chartType === 'pie') {
             this.loader.createPieChart(item.feature, item.config);
@@ -153,4 +161,5 @@ export class ChartControls {
 export interface ChartControls {
     mapApi: any;
     loader: ChartLoader;
+    language: String;
 }

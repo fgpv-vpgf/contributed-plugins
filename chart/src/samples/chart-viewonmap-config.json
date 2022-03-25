@@ -38,10 +38,10 @@
             {
                 "id": "EXT_NRCAN_Lambert_3978",
                 "default": {
-                    "xmin": -400540.1099460097,
-                    "ymin": -931178.9717462073,
-                    "xmax": 3113133.5840680455,
-                    "ymax": 727761.8461354285
+                    "xmin": -4844430.556896179,
+                    "ymin": -1052774.037634491,
+                    "xmax": 5666163.380958509,
+                    "ymax": 4170111.408136484
                 },
                 "full": {
                     "xmax": 5666163.380958509,
@@ -584,90 +584,7 @@
                 }
             }
         ],
-        "layers": [
-            {
-                "layerChoice": "esriDynamic",
-                "layerType": "esriDynamic",
-                "toggleSymbology": true,
-                "refreshInterval": 0,
-                "expectedResponseTime": 4000,
-                "tolerance": 5,
-                "outfields": "*",
-                "imageFormat": "png32",
-                "singleEntryCollapse": false,
-                "controls": [
-                    "opacity",
-                    "visibility",
-                    "boundingBox",
-                    "query",
-                    "snapshot",
-                    "metadata",
-                    "boundaryZoom",
-                    "refresh",
-                    "reload",
-                    "remove",
-                    "settings",
-                    "data",
-                    "styles"
-                ],
-                "disabledControls": [],
-                "enableStructuredDelete": false,
-                "state": {
-                    "visibility": true,
-                    "boundingBox": false,
-                    "query": true,
-                    "snapshot": false,
-                    "hovertips": true
-                },
-                "layerEntries": [
-                    {
-                        "outfields": "*",
-                        "stateOnly": false,
-                        "table": {
-                            "title": "",
-                            "maximize": false,
-                            "lazyFilter": false,
-                            "applyMap": false,
-                            "showFilter": true,
-                            "filterByExtent": false,
-                            "searchStrictMatch": false,
-                            "printEnabled": false,
-                            "columns": []
-                        },
-                        "controls": [
-                            "opacity",
-                            "visibility",
-                            "boundingBox",
-                            "query",
-                            "snapshot",
-                            "metadata",
-                            "boundaryZoom",
-                            "refresh",
-                            "reload",
-                            "remove",
-                            "settings",
-                            "data",
-                            "styles"
-                        ],
-                        "disabledControls": [],
-                        "state": {
-                            "opacity": 1,
-                            "visibility": true,
-                            "boundingBox": false,
-                            "query": true,
-                            "snapshot": false,
-                            "hovertips": true
-                        },
-                        "init": true,
-                        "index": 0,
-                        "name": "Nuclear Power Plants"
-                    }
-                ],
-                "url": "https://maps-stage.services.geo.ca/server_serveur/rest/services/CNSC/RadionuclideReleases_NuclearPowerPlants1_en/MapServer",
-                "name": "Radionuclide Releases",
-                "id": "Radionuclide Releases***eb790592"
-            }
-        ],
+        "layers": [],
         "legend": {
             "legendChoice": "autopopulate",
             "type": "autopopulate",
@@ -739,7 +656,6 @@
         },
         "tableIsOpen": {
             "id": "",
-            "dynamicIndex": "",
             "large": false,
             "medium": false,
             "small": false
@@ -808,130 +724,9 @@
         "googleAPIKey": "",
         "esriLibUrl": ""
     },
-    "version": "3.3.4",
+    "version": "3.3.5",
     "language": "en-CA",
     "plugins": {
-        "rangeSlider": {
-            "enable": false,
-            "open": true,
-            "controls": [
-                "lock",
-                "delay"
-            ],
-            "params": {
-                "type": "number",
-                "delay": "3000",
-                "rangeType": "dual",
-                "stepType": "dynamic",
-                "precision": "0",
-                "rangeInterval": -1,
-                "startRangeEnd": true,
-                "range": {
-                    "min": 0,
-                    "max": 1
-                },
-                "limit": {
-                    "min": 0,
-                    "max": 1,
-                    "staticItems": []
-                },
-                "units": ""
-            },
-            "maximize": true,
-            "maximizeDesc": true,
-            "autorun": false,
-            "loop": false,
-            "reverse": false,
-            "lock": false
-        },
-        "coordInfo": {
-            "enable": false
-        },
-        "areasOfInterest": {
-            "enable": false
-        },
-        "chart": {
-            "enable": true,
-            "type": "line",
-            "title": "Radionuclide Releases - Nuclear Power Plants",
-            "options": {
-                "colors": ""
-            },
-            "axis": {
-                "xAxis": {
-                    "title": "Year",
-                    "type": "date",
-                    "values": "",
-                    "split": ";"
-                },
-                "yAxis": {
-                    "title": "Annual Releases",
-                    "type": "linear",
-                    "values": "",
-                    "split": ";"
-                }
-            },
-            "layers": [
-                {
-                    "type": "link",
-                    "details": {
-                        "enabled": false
-                    },
-                    "id": "Radionuclide Releases***eb790592",
-                    "nameField": "facility_name",
-                    "linkUrl": "https://maps-stage.services.geo.ca/server_serveur/rest/services/CNSC/RadionuclideReleases_NuclearPowerPlants1_en/MapServer/1",
-                    "linkField": "facility_name",
-                    "data": [
-                        {
-                            "type": "combine",
-                            "linkType": "multi",
-                            "label": {
-                                "type": "field",
-                                "values": "units",
-                                "split": ";"
-                            },
-                            "regex": "\\(|\\),\\(|\\)",
-                            "split": ",",
-                            "prefix": "",
-                            "suffix": "",
-                            "link": "facility_name",
-                            "date": "year",
-                            "values": "substance_name",
-                            "measure": "annual_releases"
-                        }
-                    ]
-                }
-            ]
-        },
-        "swiper": {
-            "enable": false,
-            "type": "vertical",
-            "keyboardOffset": 10
-        },
-        "draw": {
-            "enable": false,
-            "open": true,
-            "tools": [
-                "picker",
-                "point",
-                "polyline",
-                "polygon",
-                "edit",
-                "measure",
-                "extent",
-                "write",
-                "read"
-            ]
-        },
-        "thematicSlider": {
-            "enable": false,
-            "open": true,
-            "autorun": false,
-            "loop": false,
-            "description": true,
-            "slider": true,
-            "stack": false,
-            "legendStack": true
-        }
+
     }
 }
