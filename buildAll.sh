@@ -7,8 +7,9 @@ for plugin in "${plugins[@]}"
 do
     echo "Start process on $plugin"
     cd $plugin
-    npm install > /dev/null 2>&1
-    npm audit fix > /dev/null 2>&1
+    npm install > /dev/null
+    npm audit fix > /dev/null
+    npm rebuild node-sass > /dev/null 2>&1
     echo "Install and audit done"
     npm run build > /dev/null 2>&1
     npm run deploy > /dev/null 2>&1
