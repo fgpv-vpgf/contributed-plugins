@@ -43,6 +43,7 @@ export class SliderManager {
     private _panelOptions: any;
     private _slider: SliderBar;
     private _ids: string[];
+    private _activeIds: string[];
 
     destroy: any;
     private _layers: Layer[] = [];
@@ -143,7 +144,9 @@ export class SliderManager {
 
         // when we remove a layer check if we need to remove the slider
         this._mapApi.layersObj.layerRemoved.subscribe((layer: any) => {
-            this.destroyPluginSlider(layer, this._layers, this._ids, nbLayers);
+            // check if the removed layer is the active slider, if so destroy slider
+            const index = this._activeIds.findIndex(id => {return id === layer.id})
+            if (index > -1) this.destroyPluginSlider(layer, this._layers, this._ids, nbLayers);
         });
 
         return this._button;
@@ -161,7 +164,7 @@ export class SliderManager {
     destroyPluginSlider(layer, layers, ids, nbLayers) {
         try {
             // case for configure layer.... remove from array
-            if (ids[0].length > 0) {
+            if (typeof ids !== 'undefined' && ids.length > 0) {
                 const index = ids.indexOf(layer.id);
                 if (index !== -1) {
                     ids.splice(index, 1);
@@ -192,6 +195,9 @@ export class SliderManager {
                     document.querySelector(`[aria-label="${this._button.label}"]`).remove();
                     this._slider.destroy();
                 }
+
+                // reset active ids
+                this._activeIds = [];
             }
         } catch (error) {}
     }
@@ -223,6 +229,10 @@ export class SliderManager {
 
             this._ids = [];
 
+            // reset active ids
+            this._layers = [];
+            this._activeIds = [];
+
             if (typeof this._slider !== 'undefined') {
                 this._panel.destroy();
                 document.querySelector(`[aria-label="${this._button.label}"]`).remove();
@@ -243,6 +253,9 @@ export class SliderManager {
             this._config.layers.push(layers[0].layerInfo);
             this._config.type = (layers[0].layer.type === 'ogcWms') ? 'wmst' : 'date';
         }
+
+        // set active layers
+        this._activeIds = layers.map(layer => layer.layerInfo.id);
 
         // create panel
         this._panel = this._mapApi.panels.create('rangeSlider');

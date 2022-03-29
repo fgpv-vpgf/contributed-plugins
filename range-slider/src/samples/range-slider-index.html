@@ -158,6 +158,13 @@
                 window.rangeSlider.prototype.getSlider().onMenuItemClick().call();
             }
 
+            // link to api from script
+            RAMP.mapAdded.subscribe(mapi => {
+                mapi.layersObj.layerRemoved.subscribe((layer) => {
+                    setTimeout(() => console.log(window.rangeSlider.prototype.getSlider()._activeIds), 0);
+                });
+            });
+
             function destroy() {
                 window.rangeSlider.prototype.getSlider().destroyPluginSliderAll();
             }
