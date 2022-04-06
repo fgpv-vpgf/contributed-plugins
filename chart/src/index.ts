@@ -19,6 +19,8 @@ export default class Chart {
     private _panelDetails: DetailsManager;
     private _loader: ChartLoader;
     public _panelOptions: object = Common._panelOptionsShrink;
+    private _isInit: boolean;
+    private _activeId: string;
 
     /**
     * Plugin init
@@ -27,16 +29,82 @@ export default class Chart {
     */
     init(mapApi: any) {
         this._mapApi = mapApi;
-
-        // manage details panel to modify values for graph layer
-        this._panelDetails = new DetailsManager(mapApi);
-
-        // get chart config and add language
-        this.config = this._RV.getConfig('plugins').chart;
-        this.config.language = this._RV.getCurrentLang();
+        this._isInit = false;
 
         // create panel
         this._panel = this._mapApi.panels.create('chart');
+
+        // if there is a chart config, init plugin
+        // if not listen for layer added to see if there is a valid config
+        const objConfig = this._RV.getConfig('plugins').chart;
+        if (typeof objConfig !== 'undefined' && typeof objConfig.layers !== 'undefined') {
+            this.config = objConfig;
+            this.initChartPlugin();
+        } else {
+            // when a layer is added, check if it is a needed one
+            this._mapApi.layersObj.layerAdded.subscribe((layer: any) => {
+
+            const uri = `https://geocore.api.geo.ca/id?id=${layer.id.split('.')[1]}`
+            fetch(encodeURI(uri)).then(response => {
+                response.json().then(json => {
+                    // check uuuid has a value in GEoCore
+                    if (typeof json.Items !== 'undefined') {
+                        // get the plugin section and parse
+                        // remove uneeded character at front and end of the string
+                        // replace the True and False by proper value true and false
+                        // replace where None by null
+                        // remove double \\
+                        // replace single quote by double quotes
+                        // replace l' in title and put back the ' where it should be kept
+                        // replace id by the right rcs id
+                        let t = json.Items[0].plugins;
+                        const parseConfig = JSON.parse(
+                            t.replace('""[', '').replace(']""', '')
+                                .replaceAll('True', 'true').replaceAll('False', 'false')
+                                .replaceAll('None', '0')
+                                .replaceAll('\\"', '')
+                                .replaceAll("'", '"')
+                                .replaceAll('l"', "l'").replaceAll("l':", 'l":')
+                                .replaceAll('d"', "d'").replaceAll("d':", 'd":')
+                                .replaceAll(layer.id.split('.')[1], layer.id));
+                        this.config = parseConfig.RAMPS[this._RV.getCurrentLang().split('-')[0]].chart;
+
+                        // TIDO: not use in view on map and was problematic... harcoded it for the moment. Investigate
+                        this.config.layers[0].data[0].regex = '\\(|\\),\\(|\\)';
+                        // init the chart
+                        if (!this._isInit) this.initChartPlugin();
+
+                        // set chart initialized and active id
+                        this._isInit = true;
+                        this._activeId = layer.id;
+                    }
+                });
+                });
+            });
+        }
+
+        // when we remove a layer check if we need to remove the chart
+        this._mapApi.layersObj.layerRemoved.subscribe((layer: any) => {
+            if (this._isInit && this._activeId === layer.id) {
+
+
+                this._isInit = false;
+            }
+        });
+
+    }
+
+    /**
+     * Initilialize the plugin
+     */
+    initChartPlugin() {
+        // manage details panel to modify values for graph layer
+        this._panelDetails = new DetailsManager(this._mapApi);
+
+        // add language
+        this.config.language = this._RV.getCurrentLang();
+
+        // set panel
         this._panel.element.css(this._panelOptions);
         this._panel.element.attr('rv-trap-focus', '');
         this._panel.body = this.compileTemplate(CHART_TEMPLATE)[0];
@@ -47,7 +115,7 @@ export default class Chart {
         this._loader = new ChartLoader(this._mapApi);
 
         // add selector control to panel header
-        new ChartControls(this._mapApi, this._panel, this._loader, this._panelOptions);
+        new ChartControls(this._mapApi, this._panel, this._loader, this._panelOptions, this.config.language);
 
         // subscribe to panel closing to destroy existing graph and slider
         this._panel.closing.subscribe(() => {

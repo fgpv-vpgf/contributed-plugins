@@ -318,7 +318,9 @@ export class ChartLoader {
 
                     return numZero;
                 }
-                const numZeroMax = typeof config.axis.yAxis.precision !== 'undefined' ? config.axis.yAxis.precision
+
+                //INFO: replace the use of precision form config by reading the dataset.
+                let numZeroMax = typeof config.axis.yAxis.precision !== 'undefined' ? countDecimals(this._lineChartOptions.datasets[0])
                     : countDecimals(this._lineChartOptions.datasets[0]);
 
                 this._sliderY = document.getElementById('nouisliderY');
