@@ -462,10 +462,14 @@ export class ChartLoader {
             // loop trough datasets to add from config
             for (let data of config.data) {
                 const fieldData = data.measure;
+                const fieldData3 = data.suffix;
+                const fieldData2 = data.suffixfield;
                 const prefix = data.prefix;
-                const suffix = data.suffix;
                 const values = attrs.data.find(i => i.field === fieldData).value;
 
+                let suffix = data.suffixfield === '' ? attrs.data.find(i => i.field === fieldData3).value
+                    : attrs.data.find(i => i.field === fieldData2).value;
+                
                 // if regex is provided, it is because there is multiple datasets in the value field
                 // only do this for single type where we can have more then 1 dataset by field
                 // for combine, there is 2 values by field (x and y). We do not support more then 1 dataset
@@ -479,7 +483,6 @@ export class ChartLoader {
                         const item: any = {
                             data: [],
                             label: data.label.values !== '' ? this.getLabels(data.label, attrs, i)[i] : '',
-                            backgroundColor: colors,
                             suffix: suffix,
                             prefix: prefix
                         };
@@ -489,7 +492,7 @@ export class ChartLoader {
                             parse = parse.toString().split(data.split);
                             for (let value of parse) {
                                 item.data.push(value);
-                            }
+                            } 
                         } else if (data.type === 'combine') {
                             let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
                             let numberPattern = /\d+/g;
@@ -549,7 +552,7 @@ export class ChartLoader {
                     parsed.datasets.push(item);
                 }
             }
-        }
+        } 
         return parsed;
     }
 
