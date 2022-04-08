@@ -27,6 +27,7 @@ export class SliderBar {
     private _precision: number;
     private _stepType: string;
     private _rangeType: string;
+    private _oriRange: Range = { min: null, max: null };
 
     private _sliderBarCtrl: any;
     public _isPlaying: boolean;
@@ -271,16 +272,19 @@ export class SliderBar {
             return new Date(str).getTime();
         }
 
+        // keep the original range for the refresh button
+        this._oriRange = Object.assign({}, this.range);
+
         // initialize the slider
         const mapWidth = this._mapApi.fgpMapObj.width;
         nouislider.create(this._slider,
             {
-                start: (this._rangeType === 'dual') ? [this.limit.min, this.limit.max] : [this.range.min],
+                start: (this._rangeType === 'dual') ? [this.range.min, this.range.max] : [this.range.min],
                 connect: true,
                 behaviour: 'drag-tap',
                 tooltips: this.setTooltips(type, language),
                 range: this.setNoUiBarRanges(mapWidth, this.limit, this._stepType),
-                step: 7 * 24 * 60 * 60 * 1000, // 1 week
+                // Do not put step - step: 7 * 24 * 60 * 60 * 1000, // 1 week
                 snap: (this._stepType === 'static') ? true : false,
                 pips: {
                     mode: this._stepType === 'dynamic' ? 'positions' : 'range',
@@ -293,11 +297,8 @@ export class SliderBar {
                 }
             });
 
-        // overwrite range to set it as limit by default
-        // TODO: Do this for the moment but revice when migrating to standard time dimension
+        // keep track of original step
         this._oriStep = this._slider.range.max - this._slider.range.min;
-        this._slider.range.min = this.limit.min;
-        this._slider.range.max = this.limit.max;
 
         // remove overlapping pips. This can happen often with static limits and date
         this.removePipsOverlaps();
@@ -315,7 +316,9 @@ export class SliderBar {
         this.setDefinitionQuery(this._slider.range);
 
         // set step
-        this._step = this._slider.range.max - this._slider.range.min;
+        // TODO: in refactor make this more obvious, the ori step is calculated from config and limits. Modifications
+        // was made for OSDP because they want the whole thing to be seen on init when no config.
+        this._step = this._oriStep; // this._slider.range.max - this._slider.range.min;
 
         // trap the on change event when user use handles
         let that = this;
@@ -458,9 +461,15 @@ export class SliderBar {
      * @param {Boolean} play true if slider is playing, false otherwise
      */
     play(play: boolean): void {
+        // check if the slier range is equal to min and max limit. If so, when play is press reset the range
+        // TODO: maybe not the best user experience. Maybe play should be disable instead
         if (play && (this._slider.range.min === this.limit.min && this._slider.range.max === this.limit.max)) {
-            this.range.max = this.range.min + this._oriStep;
-            this._slider.noUiSlider.set([this.range.min, this.range.max]);
+            
+            // check if the step was define if not put 10%
+            if (this._oriStep === this.limit.max - this.limit.min) this._oriStep = this._oriStep / 10;
+
+            // apply the range
+            this._slider.noUiSlider.set([this.range.min, this.range.min + this._oriStep]);
             this.setDefinitionQuery(this.range);
         }
 
@@ -661,8 +670,8 @@ export class SliderBar {
      * @function refresh
      */
     refresh(): void {
-        this._slider.noUiSlider.set([this.limit.min, this.limit.max]);
-        this.setDefinitionQuery(this.limit);
+        this._slider.noUiSlider.set([this._oriRange.min, this._oriRange.max]);
+        this.setDefinitionQuery(this._oriRange);
         this.pause();
     }
 
