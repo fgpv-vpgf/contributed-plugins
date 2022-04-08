@@ -145,8 +145,13 @@ export class SliderManager {
         // when we remove a layer check if we need to remove the slider
         this._mapApi.layersObj.layerRemoved.subscribe((layer: any) => {
             // check if the removed layer is the active slider, if so destroy slider
-            const index = this._activeIds.findIndex(id => {return id === layer.id})
-            if (index > -1) this.destroyPluginSlider(layer, this._layers, this._ids, nbLayers);
+            const index = this._activeIds.findIndex(id => { return id === layer.id })
+            if (index > -1) this.destroyPluginSlider(layer, this._ids, nbLayers);
+
+            // remove layer form array
+            this._layers =  this._layers.filter(object => {
+                return object.layerInfo.id !== layer._id;
+            });
         });
 
         return this._button;
@@ -157,18 +162,17 @@ export class SliderManager {
      * Destroy the slider for selected layer layers
      * @function destroyPluginSlider
      * @param {Layer} layer Layer to remove
-     * @param {Layer[]} layers Array of layers on the map
      * @param {Number[]} ids Array of layers id
      * @param {Number} nbLayers Number of layers
      */
-    destroyPluginSlider(layer, layers, ids, nbLayers) {
+    destroyPluginSlider(layer, ids, nbLayers) {
         try {
             // case for configure layer.... remove from array
             if (typeof ids !== 'undefined' && ids.length > 0) {
                 const index = ids.indexOf(layer.id);
                 if (index !== -1) {
                     ids.splice(index, 1);
-                    layers.splice(index, 1);
+                    this._layers.splice(index, 1);
                     nbLayers--;
                 }
             }
@@ -184,7 +188,6 @@ export class SliderManager {
 
             // empty ids and layers so the plugins will reset themself from a time aware layer
             ids = [];
-            layers.splice(0, 1);
 
             // if array is empty or it was a time aware added layer destroy
             if (ids.length === 0 || ids[0] === 'done') {
@@ -230,7 +233,7 @@ export class SliderManager {
             this._ids = [];
 
             // reset active ids
-            this._layers = [];
+
             this._activeIds = [];
 
             if (typeof this._slider !== 'undefined') {
@@ -306,7 +309,9 @@ export class SliderManager {
                         range = [Math.min.apply(null, values.map(item => item.range).flat()), Math.max.apply(null, values.map(item => item.range).flat())];
                     }
 
-                    if (this._config.range.min === null && this._config.range.max === null && (!isNaN(range[0]) && !isNaN(range[1]))) {
+                    // if range or range interval is not define, set range as the whole limit
+                    if (this._config.range.min === null && this._config.range.max === null && this._config.rangeInterval !== -1 &&
+                        (!isNaN(range[0]) && !isNaN(range[1]))) {
                         if (!this._config.startRangeEnd) {
                             this._config.range.min = range[0];
                             this._config.range.max = range[1];
@@ -479,7 +484,7 @@ export class SliderManager {
      */
     setTimeWMSLimits(item: Layer): Promise<Object> {
         item.layer._viewerLayer.initialConfig.layerEntries[0].globalList = '';
-        item.layer._viewerLayer.initialConfig.layerEntries.forEach(item => item.globalList += item._name)
+        item.layer._viewerLayer.initialConfig.layerEntries.forEach(item => item.globalList += item._id)
         let subLayersIds = item.layer.esriLayer.layerInfos.map(subLayer => {
             return subLayer.name
         });

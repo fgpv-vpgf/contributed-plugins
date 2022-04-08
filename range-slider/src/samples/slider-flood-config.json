@@ -1,350 +1,678 @@
 {
-    "ui": {
-      "navBar": {
-        "zoom": "buttons",
-        "extra": [
-          "fullscreen",
-          "geoLocator",
-          "home",
-          "help"
-        ]
-      },
-      "sideMenu": {
-        "logo": true
-      },
-      "legend": {
-        "isOpen": {
-          "large": true,
-          "medium": true,
-          "small": false
-        },
-        "reorderable": false
-      }
-    },
-    "version": "2.0",
-    "language": "en",
-    "services":{
-      "proxyUrl":"https://maps.canada.ca/wmsproxy/ws/wmsproxy/executeFromProxy",
-      "geometryUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/Geometry/GeometryServer",
-      "exportMapUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
-      "search":{
-         "serviceUrls":{
-            "geoNames":"https://geogratis.gc.ca/services/geoname/en/geonames.json",
-            "geoLocation":"https://geogratis.gc.ca/services/geolocation/en/locate?q=",
-            "geoSuggest":"https://geogratis.gc.ca/services/geolocation/en/suggest?q=",
-            "provinces":"https://geogratis.gc.ca/services/geoname/en/codes/province.json",
-            "types":"https://geogratis.gc.ca/services/geoname/en/codes/concise.json"
-         },
-         "disabledSearches":[
-            "NTS",
-            "FSA",
-            "LAT/LNG"
-         ]
-      },
-      "export": {
-        "title": {
-          "value": "Title"
-        },
-        "map": {},
-        "mapElements": {},
-        "legend": {},
-        "footnote": {
-          "value": "This is a footnote added from the configuration file. The note is very long so it should wrap on multiple lines when it reaches a certain limit in size. Maybe some user will want to use this as aplace holder to put a lot of information so we need to be able to wrap this content. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce aliquet ante quis aliquet feugiat. Cras eget semper nunc, eu placerat purus. Nunc sed lacinia enim, ut sollicitudin quam. Nunc quis finibus massa, eget maximus enim. Donec ac nisl libero. Nunc eu pharetra arcu. Fusce luctus, magna cursus gravida tristique, risus nisi porttitor magna, ac dictum ipsum dui vel nulla. Integer id ornare augue. Quisque condimentum velit quis elementum porta. Sed dui enim, iaculis cursus diam volutpat, laoreet porta quam. Sed nec aliquet magna. Curabitur commodo fringilla metus, eu posuere sapien mollis nec."
-        }
-      }
-    },
-    "map": {
-      "initialBasemapId": "baseNrCan",
+  "map": {
       "components": {
-        "geoSearch": {
-          "enabled": true,
-          "showGraphic": true,
-          "showInfo": true
-        },
-        "mouseInfo": {
-          "enabled": true,
-          "spatialReference": {
-            "wkid": 4326
+          "geoSearch": {
+              "enabled": true,
+              "showGraphic": true,
+              "showInfo": true
+          },
+          "mouseInfo": {
+              "enabled": true,
+              "spatialReference": {
+                  "wkid": 4326,
+                  "vcsWkid": null,
+                  "latestWkid": null,
+                  "latestVcsWkid": null,
+                  "wkt": ""
+              }
+          },
+          "northArrow": {
+              "enabled": true,
+              "arrowIcon": "",
+              "poleIcon": ""
+          },
+          "basemap": {
+              "enabled": true
+          },
+          "overviewMap": {
+              "enabled": false,
+              "expandFactor": 4,
+              "initiallyExpanded": false
+          },
+          "scaleBar": {
+              "enabled": true
           }
-        },
-        "northArrow": {
-          "enabled": true
-        },
-        "basemap": {
-          "enabled": true
-        },
-        "overviewMap": {
-          "enabled": true,
-          "layerType": "imagery"
-        },
-        "scaleBar": {
-          "enabled": true
-        }
       },
-      "legend": {
-        "type": "autopopulate",
-        "root": {
-          "name": "root",
-          "children": [
-            {
-              "name": "A Group with a hidden layer",
-              "expanded": true,
-              "children": [
-                {
-                  "layerId": "0",
-                  "hidden": true
-                },
-                {
-                  "layerId": "powerplant100mw-naturalGas"
-                }
-              ]
-            },
-            {
-              "layerId": "GeoChron"
-            }
-          ]
-        }
-      },
-      "layers": [{
-          "id": "acqplan",
-          "name": "Acquisition Plan Collection - active",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Acquisition_Plan/EGS_AcquisitionPlan_Collection_Active_en/MapServer/",
-          "layerEntries": [{
-            "index": 1,
-            "name": "Today"
-          },
-          {
-            "index": 2,
-            "name": "Futur - 12 tp 72 hours"
-          },
-          {
-            "index": 3,
-            "name": "Past - 12 to 72 hours"
-          }]
-        },
-        {
-          "id": "0",
-          "name": "Active flood - EMPTY",
-          "layerType": "esriDynamic",
-          "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Active_en/MapServer/",
-          "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
-            "index": 1,
-            "name": "In Canada"
-          },
-          {
-            "index": 2,
-            "name": "Flooded Area in Canada"
-          }]
-        },
-        {
-          "id": "1",
-          "name": "Flood in Canada - Current Year",
-          "layerType": "esriDynamic",
-          "suppressGetCapabilities": true,
-          "url": "https://maps-stage.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en_MULTILEVEL/MapServer/",
-          "layerEntries": [{
-            "index": 0,
-            "name": "Product Footprints"
-          },
-          {
-            "index": 1,
-            "name": "Current Year - level 1"
-          },
-          {
-            "index": 2,
-            "name": "Current Year - level 2"
-          },
-          {
-            "index": 3,
-            "name": "Current Year - level 3"
-          },
-          {
-            "index": 4,
-            "name": "Current Year - level 4"
-          }]
-        }
-      ],
+      "initialBasemapId": "18e13bfd",
       "extentSets": [
-        {
-          "id": "EXT_NRCAN_Lambert_3978",
-          "default": {
-            "xmax": 84065.65426297553,
-            "xmin": -336543.31195495697,
-            "ymax": 150156.49322665262,
-            "ymin": -55239.95923291899
-          },
-          "spatialReference": {
-            "wkid": 3978
+          {
+              "id": "EXT_ESRI_World_AuxMerc_3857",
+              "default": {
+                  "xmin": -16763712,
+                  "ymin": 5165908,
+                  "xmax": -5688293,
+                  "ymax": 10649806
+              },
+              "full": {
+                  "xmax": -5688293,
+                  "xmin": -16763712,
+                  "ymax": 10649806,
+                  "ymin": 5165908
+              },
+              "maximum": {
+                  "xmax": -5688293,
+                  "xmin": -16763712,
+                  "ymax": 10649806,
+                  "ymin": 5165908
+              },
+              "spatialReference": {
+                  "wkid": 102100,
+                  "latestWkid": 3857
+              }
           }
-        }
       ],
       "lodSets": [
-        {
-          "id": "LOD_NRCAN_Lambert_3978",
-          "lods": [
-            {
-              "level": 0,
-              "resolution": 38364.660062653464,
-              "scale": 145000000
-            },
-            {
-              "level": 1,
-              "resolution": 22489.62831258996,
-              "scale": 85000000
-            },
-            {
-              "level": 2,
-              "resolution": 13229.193125052918,
-              "scale": 50000000
-            },
-            {
-              "level": 3,
-              "resolution": 7937.5158750317505,
-              "scale": 30000000
-            },
-            {
-              "level": 4,
-              "resolution": 4630.2175937685215,
-              "scale": 17500000
-            },
-            {
-              "level": 5,
-              "resolution": 2645.8386250105837,
-              "scale": 10000000
-            },
-            {
-              "level": 6,
-              "resolution": 1587.5031750063501,
-              "scale": 6000000
-            },
-            {
-              "level": 7,
-              "resolution": 926.0435187537042,
-              "scale": 3500000
-            },
-            {
-              "level": 8,
-              "resolution": 529.1677250021168,
-              "scale": 2000000
-            },
-            {
-              "level": 9,
-              "resolution": 317.50063500127004,
-              "scale": 1200000
-            },
-            {
-              "level": 10,
-              "resolution": 185.20870375074085,
-              "scale": 700000
-            },
-            {
-              "level": 11,
-              "resolution": 111.12522225044451,
-              "scale": 420000
-            },
-            {
-              "level": 12,
-              "resolution": 66.1459656252646,
-              "scale": 250000
-            },
-            {
-              "level": 13,
-              "resolution": 38.36466006265346,
-              "scale": 145000
-            },
-            {
-              "level": 14,
-              "resolution": 22.48962831258996,
-              "scale": 85000
-            },
-            {
-              "level": 15,
-              "resolution": 13.229193125052918,
-              "scale": 50000
-            },
-            {
-              "level": 16,
-              "resolution": 7.9375158750317505,
-              "scale": 30000
-            },
-            {
-              "level": 17,
-              "resolution": 4.6302175937685215,
-              "scale": 17500
-            }
-          ]
-        }
+          {
+              "id": "LOD_ESRI_World_AuxMerc_3857",
+              "lods": [
+                  {
+                      "level": 0,
+                      "resolution": 19567.87924099992,
+                      "scale": 73957190.948944
+                  },
+                  {
+                      "level": 1,
+                      "resolution": 9783.93962049996,
+                      "scale": 36978595.474472
+                  },
+                  {
+                      "level": 2,
+                      "resolution": 4891.96981024998,
+                      "scale": 18489297.737236
+                  },
+                  {
+                      "level": 3,
+                      "resolution": 2445.98490512499,
+                      "scale": 9244648.868618
+                  },
+                  {
+                      "level": 4,
+                      "resolution": 1222.992452562495,
+                      "scale": 4622324.434309
+                  },
+                  {
+                      "level": 5,
+                      "resolution": 611.4962262813797,
+                      "scale": 2311162.217155
+                  },
+                  {
+                      "level": 6,
+                      "resolution": 305.74811314055756,
+                      "scale": 1155581.108577
+                  },
+                  {
+                      "level": 7,
+                      "resolution": 152.87405657041106,
+                      "scale": 577790.554289
+                  },
+                  {
+                      "level": 8,
+                      "resolution": 76.43702828507324,
+                      "scale": 288895.277144
+                  },
+                  {
+                      "level": 9,
+                      "resolution": 38.21851414253662,
+                      "scale": 144447.638572
+                  },
+                  {
+                      "level": 10,
+                      "resolution": 19.10925707126831,
+                      "scale": 72223.819286
+                  },
+                  {
+                      "level": 11,
+                      "resolution": 9.554628535634155,
+                      "scale": 36111.909643
+                  },
+                  {
+                      "level": 12,
+                      "resolution": 4.77731426794937,
+                      "scale": 18055.954822
+                  }
+              ]
+          }
       ],
       "tileSchemas": [
-        {
-          "id": "EXT_NRCAN_Lambert_3978#LOD_NRCAN_Lambert_3978",
-          "name": "Lambert Maps",
-          "extentSetId": "EXT_NRCAN_Lambert_3978",
-          "lodSetId": "LOD_NRCAN_Lambert_3978",
-          "hasNorthPole": true
-        }
+          {
+              "id": "e0ceca1d",
+              "name": "World",
+              "extentSetId": "EXT_ESRI_World_AuxMerc_3857",
+              "lodSetId": "LOD_ESRI_World_AuxMerc_3857",
+              "overviewUrl": {
+                  "layerType": "esriTile",
+                  "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"
+              }
+          }
       ],
       "baseMaps": [
-        {
-          "id": "baseNrCan",
-          "name": "Canada Base Map - Transportation (CBMT)",
-          "description": "The Canada Base Map - Transportation (CBMT) web mapping services of the Earth Sciences Sector at Natural Resources Canada, are intended primarily for online mapping application users and developers.",
-          "altText": "altText - The Canada Base Map - Transportation (CBMT)",
-          "layers": [
-            {
-              "id": "CBMT",
+          {
+              "id": "18e13bfd",
+              "name": "Transport with labels",
+              "description": "This worldwide basemap provides geographic context with bilingual labels and an emphasis on transportation networks. From Natural Resources Canada.",
+              "typeSummary": "",
+              "altText": "Transport with labels",
+              "thumbnailUrl": "",
+              "tileSchemaId": "e0ceca1d",
+              "attribution": {
+                  "text": {
+                      "enabled": true,
+                      "value": ""
+                  },
+                  "logo": {
+                      "enabled": false,
+                      "value": "",
+                      "link": ""
+                  }
+              },
+              "layers": [
+                  {
+                      "id": "WorldTransportLabel",
+                      "layerType": "esriFeature",
+                      "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3857/MapServer",
+                      "opacity": 1
+                  },
+                  {
+                      "id": "WorldLabel",
+                      "layerType": "esriFeature",
+                      "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_TXT_3857/MapServer",
+                      "opacity": 1
+                  }
+              ]
+          },
+          {
+              "id": "bb32d78a",
+              "name": "Transport without labels",
+              "description": "This worldwide basemap provides geographic context with an emphasis on transportation networks and without labels. From Natural Resources Canada.",
+              "typeSummary": "",
+              "altText": "Transport without labels",
+              "thumbnailUrl": "",
+              "tileSchemaId": "e0ceca1d",
+              "attribution": {
+                  "text": {
+                      "enabled": true,
+                      "value": ""
+                  },
+                  "logo": {
+                      "enabled": false,
+                      "value": "",
+                      "link": ""
+                  }
+              },
+              "layers": [
+                  {
+                      "id": "WorldTransport",
+                      "layerType": "esriFeature",
+                      "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT_CBCT_GEOM_3857/MapServer",
+                      "opacity": 1
+                  }
+              ]
+          }
+      ],
+      "layers": [
+          {
+              "layerChoice": "esriFeature",
               "layerType": "esriFeature",
-              "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/CBMT3978/MapServer"
-            }
-          ],
-          "tileSchemaId": "EXT_NRCAN_Lambert_3978#LOD_NRCAN_Lambert_3978"
-        },
-        {
-          "id": "baseSimple",
-          "name": "Canada Base Map - Simple",
-          "description": "Canada Base Map - Simple",
-          "altText": "altText - Canada base map - Simple",
-          "layers": [
-            {
-              "id": "SMR",
+              "toggleSymbology": true,
+              "refreshInterval": 0,
+              "expectedResponseTime": 4000,
+              "tolerance": 5,
+              "controls": [
+                  "opacity",
+                  "visibility",
+                  "boundingBox",
+                  "query",
+                  "snapshot",
+                  "metadata",
+                  "boundaryZoom",
+                  "refresh",
+                  "reload",
+                  "remove",
+                  "settings",
+                  "data",
+                  "styles"
+              ],
+              "disabledControls": [],
+              "state": {
+                  "opacity": 1,
+                  "visibility": true,
+                  "boundingBox": false,
+                  "query": true,
+                  "snapshot": false,
+                  "hovertips": true
+              },
+              "table": {
+                  "title": "",
+                  "maximize": false,
+                  "lazyFilter": false,
+                  "applyMap": false,
+                  "showFilter": true,
+                  "filterByExtent": false,
+                  "searchStrictMatch": false,
+                  "printEnabled": false,
+                  "columns": []
+              },
+              "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Active_en/MapServer/0",
+              "name": "Active Flooding",
+              "id": "activeflooding"
+          },
+          {
+              "layerChoice": "esriFeature",
               "layerType": "esriFeature",
-              "url": "https://geoappext.nrcan.gc.ca/arcgis/rest/services/BaseMaps/Simple/MapServer"
-            }
-          ],
-          "tileSchemaId": "EXT_NRCAN_Lambert_3978#LOD_NRCAN_Lambert_3978"
-        }
-      ]
-    },
-    "plugins": {
-      "rangeSlider": {
-        "open": true,
-        "autorun": false,
-        "loop": false,
-        "controls": ["lock", "loop", "refresh", "reverse"],
-        "params": {
-          "delay": 3000,
-          "type": "date",
-          "rangeType": "dual",
-          "stepType": "dynamic",
-          "precision": "hour",
-          "startRangeEnd": true,
-          "rangeInterval": 604800000,
-          "range": { "min": null, "max": null },
-          "limit": { "min": null, "max": null },
-          "limits": [],
-          "units": "",
-          "description": "Let see current and active flood from January 2020 to May 2021. Interval set by week"
-        },
-        "layers": [{
-          "id": "1",
-          "field": "date_utc",
-          "isTimeAware": true
-        }]
+              "toggleSymbology": true,
+              "refreshInterval": 0,
+              "expectedResponseTime": 4000,
+              "tolerance": 5,
+              "controls": [
+                  "opacity",
+                  "visibility",
+                  "boundingBox",
+                  "query",
+                  "snapshot",
+                  "metadata",
+                  "boundaryZoom",
+                  "refresh",
+                  "reload",
+                  "remove",
+                  "settings",
+                  "data",
+                  "styles"
+              ],
+              "disabledControls": [],
+              "state": {
+                  "opacity": 1,
+                  "visibility": true,
+                  "boundingBox": false,
+                  "query": true,
+                  "snapshot": false,
+                  "hovertips": true
+              },
+              "table": {
+                  "title": "",
+                  "maximize": false,
+                  "lazyFilter": false,
+                  "applyMap": false,
+                  "showFilter": true,
+                  "filterByExtent": false,
+                  "searchStrictMatch": false,
+                  "printEnabled": false,
+                  "columns": []
+              },
+              "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/0",
+              "name": "Footprint",
+              "id": "Footprint"
+          },
+          {
+              "layerChoice": "esriFeature",
+              "layerType": "esriFeature",
+              "toggleSymbology": true,
+              "refreshInterval": 0,
+              "expectedResponseTime": 4000,
+              "tolerance": 5,
+              "controls": [
+                  "opacity",
+                  "visibility",
+                  "boundingBox",
+                  "query",
+                  "snapshot",
+                  "metadata",
+                  "boundaryZoom",
+                  "refresh",
+                  "reload",
+                  "remove",
+                  "settings",
+                  "data",
+                  "styles"
+              ],
+              "disabledControls": [],
+              "state": {
+                  "opacity": 1,
+                  "visibility": true,
+                  "boundingBox": false,
+                  "query": true,
+                  "snapshot": false,
+                  "hovertips": true
+              },
+              "table": {
+                  "title": "",
+                  "maximize": false,
+                  "lazyFilter": false,
+                  "applyMap": false,
+                  "showFilter": true,
+                  "filterByExtent": false,
+                  "searchStrictMatch": false,
+                  "printEnabled": false,
+                  "columns": []
+              },
+              "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/1",
+              "name": "Floods in Canada by land use",
+              "id": "Floods in Canada by land use"
+          },
+          {
+              "layerChoice": "esriFeature",
+              "layerType": "esriFeature",
+              "toggleSymbology": true,
+              "refreshInterval": 0,
+              "expectedResponseTime": 4000,
+              "tolerance": 5,
+              "controls": [
+                  "opacity",
+                  "visibility",
+                  "boundingBox",
+                  "query",
+                  "snapshot",
+                  "metadata",
+                  "boundaryZoom",
+                  "refresh",
+                  "reload",
+                  "remove",
+                  "settings",
+                  "data",
+                  "styles"
+              ],
+              "disabledControls": [],
+              "state": {
+                  "opacity": 1,
+                  "visibility": false,
+                  "boundingBox": false,
+                  "query": true,
+                  "snapshot": false,
+                  "hovertips": true
+              },
+              "table": {
+                  "title": "",
+                  "maximize": false,
+                  "lazyFilter": false,
+                  "applyMap": false,
+                  "showFilter": true,
+                  "filterByExtent": false,
+                  "searchStrictMatch": false,
+                  "printEnabled": false,
+                  "columns": []
+              },
+              "url": "https://maps-cartes.services.geo.ca/egs_sgu/rest/services/Flood_Inondation/EGS_Flood_Product_Current_en/MapServer/2",
+              "name": "Flood Product Current",
+              "id": "Flood Product Current"
+          }
+      ],
+      "legend": {
+          "legendChoice": "autopopulate",
+          "type": "autopopulate",
+          "root": {
+              "name": "root",
+              "children": []
+          }
       }
-    }
+  },
+  "ui": {
+      "sideMenu": {
+          "items": [
+              [
+                  "fullscreen",
+                  "help",
+                  "about",
+                  "layers"
+              ],
+              [
+                  "touch"
+              ]
+          ],
+          "logo": false
+      },
+      "about": {
+          "content": "<h4>Active Floods in Canada</h4><p>Flood extent polygons representing active floods (<em>last three days</em>) throughout Canada as monitored by Natural Resources Canada using satellite imagery for emergency response.</p><p>In response to large flood events, Natural Resources Canada (NRCan), for the provision of emergency geomatics services, may be activated by Canada’s emergency management protocols.  As new satellite imagery becomes available, NRCan will extract flood extent polygons and update the dataset in near real time (4 hours). This item contains the latest flood products generated in the past three days.  For any data older than 72 hours, please refer to the Floods in Canada - Current Year entry.</p><p>The flood products are generated and validated on a best effort basis.  Various factors may affect the quality of the flood polygons.  Those factors include but are not limited to: sensor type, image resolution, cloud coverage or limits to the flood polygon extraction method.  In this layer, symbology is applied to the flood polygons based on the confidence level assigned during the quality control process.  Product items are available through the FTP server <a href='ftp://data.eodms-sgdot.nrcan-rncan.gc.ca/EGS/' title='data.eodms-sgdot.nrcan-rncan.gc.ca' target='_blank'>data.eodms-sgdot.nrcan-rncan.gc.ca</a>.</p><h4>Disclaimer</h4><p>Emergency response authorities are the primary users of these satellite-derived open water flood extent map products. These products are generated to provide analysis and emergency response situational awareness and to facilitate decision-making during major flood events. The open water flood extent products are generated rapidly and limited time is available for editing and validation. The flood products reflect the open water flood conditions at the date/time of acquisition. While efforts are made to produce high quality products, near-real time products may contain errors due to the limited time available for vector editing and validation. Please note that current algorithms do not map flooded areas under the forest canopy and are not optimized for urban flood mapping.</p><h4>Limitation of Liability</h4><p>Accordingly, the information contained on this website is provided on an <em>as is</em> basis and Natural Resources Canada makes no representations or warranties respecting the information, either expressed or implied, arising by law or otherwise, including but not limited to, effectiveness, completeness, accuracy or fitness for a particular purpose. Natural Resources Canada does not assume any liability in respect of any damage or loss based on the use of this website. In no event shall Natural Resources Canada be liable in any way for any direct, indirect, special, incidental, consequential, or other damages based on any use of this website or any other website to which this site is linked, including, without limitation, any lost profits or revenue or business interruption.</p>",
+          "aboutChoice": "string"
+      },
+      "fullscreen": false,
+      "theme": "default",
+      "failureFeedback": {
+          "failureMessage": "",
+          "failureImageUrl": ""
+      },
+      "title": "",
+      "appBar": {
+          "sideMenu": true,
+          "geoSearch": false,
+          "basemap": false,
+          "layers": false
+      },
+      "navBar": {
+          "zoom": "buttons",
+          "extra": [
+              "fullscreen",
+              "home",
+              "help",
+              "layers"
+          ]
+      },
+      "restrictNavigation": true,
+      "help": {
+          "folderName": "default"
+      },
+      "legend": {
+          "reorderable": false,
+          "allowImport": false,
+          "isOpen": {
+              "large": false,
+              "medium": false,
+              "small": false
+          }
+      },
+      "tableIsOpen": {
+          "id": "",
+          "large": false,
+          "medium": false,
+          "small": false
+      },
+      "widgetsWidget": "",
+      "logoUrl": ""
+  },
+  "services": {
+      "proxyUrl": "https://maps.canada.ca/wmsproxy/ws/wmsproxy/executeFromProxy",
+      "geometryUrl": "https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/Geometry/GeometryServer",
+      "exportMapUrl": "https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+      "search": {
+          "serviceUrls": {
+              "geoNames": "https://geogratis.gc.ca/services/geoname/en/geonames.json",
+              "geoLocation": "https://geogratis.gc.ca/services/geolocation/en/locate?q=",
+              "geoSuggest": "https://geogratis.gc.ca/services/geolocation/en/suggest?q=",
+              "provinces": "https://geogratis.gc.ca/services/geoname/en/codes/province.json",
+              "types": "https://geogratis.gc.ca/services/geoname/en/codes/concise.json"
+          },
+          "disabledSearches": [
+              "NTS",
+              "FSA",
+              "LAT/LNG"
+          ],
+          "settings": {
+              "categories": [],
+              "sortOrder": [],
+              "maxResults": 100,
+              "officialOnly": false
+          }
+      },
+      "export": {
+          "title": {
+              "isSelected": true,
+              "isSelectable": true,
+              "value": "EGS Flood Product - Active Floods in Canada"
+          },
+          "footnote": {
+              "isSelected": true,
+              "isSelectable": false,
+              "value": "© Her Majesty the Queen in Right of Canada, represented by the Minister of Natural Resources"
+          },
+          "map": {
+              "isSelected": true,
+              "isSelectable": true
+          },
+          "mapElements": {
+              "isSelected": true,
+              "isSelectable": true
+          },
+          "legend": {
+              "isSelected": true,
+              "isSelectable": true,
+              "showInfoSymbology": false,
+              "showControlledSymbology": false,
+              "columnWidth": 350
+          },
+          "timestamp": {
+              "isSelected": false,
+              "isSelectable": false
+          },
+          "timeout": 120000,
+          "cleanCanvas": false
+      },
+      "googleAPIKey": "",
+      "geolocation": "",
+      "coordInfo": "",
+      "print": "",
+      "corsEverywhere": false,
+      "esriLibUrl": ""
+  },
+  "version": "3.3.5",
+  "language": "en-CA",
+  "plugins": {
+      "rangeSlider": {
+          "open": true,
+          "enable": true,
+          "maximizeDesc": false,
+          "autorun": false,
+          "loop": false,
+          "lock": false,
+          "controls": [
+              "lock",
+              "delay",
+              "export",
+              "refresh"
+          ],
+          "params": {
+              "type": "date",
+              "delay": "3000",
+              "startRangeEnd": true,
+              "rangeInterval": 259200000,
+              "isTimeAware": false,
+              "limit": {
+                  "min": null,
+                  "max": null,
+                  "staticItems": []
+              },
+              "rangeType": "dual",
+              "stepType": "dynamic",
+              "precision": "date",
+              "range": {
+                  "min": null,
+                  "max": null
+              },
+              "units": ""
+          },
+          "layers": [
+              {
+                  "id": "Flood Product Current",
+                  "field": "date_utc",
+                  "isTimeAware": false
+              },
+              {
+                  "id": "Footprint",
+                  "field": "date_utc",
+                  "isTimeAware": false
+              },
+              {
+                  "id": "Floods in Canada by land use",
+                  "field": "date_utc",
+                  "isTimeAware": false
+              }
+          ],
+          "maximize": true,
+          "reverse": true
+      },
+      "areasOfInterest": {
+          "enable": false,
+          "areas": []
+      },
+      "chart": {
+          "enable": false,
+          "type": "pie",
+          "title": "",
+          "labelsPie": {
+              "type": "field",
+              "values": "date",
+              "split": ";"
+          },
+          "options": {
+              "colors": "",
+              "cutOut": 50
+          },
+          "labelsLine": {
+              "xAxis": {
+                  "title": "",
+                  "type": "config",
+                  "values": "",
+                  "split": ";"
+              },
+              "yAxis": {
+                  "title": "",
+                  "type": "config",
+                  "values": "",
+                  "split": ";"
+              }
+          },
+          "layers": [
+              {
+                  "id": "0"
+              }
+          ],
+          "axis": {
+              "xAxis": {
+                  "title": "",
+                  "type": "config",
+                  "values": "",
+                  "split": ";"
+              },
+              "yAxis": {
+                  "title": "",
+                  "precision": "",
+                  "type": "config",
+                  "values": "",
+                  "split": ";"
+              }
+          }
+      },
+      "swiper": {
+          "enable": false,
+          "type": "vertical",
+          "keyboardOffset": 10,
+          "layers": [
+              {}
+          ]
+      },
+      "draw": {
+          "enable": false,
+          "open": true,
+          "tools": [
+              "picker",
+              "point",
+              "polyline",
+              "polygon",
+              "edit",
+              "measure",
+              "extent",
+              "write",
+              "read"
+          ]
+      },
+      "coordInfo": {
+          "enable": false
+      },
+      "thematicSlider": {
+          "enable": false,
+          "open": true,
+          "autorun": false,
+          "loop": false,
+          "slider": true,
+          "stack": false,
+          "legendStack": true
+      }
   }
+}
