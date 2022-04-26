@@ -647,7 +647,7 @@
       "sideMenu": {
         "items": [
           [ "layers", "basemap" ],
-          [ "fullscreen", "export", "share", "touch", "help" ],
+          [ "fullscreen", "export", "share", "touch", "help" ,"language"],
           [ "plugins" ]
         ],
         "logo": true
@@ -664,6 +664,7 @@
         "sideMenu": true,
         "geoSearch": true,
         "basemap": true,
+        "langauge":true,
         "layers": true
       },
       "navBar": {

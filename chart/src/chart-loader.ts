@@ -7,6 +7,8 @@ import { CANVAS_TEMPLATE } from './template';
 import * as chartjs from 'chart.js';
 import * as nouislider from 'nouislider';
 import { tr } from 'date-fns/locale';
+import set from 'date-fns/esm/set/index';
+import { write } from 'fs';
 
 /**
  * Creates and manages charts.
@@ -53,6 +55,9 @@ export class ChartLoader {
         '#000000'
     ];
 
+    // tooltip in getGlobalOptions requires langage for french date format
+    private language1: string;
+    
     /**
      * Chart loader constructor
      * @constructor
@@ -77,6 +82,8 @@ export class ChartLoader {
     initSlider(slider: any, min: number, max: number, type: string, language: string, length: number, isDateTimeObjForXAxis: boolean = false) {
         const delta = Math.abs(max - min);
 
+        this.language1 = language;  
+   
         // create the step
         const step = 1 / (Math.pow(10, length));
 
@@ -159,7 +166,6 @@ export class ChartLoader {
                 value = `${date.getFullYear()}-${this.prependZero(date.getMonth() + 1)}-${this.prependZero(date.getDate())} ${this.prependZero(date.getHours())}:${this.prependZero(date.getMinutes())}`;
             }
         }
-
         return value;
     }
 
@@ -353,7 +359,7 @@ export class ChartLoader {
      * @function getGlobalOptions
      * @return {Object} the global options
      */
-    private getGlobalOptions(chartType: string, isDateTimeObjForXAxis: boolean): object {
+    private getGlobalOptions(chartType: string,isDateTimeObjForXAxis: boolean): object {
         return {
             maintainAspectRatio: false,
             responsive: true,
@@ -409,6 +415,9 @@ export class ChartLoader {
                 axis: 'x', // this need to be set to select all values to a specified x
                 callbacks: {
                     title: (tooltipItem: any): string => {
+                        if (this.language1 === 'fr-CA')
+                            tooltipItem[0].label = tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',')-2,2)+' '+tooltipItem[0].label.substr(0, 3)+', '+tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',',10)-4,5)+tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',',11)+1 );
+               
                         if (!isDateTimeObjForXAxis)
                             return tooltipItem[0].label.split(',').filter((item: any, index: any) => index < 2).join(', ');
                         else
