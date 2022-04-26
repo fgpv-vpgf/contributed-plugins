@@ -53,6 +53,9 @@ export class ChartLoader {
         '#000000'
     ];
 
+    // tooltip in getGlobalOptions requires langage for french date format
+    private languageUsed: string;
+    
     /**
      * Chart loader constructor
      * @constructor
@@ -77,6 +80,8 @@ export class ChartLoader {
     initSlider(slider: any, min: number, max: number, type: string, language: string, length: number, isDateTimeObjForXAxis: boolean = false) {
         const delta = Math.abs(max - min);
 
+        this.languageUsed = language;  
+   
         // create the step
         const step = 1 / (Math.pow(10, length));
 
@@ -411,8 +416,11 @@ export class ChartLoader {
                     title: (tooltipItem: any): string => {
                         if (!isDateTimeObjForXAxis)
                             return tooltipItem[0].label.split(',').filter((item: any, index: any) => index < 2).join(', ');
-                        else
+                        else {
+                            if (this.languageUsed === 'fr-CA')
+                                tooltipItem[0].label = tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',')-2,2)+' '+tooltipItem[0].label.substr(0, 3)+', '+tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',',10)-4,5)+tooltipItem[0].label.substr(tooltipItem[0].label.indexOf(',',11)+1 );
                             return tooltipItem[0].label;
+                        }
                     },
                     label: (tooltipItem: any, data: any): string => {
                         const item = data.datasets[tooltipItem.datasetIndex];
