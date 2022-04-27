@@ -84,7 +84,9 @@
             rv-config="slider-esrinumber-config.json"
             rv-langs='["en-CA", "fr-CA"]'
             rv-plugins="rangeSlider"
+            rv-service-endpoint="https://gcgeo.gc.ca/geonetwork/srv/api/"
         >
+        <!-- data-rv-keys='["4e8e3c6a-c961-4def-bdc7-f24823462818"]' -->
             <noscript>
                 <p>
                     This interactive map requires JavaScript. To view this content please enable JavaScript in your
@@ -127,6 +129,10 @@
                             location.reload();
                         }
                     }
+                } else if (params.has('keys')) {
+                    // do nothing
+                    sampleMapElem.setAttribute('rv-config', 'slider-empty-config.json');
+                    sessionStorage.setItem('sample', 12);
                 } else { // the key `sample` is provided
                     var sampleIndex = 0;
                     params.set('sample', sampleIndex + 1);
@@ -147,7 +153,9 @@
             }
         </script>
         <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default,Object.entries,Object.values,Array.prototype.find,Array.prototype.findIndex,Array.prototype.values,Array.prototype.includes,HTMLCanvasElement.prototype.toBlob,String.prototype.repeat,String.prototype.codePointAt,String.fromCodePoint,NodeList.prototype.@@iterator,Promise,Promise.prototype.finally"></script>
-        <script src="../../fgpv/rv-main.js"></script>
+        <!-- <script src="../../fgpv/rv-main.js"></script> -->
+        <script src="https://viewer-visualiseur.services.geo.ca/apps/RAMP/fgpv/fgpv-3.3.5/legacy-api.js"></script>
+        <script src="https://viewer-visualiseur.services.geo.ca/apps/RAMP/fgpv/fgpv-3.3.5/rv-main.js"></script>
 
         <script>
             var params = new URLSearchParams(currentUrl.search);
