@@ -47,29 +47,13 @@ export default class Chart {
             const uri = `https://geocore.api.geo.ca/id?id=${layer.id.split('.')[1]}`
             fetch(encodeURI(uri)).then(response => {
                 response.json().then(json => {
-                    // check uuuid has a value in GEoCore
-                    if (typeof json.Items !== 'undefined') {
+                    // check uuuid has a value in GeoCore
+                    if (typeof json.Items !== 'undefined' && 'NaN' !== json.Items[0].plugins) {
                         // get the plugin section and parse
-                        // remove uneeded character at front and end of the string
-                        // replace the True and False by proper value true and false
-                        // replace where None by null
-                        // remove double \\
-                        // replace single quote by double quotes
-                        // replace l' in title and put back the ' where it should be kept
-                        // replace id by the right rcs id
-                        let t = json.Items[0].plugins;
-                        const parseConfig = JSON.parse(
-                            t.replace('""[', '').replace(']""', '')
-                                .replaceAll('True', 'true').replaceAll('False', 'false')
-                                .replaceAll('None', '0')
-                                .replaceAll('\\"', '')
-                                .replaceAll("'", '"')
-                                .replaceAll('l"', "l'").replaceAll("l':", 'l":')
-                                .replaceAll('d"', "d'").replaceAll("d':", 'd":')
-                                .replaceAll(layer.id.split('.')[1], layer.id));
-                        this.config = parseConfig.RAMPS[this._RV.getCurrentLang().split('-')[0]].chart;
+                        let n = JSON.stringify(json.Items[0].plugins[0]).replaceAll(layer.id.split('.')[1], layer.id);
+                        this.config = JSON.parse(n).RAMPS[this._RV.getCurrentLang().split('-')[0]].chart
 
-                        // TIDO: not use in view on map and was problematic... harcoded it for the moment. Investigate
+                        // TODO: not use in view on map and was problematic... harcoded it for the moment. Investigate
                         this.config.layers[0].data[0].regex = '\\(|\\),\\(|\\)';
                         // init the chart
                         if (!this._isInit) this.initChartPlugin();
