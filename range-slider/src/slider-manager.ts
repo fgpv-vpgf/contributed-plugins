@@ -295,6 +295,9 @@ export class SliderManager {
 
             // wait for all promises to resolve then initialize the slider
             Promise.all(promises).then(values => {
+                // remove no features value (=== -1)
+                values = values.filter(item => item.limits[0] !== -1);
+
                 // only initialize if the promises resolve to something
                 if (values[0] !== false) {
                     // set limits
@@ -405,7 +408,8 @@ export class SliderManager {
                 dataType: 'jsonp',
                 success: data => resolve({
                     range: [NaN, NaN],
-                    limits: [data.features[0].attributes.rsMIN, data.features[0].attributes.rsMAX]
+                    limits: [typeof data.features[0] !== 'undefined'? data.features[0].attributes.rsMIN : -1, // if not feature set -1
+                        typeof data.features[0] !== 'undefined'? data.features[0].attributes.rsMAX : -1]
                 })
             });
         });
