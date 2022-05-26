@@ -8,6 +8,8 @@ import Common from './common';
 
 const _ = require('lodash');
 
+const previousChart = "0";
+
 /**
  * Class to manage the selection control and lauch chart creation
  * @exports
@@ -67,6 +69,10 @@ export class ChartControls {
 
             // This actually populate the chart and labels combo in panel.
             this.selectChart = () => {
+                  if (this.previousChart !== this.selectedChart) {
+                        // reset chart labels
+                        this.selectedLabel = [];
+                }
                 (<any>that).createChart(this.selectedChart, this.selectedLabel);
                 ChartParser.populateLabelSelect(this.selectedChart, this);
             }
