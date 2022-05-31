@@ -25,7 +25,7 @@
   "language": "en",
   "services":{
     "proxyUrl":"https://maps.canada.ca/wmsproxy/ws/wmsproxy/executeFromProxy",
-    "geometryUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/Geometry/GeometryServer",
+    "geometryUrl":"https://maps-cartes.services.geo.ca/server2_serveur2/rest/services/Utilities/Geometry/GeometryServer",
     "exportMapUrl":"https://webservices.maps.canada.ca/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
     "search":{
        "serviceUrls":{
