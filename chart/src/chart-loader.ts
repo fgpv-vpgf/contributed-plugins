@@ -493,12 +493,14 @@ export class ChartLoader {
                         } else if (data.type === 'combine') {
                             let parseCombValues = parse.replace(new RegExp(data.regex, 'g'), '*').split('*').filter(Boolean);
                             let numberPattern = /\d+/g;
-                            parsed.isDateTimeObjForXAxis = (parseCombValues.filter(q=>{
-                                let time: any = parseInt(q.split('T')[1].split(data.split)[0].match(numberPattern).join(''));
-                                if (time > 0) {
-                                    return true;
-                                }
-                            })).length > 0;
+                            if (parseCombValues.includes("T")) {
+                                parsed.isDateTimeObjForXAxis = (parseCombValues.filter(q => {
+                                    let time: any = parseInt(q.split('T')[1].split(data.split)[0].match(numberPattern).join(''));
+                                    if (time > 0) {
+                                        return true;
+                                    }
+                                })).length > 0;
+                            }
                             for (let val of parseCombValues) {
                                 let splitVal = val.split(data.split);
 
