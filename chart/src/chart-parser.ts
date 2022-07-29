@@ -143,7 +143,13 @@ export class ChartParser {
 
         data.features.forEach((feat: any) => {
             if (typeof attrValue === 'undefined' || attrValue === feat.attributes[layerConfig.data[index].values]) {
-                values.push(`(${new Date(feat.attributes[layerConfig.data[index].date]).toJSON()},${feat.attributes[layerConfig.data[index].measure]})`);
+                 if (String(feat.attributes[layerConfig.data[index].date]).length === 4) {
+                    feat.attributes[layerConfig.data[index].date] = Number(feat.attributes[layerConfig.data[index].date]);
+            }
+            if (String(feat.attributes[layerConfig.data[index].date]).length === 4) 
+                    values.push(`(${(feat.attributes[layerConfig.data[index].date])},${feat.attributes[layerConfig.data[index].measure]})`)
+            else 
+                    values.push(`(${new Date(feat.attributes[layerConfig.data[index].date]).toJSON()},${feat.attributes[layerConfig.data[index].measure]})`);   
             }
         });
 
