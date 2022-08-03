@@ -108,6 +108,9 @@ export class ChartLine {
             dataset.backgroundColor = `${colors[i]}80`;
             dataset.borderColor = colors[i];
             dataset.borderWidth = 2;
+            if (xType === 'stepped') {
+                dataset.steppedLine = true;
+            }
 
             // keep the original value so we can use a slider to refine
             // use lodash to deep clone the object so we dont mess the original object
@@ -154,6 +157,8 @@ export class ChartLine {
             optsAxe.type = 'category';
             optsAxe.labels = ticks;
         } else if (config.type === 'linear') {
+            optsAxe.type = 'linear';
+        } else if (config.type === 'stepped') {
             optsAxe.type = 'linear';
         } else if (config.type === 'date') {
             optsAxe.type = 'time';
