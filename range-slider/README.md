@@ -11,6 +11,7 @@ Inside your configuration file you need
 "plugins": {
     "rangeSlider": {
         "open": true,
+        "autoinit" : false,
         "autorun": false,
         "loop": true,
         "controls": ["lock", "loop", "delay", "export", "refresh"],
@@ -36,6 +37,7 @@ Inside your configuration file you need
 Configuration parameters
 - open: boolean to set the controls panel (description and slider) open by default
 - autorun: boolean to start the animation automatically (if true, open should be true as well)
+- autoinit: Initialize automatically with time aware layer
 - loop: boolean to restart automatically the animation when it reaches the end of the array
 - controls: string array who contains needed controls. Order inside the array has no effect.
     - lock: lock or unlock left anchor when step or play
