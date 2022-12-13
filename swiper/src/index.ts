@@ -141,6 +141,11 @@ export default class Swiper {
             });
 
             swipeWidget.startup();
+
+            const items = document.getElementsByClassName('rv-symbol-graphic');
+            for (let i = 0; i < items.length; i++) {
+                (items[i] as HTMLElement).style.pointerEvents = 'none';
+            };
         }
 
         catch (err) {
