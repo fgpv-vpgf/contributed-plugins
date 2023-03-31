@@ -1,5 +1,7 @@
 import { PanelManager } from './panel-manager';
 
+var isSetup = false;
+
 export default class Draw {
     /**
      * Plugin init
@@ -7,6 +9,9 @@ export default class Draw {
      * @param {Object} mapApi the viewer api
      */
     init(mapApi: any) {
+        const bar = document.getElementsByClassName('rv-mapnav-draw-content')[0];
+        if (bar !== undefined) bar.remove();
+
         this.mapApi = mapApi;
 
         // get draw config
