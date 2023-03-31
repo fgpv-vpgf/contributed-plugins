@@ -82,7 +82,7 @@ Configuration parameters
 - type: chart type to create (pie, bar or line)
 - title: chart title
 - axis: object to handle how labels and slider (line) will be generate (xAxis and yAxis). Only for bar and line chart.
-  - type: type of labels, from a field or configuration for bar chart or from values (linear or date in yyyy-mm-dd format) for line chart.
+  - type: type of labels, from a field or configuration for bar chart or from values (linear, stepped or date in yyyy-mm-dd format) for line chart.
   - title: title of the axis
   - values: name field to get the labels (only for type field)
   - split: character to use to split the labels (only for type field)
